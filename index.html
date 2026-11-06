@@ -450,8 +450,9 @@ function reasonHtml(x) {
   </div></div>`;
 }
 function renderMarket() {
-  const m = D.markets.find(x => x.id === state.market) || D.markets[0];
+  const m = D.markets.find(x => x.id === state.market) || D.markets.find(x => x.id === defaultMarket()) || D.markets[0];
   state.market = m.id;
+  LS.set('mw-market', m.id);          // 记住上次看的品种
   const list = m.moves.length ? m.moves.map((mv, k) => `
     <div class="mv-item ${k === state.move ? 'on' : ''}" data-mvi="${k}">
       <div class="head">
@@ -856,7 +857,7 @@ document.addEventListener('click', e => {
     $('#dchart').innerHTML = '<div class="empty">图表加载中…</div>'; return loadChart(state.stock, DETAIL.period, '#dchart'); }
   if (t.closest('[data-expand]')) { DETAIL.expand = !DETAIL.expand; return paintProfile(state.stock); }
   const tab = t.closest('nav.tabs button');
-  if (tab) return go({ tab: tab.dataset.tab, ...(tab.dataset.tab === 'market' && !state.market ? { market: topMarket(), move: 0 } : {}) });
+  if (tab) return go({ tab: tab.dataset.tab, ...(tab.dataset.tab === 'market' && !state.market ? { market: defaultMarket(), move: 0 } : {}) });
   const card = t.closest('.mv-card');
   if (card) return go({ tab: 'market', market: card.dataset.mk, move: +card.dataset.mv });
   const tk = t.closest('[data-mk]');
@@ -885,11 +886,11 @@ document.addEventListener('keydown', e => {
 });
 window.addEventListener('popstate', () => { readHash(); render(); if (viewIds().length) refreshQuotes(true); });
 
-// 默认打开今天异动最显著的品种
-function topMarket() {
-  let best = D.markets[0], bv = -1;
-  D.markets.forEach(m => m.moves.forEach(mv => { const v = Math.abs(mv.chg) / m.th; if (v > bv) { bv = v; best = m; } }));
-  return best?.id;
+// 异动归因默认打开上证指数；看过别的品种就打开上次看的那个
+function defaultMarket() {
+  const last = LS.get('mw-market', '');
+  if (D.markets.some(m => m.id === last)) return last;
+  return D.markets.some(m => m.id === '1.000001') ? '1.000001' : D.markets[0]?.id;
 }
 
 // 主题
@@ -919,7 +920,7 @@ async function load() {
   if (first) {
     first = false;
     readHash();
-    if (state.tab === 'market' && !D.markets.some(m => m.id === state.market)) state.market = topMarket();
+    if (state.tab === 'market' && !D.markets.some(m => m.id === state.market)) state.market = defaultMarket();
     render();
     if (viewIds().length) refreshQuotes(true);
   } else if (state.tab === 'overview' || state.tab === 'market') render();   // 定时重读：快讯页、详情页不打断
