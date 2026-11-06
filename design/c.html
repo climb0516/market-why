@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>样张 C · 简洁资讯</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #fbfaf8; --t1: #141414; --t2: #55524d; --t3: #9a958e; --line: #e8e4de; --red: #d0021b; --up: #d0021b; --down: #0a8f5a; --soft: #f3f0eb; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--t1); font: 15px/1.6 Inter, "PingFang SC", "Microsoft YaHei", sans-serif; -webkit-font-smoothing: antialiased; }
+  .serif { font-family: "Noto Serif SC", "Songti SC", serif; }
+  .num { font-variant-numeric: tabular-nums; }
+  .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--t3); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  header { border-bottom: 3px double var(--t1); padding: 22px 0 12px; display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  header h1 { font-size: 34px; font-weight: 900; letter-spacing: -.01em; }
+  header h1 span { color: var(--red); }
+  header .date { color: var(--t3); font-size: 13px; }
+  nav { display: flex; gap: 22px; padding: 10px 0; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 14.5px; overflow-x: auto; white-space: nowrap; }
+  nav span { color: var(--t2); padding-bottom: 6px; }
+  nav span.on { color: var(--t1); border-bottom: 2px solid var(--red); }
+  .strip { display: flex; gap: 0; overflow-x: auto; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+  .strip div { padding: 10px 18px 10px 0; margin-right: 18px; border-right: 1px solid var(--line); white-space: nowrap; font-size: 13px; }
+  .strip b { display: block; font-size: 12px; color: var(--t3); font-weight: 500; }
+  .strip .v { font-weight: 600; }
+  .layout { display: grid; grid-template-columns: 1fr; gap: 36px; padding: 26px 0 50px; }
+  @media (min-width: 960px) { .layout { grid-template-columns: 1.6fr 1fr; } }
+  h2 { font-family: "Noto Serif SC", serif; font-size: 20px; font-weight: 900; padding-bottom: 8px; border-bottom: 2px solid var(--t1); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; }
+  h2 small { font-family: Inter, sans-serif; font-size: 12px; color: var(--t3); font-weight: 500; }
+  .lead { padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .lead .k { color: var(--red); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+  .lead h3 { font-family: "Noto Serif SC", serif; font-size: 26px; line-height: 1.35; font-weight: 900; margin: 6px 0 8px; }
+  .lead p { color: var(--t2); font-size: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .story { padding: 14px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 28px 1fr; gap: 8px; }
+  .story .n { font-family: "Noto Serif SC"; font-weight: 900; color: var(--t3); font-size: 18px; }
+  .story h4 { font-family: "Noto Serif SC", serif; font-size: 17.5px; font-weight: 700; line-height: 1.45; }
+  .meta { color: var(--t3); font-size: 12.5px; margin-top: 4px; }
+  .mv { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .mv .h { display: flex; justify-content: space-between; font-weight: 700; }
+  .mv .w { font-size: 13.5px; color: var(--t2); margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .tbl td { padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .tbl td:not(:first-child) { text-align: right; }
+  .block { margin-bottom: 34px; }
+  .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+  .chips div { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1 class="serif">Market<span>Why</span></h1><span class="date" id="upd"></span></header>
+  <nav><span>要闻</span><span class="on">全球</span><span>有色</span><span>AI</span><span>异动</span><span>快讯</span></nav>
+  <div class="strip num" id="strip"></div>
+  <div class="layout" id="app"></div>
+</div>
+<script src="common.js"></script>
+<script>
+(async () => {
+  const { esc, hm, cls, pct, fmtP, usSession } = MW;
+  const d = await MW.load();
+  document.getElementById('upd').textContent = '行情为什么动 · 更新于 ' + d.updated;
+  document.getElementById('strip').innerHTML = d.macro.map(m => `<div><b>${esc(m.name)}</b><span class="v">${fmtP(m.q.price)}</span> <span class="${cls(m.q.pct)}">${pct(m.q.pct)}</span></div>`).join('');
+  const [lead, ...rest] = d.events;
+  document.getElementById('app').innerHTML = `
+    <div>
+      <h2>影响市场的大事<small>近 24 小时 · 多家来源报道</small></h2>
+      <div class="lead"><div class="k">头条 · ${lead.refs.length} 家报道 · ${hm(lead.ts)}</div><h3>${esc(lead.title)}</h3><p>${esc(lead.summary || '')}</p></div>
+      ${rest.map((e, i) => `<div class="story"><span class="n">${i + 2}</span><div><h4>${esc(e.title)}</h4><div class="meta">${hm(e.ts)} · ${e.refs.length} 家报道${e.factors[0] ? ' · ' + esc(d.FAC[e.factors[0]]) : ''}</div></div></div>`).join('')}
+      <h2 style="margin-top:34px">今日异动<small>哪里动了 · 当时发生了什么</small></h2>
+      ${d.topMoves.map(({ m, mv, news }) => `<div class="mv"><div class="h"><span>${esc(m.name)} <span class="meta" style="font-weight:400">${mv.kind === 'gap' ? '开盘跳空' : hm(mv.start) + '–' + hm(mv.end)}</span></span><span class="num ${cls(mv.chg)}">${mv.chg > 0 ? '+' : ''}${mv.chg}${m.unit === 'bp' ? 'bp' : '%'}</span></div>
+        <div class="w">${news[0] ? esc(news[0].title) : '同时段没有匹配到相关新闻'}</div></div>`).join('')}
+    </div>
+    <aside>
+      <div class="block"><h2>全球产业<small>${usSession()}</small></h2>
+        <div class="chips">${d.industry.map(t => `<div><span>${esc(t.name)}</span><span class="num ${cls(t.pct)}">${pct(t.pct)}</span></div>`).join('')}</div></div>
+      <div class="block"><h2>${esc(d.aiTheme.name)}<small>等权 <span class="${cls(d.aiTheme.pct)}">${pct(d.aiTheme.pct)}</span></small></h2>
+        <table class="tbl num">${d.aiTheme.rows.map(r => `<tr><td>${esc(r.name)} <span class="meta">${r.mkt}</span></td><td>${fmtP(r.q.price)}</td><td class="${cls(r.q.pct)}">${pct(r.q.pct)}</td></tr>`).join('')}</table></div>
+    </aside>`;
+})();
+</script>
+</body>
+</html>

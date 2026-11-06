@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>样张 D · 现代金融</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #070a14; --glass: rgba(255,255,255,.055); --glass-2: rgba(255,255,255,.09); --bd: rgba(255,255,255,.09); --t1: #f2f4fa; --t2: #9aa3b8; --t3: #5f6880; --up: #ff5c7a; --down: #22d3a0; --a1: #7c5cff; --a2: #22c1ee; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--t1); font: 14.5px/1.5 "Plus Jakarta Sans", "PingFang SC", sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+  body::before { content: ''; position: fixed; inset: 0; z-index: -1; background:
+    radial-gradient(600px 400px at 10% -5%, rgba(124,92,255,.28), transparent 60%),
+    radial-gradient(500px 380px at 95% 10%, rgba(34,193,238,.18), transparent 60%),
+    radial-gradient(700px 500px at 50% 110%, rgba(255,92,122,.10), transparent 60%); }
+  .num { font-variant-numeric: tabular-nums; }
+  .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--t2); }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 18px 60px; }
+  header { display: flex; align-items: center; gap: 14px; padding: 18px 0; }
+  .logo { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, var(--a1), var(--a2)); display: grid; place-items: center; box-shadow: 0 8px 24px rgba(124,92,255,.4); }
+  .logo svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2.2; }
+  header h1 { font-size: 20px; font-weight: 800; }
+  header .sub { color: var(--t3); font-size: 12.5px; }
+  .seg { margin-left: auto; display: flex; background: var(--glass); border: 1px solid var(--bd); border-radius: 14px; padding: 4px; gap: 2px; }
+  .seg span { padding: 7px 14px; border-radius: 10px; color: var(--t2); font-weight: 600; font-size: 13.5px; display: flex; align-items: center; gap: 6px; }
+  .seg span.on { background: linear-gradient(135deg, rgba(124,92,255,.9), rgba(34,193,238,.8)); color: #fff; box-shadow: 0 4px 16px rgba(124,92,255,.35); }
+  .seg svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+  @media (max-width: 760px) { header { flex-wrap: wrap; } .seg { margin-left: 0; width: 100%; overflow-x: auto; } .seg span { flex: 1; justify-content: center; padding: 7px 8px; } .seg span em { display: none; } }
+  .glass { background: var(--glass); border: 1px solid var(--bd); border-radius: 22px; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  .sec { padding: 18px; margin-top: 16px; }
+  .sec-h { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .sec-h h2 { font-size: 17px; font-weight: 800; }
+  .sec-h .tag { margin-left: auto; font-size: 12px; color: var(--t2); background: var(--glass-2); border-radius: 999px; padding: 4px 10px; display: flex; gap: 6px; align-items: center; }
+  .sec-h .tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--a2); box-shadow: 0 0 8px var(--a2); }
+  .macro { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .mc { background: var(--glass); border: 1px solid var(--bd); border-radius: 18px; padding: 14px; position: relative; overflow: hidden; }
+  .mc .n { color: var(--t2); font-size: 13px; font-weight: 600; }
+  .mc b { display: block; font-size: 24px; font-weight: 800; margin-top: 2px; letter-spacing: -.02em; }
+  .bdg { display: inline-flex; font-size: 12.5px; font-weight: 700; padding: 2px 8px; border-radius: 8px; margin-top: 6px; }
+  .bdg.up { background: rgba(255,92,122,.14); } .bdg.down { background: rgba(34,211,160,.14); } .bdg.flat { background: var(--glass-2); }
+  .mc svg.sp { position: absolute; right: 12px; bottom: 14px; width: 84px; height: 34px; }
+  .themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+  .th { border-radius: 16px; padding: 14px; border: 1px solid var(--bd); display: flex; flex-direction: column; gap: 10px; background: var(--glass); }
+  .th .ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--glass-2); }
+  .th .ic svg { width: 18px; height: 18px; stroke: #c9d0ff; fill: none; stroke-width: 1.8; }
+  .th .row { display: flex; justify-content: space-between; align-items: center; }
+  .th .n { font-weight: 700; }
+  .bar { height: 4px; border-radius: 2px; background: var(--glass-2); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 2px; }
+  .two { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 960px) { .two { grid-template-columns: 1fr 1fr; } }
+  .li { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--bd); align-items: flex-start; }
+  .li:first-of-type { border-top: 0; }
+  .dot { width: 36px; height: 36px; border-radius: 12px; flex: none; display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+  .dot.up { background: rgba(255,92,122,.14); } .dot.down { background: rgba(34,211,160,.14); }
+  .li .t { font-weight: 700; } .li .s { color: var(--t2); font-size: 13px; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .rk { background: linear-gradient(135deg, var(--a1), var(--a2)); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; font-size: 20px; width: 28px; flex: none; }
+  .stk { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; padding: 11px 0; border-top: 1px solid var(--bd); }
+  .stk .m { font-size: 10.5px; color: var(--t2); background: var(--glass-2); border-radius: 5px; padding: 1px 5px; margin-left: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
+    <div><h1>MarketWhy</h1><div class="sub" id="upd"></div></div>
+    <div class="seg">
+      <span><svg viewBox="0 0 24 24"><path d="M3 12l9-8 9 8v8H3z"/></svg><em>总览</em></span>
+      <span class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18"/></svg><em>全球</em></span>
+      <span><svg viewBox="0 0 24 24"><path d="M12 3l9 9-9 9-9-9z"/></svg><em>有色</em></span>
+      <span><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></svg><em>AI</em></span>
+      <span><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg><em>快讯</em></span>
+    </div>
+  </header>
+  <div id="app"></div>
+</div>
+<script src="common.js"></script>
+<script>
+(async () => {
+  const { esc, hm, cls, pct, fmtP, spark, usSession } = MW;
+  const d = await MW.load();
+  document.getElementById('upd').textContent = '行情为什么动 · ' + d.updated;
+  // 线性图标（替代 emoji），按主题 key 取，没有的用通用图标
+  const I = {
+    'ai-compute': '<rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/>',
+    cpo: '<circle cx="12" cy="12" r="3"/><path d="M2 12h7M15 12h7M12 2v7M12 15v7"/>',
+    semi: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8v8H8z"/>',
+    storage: '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+    datacenter: '<rect x="4" y="3" width="16" height="6" rx="1"/><rect x="4" y="11" width="16" height="6" rx="1"/><path d="M8 6h.01M8 14h.01M4 21h16"/>',
+    cloud: '<path d="M7 18a5 5 0 010-10 6 6 0 0111.5 1.5A4 4 0 0118 18z"/>',
+    space: '<path d="M12 2c3 3 4 7 4 11l-4 4-4-4c0-4 1-8 4-11z"/><path d="M8 13l-3 3 1 3 3-1M16 13l3 3-1 3-3-1"/>',
+    satellite: '<path d="M4 10l6-6 4 4-6 6z"/><path d="M14 14l6 6M12 12l3-3M16 4a4 4 0 014 4"/>',
+    robot: '<rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/>',
+    autodrive: '<path d="M5 16l2-6h10l2 6M3 16h18v3H3z"/><circle cx="7" cy="19" r="1"/><circle cx="17" cy="19" r="1"/>',
+    nuclear: '<circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/>',
+    rareearth: '<path d="M6 3v8a6 6 0 0012 0V3M6 7h4M14 7h4"/>',
+  };
+  const icon = k => `<svg viewBox="0 0 24 24">${I[k] || '<circle cx="12" cy="12" r="8"/>'}</svg>`;
+  const B = v => `<span class="bdg num ${cls(v)}">${v > 0 ? '▲' : v < 0 ? '▼' : ''} ${pct(v)}</span>`;
+  const col = v => v >= 0 ? 'var(--up)' : 'var(--down)';
+  document.getElementById('app').innerHTML = `
+    <section class="glass sec"><div class="sec-h"><h2>全球经济数据</h2></div>
+      <div class="macro">${d.macro.map(m => `<div class="mc"><div class="n">${esc(m.name)}</div><b class="num">${fmtP(m.q.price)}</b>${B(m.q.pct)}
+        ${m.pts ? `<svg class="sp" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline fill="none" stroke="${col(m.q.pct)}" stroke-width="2" points="${spark(m.pts)}"/></svg>` : ''}</div>`).join('')}</div></section>
+    <section class="glass sec"><div class="sec-h"><h2>全球产业数据</h2><span class="tag"><i></i>${usSession()}</span></div>
+      <div class="themes">${d.industry.map(t => `<div class="th"><div class="row"><span class="ic">${icon(t.key)}</span>${B(t.pct)}</div>
+        <span class="n">${esc(t.name)}</span><div class="bar"><i style="width:${Math.min(100, Math.abs(t.pct || 0) * 6)}%;background:${col(t.pct)}"></i></div></div>`).join('')}</div></section>
+    <div class="two">
+      <section class="glass sec"><div class="sec-h"><h2>今日异动</h2></div>
+        ${d.topMoves.map(({ m, mv, news }) => `<div class="li"><span class="dot num ${cls(mv.chg)}">${mv.dir > 0 ? '▲' : '▼'}</span><div style="min-width:0;flex:1">
+          <div class="t">${esc(m.name)} <span class="num ${cls(mv.chg)}" style="font-size:13px">${mv.chg > 0 ? '+' : ''}${mv.chg}${m.unit === 'bp' ? 'bp' : '%'}</span> <span style="color:var(--t3);font-size:12px;font-weight:500">${mv.kind === 'gap' ? '开盘跳空' : hm(mv.start)}</span></div>
+          <div class="s">${news[0] ? esc(news[0].title) : '同时段没有匹配到相关新闻'}</div></div></div>`).join('')}</section>
+      <section class="glass sec"><div class="sec-h"><h2>影响市场的大事</h2></div>
+        ${d.events.map((e, i) => `<div class="li"><span class="rk">${i + 1}</span><div><div class="t">${esc(e.title)}</div><div class="s">${hm(e.ts)} · ${e.refs.length} 家报道${e.factors[0] ? ' · ' + esc(d.FAC[e.factors[0]]) : ''}</div></div></div>`).join('')}</section>
+    </div>
+    <section class="glass sec"><div class="sec-h"><span class="ic" style="width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--glass-2)">${icon('ai-compute')}</span><h2>${esc(d.aiTheme.name)}</h2>${B(d.aiTheme.pct)}<span class="tag">成分股等权</span></div>
+      ${d.aiTheme.rows.map(r => `<div class="stk"><span class="t" style="font-weight:700">${esc(r.name)}<span class="m">${r.mkt}</span></span><span class="num" style="color:var(--t2)">${fmtP(r.q.price)}</span>${B(r.q.pct)}</div>`).join('')}</section>`;
+  document.querySelectorAll('.th .ic svg, .sec-h .ic svg').forEach(s => { s.style.cssText = 'width:18px;height:18px;stroke:#c9d0ff;fill:none;stroke-width:1.8'; });
+})();
+</script>
+</body>
+</html>

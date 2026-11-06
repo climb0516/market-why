@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarketWhy 样张对比</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a1b1e; color: #eee; font: 14px/1.5 -apple-system, "PingFang SC", sans-serif; padding: 24px 16px 60px; }
+  h1 { font-size: 22px; text-align: center; }
+  p.sub { text-align: center; color: #999; margin: 6px 0 22px; }
+  .list { display: grid; gap: 12px; max-width: 560px; margin: 0 auto 28px; }
+  .list a { display: flex; gap: 14px; align-items: center; background: #26272b; border-radius: 14px; padding: 14px 16px; color: inherit; text-decoration: none; }
+  .list a:hover { background: #2f3035; }
+  .list b { font-size: 26px; font-weight: 800; width: 34px; text-align: center; color: #ff9f0a; }
+  .list span { color: #aaa; font-size: 13px; display: block; }
+  .frames { display: none; gap: 20px; justify-content: center; flex-wrap: wrap; }
+  .frames figure { text-align: center; }
+  .frames iframe { width: 390px; height: 780px; border: 0; border-radius: 28px; box-shadow: 0 0 0 8px #000, 0 20px 50px rgba(0,0,0,.5); background: #000; }
+  .frames figcaption { margin-top: 16px; font-weight: 700; }
+  @media (min-width: 900px) { .frames { display: flex; } }
+</style>
+</head>
+<body>
+  <h1>MarketWhy 改版样张</h1>
+  <p class="sub">四款用同一份真实数据渲染，内容一致，只比较视觉风格。点进去看完整页面（电脑上也可以缩放窗口看手机效果）</p>
+  <div class="list">
+    <a href="a.html"><b>A</b><div>仿截图 App<span>深色圆角大卡片、大号粗体数字、▲▼ 彩色涨跌、橙色竖条标题、底部标签栏</span></div></a>
+    <a href="b.html"><b>B</b><div>专业终端<span>彭博终端风：高密度、细线表格、产业热力色块、等宽数字</span></div></a>
+    <a href="c.html"><b>C</b><div>简洁资讯<span>浅色报纸风：衬线大标题、新闻在前、行情为辅</span></div></a>
+    <a href="d.html"><b>D</b><div>现代金融 App<span>毛玻璃 + 渐变、迷你走势图、线性图标替代 emoji</span></div></a>
+  </div>
+  <div class="frames">
+    <figure><iframe src="a.html" loading="lazy"></iframe><figcaption>A · 仿截图 App</figcaption></figure>
+    <figure><iframe src="b.html" loading="lazy"></iframe><figcaption>B · 专业终端</figcaption></figure>
+    <figure><iframe src="c.html" loading="lazy"></iframe><figcaption>C · 简洁资讯</figcaption></figure>
+    <figure><iframe src="d.html" loading="lazy"></iframe><figcaption>D · 现代金融 App</figcaption></figure>
+  </div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>样张 B · 专业终端</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #050607; --p: #0c0e10; --l: #1d2126; --l2: #2a3037; --t1: #e6e8eb; --t2: #8b939c; --t3: #59616a; --amber: #ffb000; --up: #ff4d4f; --down: #19c37d; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--t1); font: 13px/1.45 "IBM Plex Sans", "PingFang SC", sans-serif; -webkit-font-smoothing: antialiased; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--t2); }
+  .top { display: flex; align-items: center; gap: 16px; padding: 8px 14px; border-bottom: 1px solid var(--l); background: #000; position: sticky; top: 0; z-index: 2; }
+  .brand { font-family: "IBM Plex Mono"; font-weight: 600; color: var(--amber); letter-spacing: .08em; }
+  .menu { display: flex; gap: 2px; }
+  .menu span { font-family: "IBM Plex Mono"; font-size: 12px; padding: 3px 9px; color: var(--t2); }
+  .menu span.on { background: var(--amber); color: #000; font-weight: 600; }
+  .clock { margin-left: auto; color: var(--t3); font-size: 12px; }
+  .tape { display: flex; gap: 22px; overflow-x: auto; padding: 6px 14px; border-bottom: 1px solid var(--l); white-space: nowrap; scrollbar-width: none; font-size: 12px; }
+  .tape b { color: var(--t2); font-weight: 500; margin-right: 6px; }
+  main { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--l); }
+  @media (min-width: 1000px) { main { grid-template-columns: 1.1fr 1fr; } .span2 { grid-column: 1 / -1; } }
+  main { grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 1000px) { main { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+  .panel { background: var(--p); min-width: 0; overflow-x: auto; }
+  @media (max-width: 640px) { th, td { padding: 6px 7px; } td svg.sp { width: 48px; } }
+  .ph { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-bottom: 1px solid var(--l); }
+  .ph h2 { font-family: "IBM Plex Mono"; font-size: 12px; font-weight: 600; color: var(--amber); letter-spacing: .06em; text-transform: uppercase; }
+  .ph .x { margin-left: auto; color: var(--t3); font-size: 11px; font-family: "IBM Plex Mono"; }
+  table { width: 100%; border-collapse: collapse; }
+  th { font-family: "IBM Plex Mono"; font-weight: 500; font-size: 11px; color: var(--t3); text-align: right; padding: 5px 12px; border-bottom: 1px solid var(--l); }
+  th:first-child, td:first-child { text-align: left; }
+  td { padding: 6px 12px; border-bottom: 1px solid #14181c; text-align: right; white-space: nowrap; }
+  tr:hover td { background: #12161a; }
+  td .sp { vertical-align: middle; }
+  .heat { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1px; background: var(--l); }
+  .heat div { padding: 12px 10px; min-height: 64px; display: flex; flex-direction: column; justify-content: space-between; }
+  .heat .n { font-size: 12.5px; font-weight: 500; }
+  .heat .v { font-family: "IBM Plex Mono"; font-size: 17px; font-weight: 600; }
+  .log { font-size: 12.5px; }
+  .log div { display: grid; grid-template-columns: 46px 86px 64px 1fr; gap: 8px; padding: 6px 12px; border-bottom: 1px solid #14181c; align-items: baseline; }
+  .log .w { color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ev div { display: grid; grid-template-columns: 22px 46px 1fr auto; gap: 8px; padding: 7px 12px; border-bottom: 1px solid #14181c; align-items: baseline; }
+  .ev .tag { font-family: "IBM Plex Mono"; font-size: 10.5px; color: var(--amber); border: 1px solid #4a3a10; padding: 0 5px; }
+  .muted { color: var(--t3); }
+  @media (max-width: 640px) { .log div { grid-template-columns: 40px 70px 58px 1fr; } .ev div { grid-template-columns: 18px 40px 1fr; } .ev .tag { display: none; } .menu span { padding: 3px 6px; } }
+</style>
+</head>
+<body>
+<div class="top"><span class="brand">MKTWHY&gt;</span><div class="menu"><span>OVW</span><span class="on">GLB</span><span>MTL</span><span>AI</span><span>NEWS</span></div><span class="clock mono" id="upd"></span></div>
+<div class="tape mono" id="tape"></div>
+<main id="app"></main>
+<script src="common.js"></script>
+<script>
+(async () => {
+  const { esc, hm, cls, pct, fmtP, spark, usSession } = MW;
+  const d = await MW.load();
+  document.getElementById('upd').textContent = 'UPD ' + d.updated + ' CST';
+  document.getElementById('tape').innerHTML = d.indices.map(m => `<span><b>${esc(m.name)}</b>${fmtP(m.last)} <span class="${cls(m.chg)}">${pct(m.chg)}</span></span>`).join('');
+  // 热力色：跌得越多绿得越深（红涨绿跌），5% 封顶
+  const heat = v => { if (v == null) return '#111'; const a = Math.min(1, Math.abs(v) / 5) * .75 + .08; return v >= 0 ? `rgba(255,77,79,${a})` : `rgba(25,195,125,${a})`; };
+  const sp = (pts, c) => pts ? `<svg class="sp" width="70" height="18" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline fill="none" stroke="${c}" stroke-width="2" points="${spark(pts)}"/></svg>` : '<span class="muted">—</span>';
+  document.getElementById('app').innerHTML = `
+    <section class="panel"><div class="ph"><h2>Global Macro</h2><span class="x">全球经济数据</span></div>
+      <table class="mono"><thead><tr><th>品种</th><th>最新</th><th>涨跌</th><th>日内</th></tr></thead><tbody>
+      ${d.macro.map(m => `<tr><td style="font-family:'IBM Plex Sans'">${esc(m.name)}</td><td>${fmtP(m.q.price)}</td><td class="${cls(m.q.pct)}">${pct(m.q.pct)}</td><td>${sp(m.pts, m.q.pct >= 0 ? '#ff4d4f' : '#19c37d')}</td></tr>`).join('')}
+      </tbody></table></section>
+    <section class="panel"><div class="ph"><h2>Sector Heatmap</h2><span class="x">全球产业 · ${usSession()}</span></div>
+      <div class="heat">${d.industry.map(t => `<div style="background:${heat(t.pct)}"><span class="n">${esc(t.name)}</span><span class="v">${pct(t.pct)}</span></div>`).join('')}</div></section>
+    <section class="panel"><div class="ph"><h2>Movers Log</h2><span class="x">今日异动</span></div>
+      <div class="log">${d.topMoves.map(({ m, mv, news }) => `<div><span class="mono muted">${mv.kind === 'gap' ? 'OPEN' : hm(mv.start)}</span><span>${esc(m.name)}</span>
+        <span class="mono ${cls(mv.chg)}">${mv.chg > 0 ? '+' : ''}${mv.chg}${m.unit === 'bp' ? 'bp' : '%'}</span><span class="w">${news[0] ? esc(news[0].title) : '—'}</span></div>`).join('')}</div></section>
+    <section class="panel"><div class="ph"><h2>Top Events</h2><span class="x">影响市场的大事</span></div>
+      <div class="ev">${d.events.map((e, i) => `<div><span class="mono muted">${i + 1}</span><span class="mono muted">${hm(e.ts)}</span><span>${esc(e.title)}</span><span class="tag">${e.refs.length}SRC</span></div>`).join('')}</div></section>
+    <section class="panel span2"><div class="ph"><h2>Theme · ${esc(d.aiTheme.name)}</h2><span class="x">等权 <span class="${cls(d.aiTheme.pct)}">${pct(d.aiTheme.pct)}</span></span></div>
+      <table class="mono"><thead><tr><th>名称</th><th>市场</th><th>最新</th><th>涨跌</th><th>市值</th></tr></thead><tbody>
+      ${d.aiTheme.rows.map(r => `<tr><td style="font-family:'IBM Plex Sans'">${esc(r.name)}</td><td class="muted">${r.mkt}</td><td>${fmtP(r.q.price)}</td><td class="${cls(r.q.pct)}">${pct(r.q.pct)}</td><td class="muted">${MW.cap(r.q.cap, r.id)}</td></tr>`).join('')}
+      </tbody></table></section>`;
+})();
+</script>
+</body>
+</html>
