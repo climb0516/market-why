@@ -1,0 +1,863 @@
+{
+ "tabs": [
+  {
+   "key": "global",
+   "name": "全球",
+   "sections": [
+    {
+     "title": "全球经济数据",
+     "kind": "quote",
+     "items": [
+      {
+       "id": "112.B00Y",
+       "name": "布伦特原油"
+      },
+      {
+       "id": "cboe.VIX",
+       "name": "恐慌指数"
+      },
+      {
+       "id": "100.UDI",
+       "name": "美元强弱"
+      },
+      {
+       "id": "105.TLT",
+       "name": "美债长债"
+      },
+      {
+       "id": "122.XAU",
+       "name": "黄金盘司"
+      },
+      {
+       "id": "122.XAG",
+       "name": "白银盘司"
+      },
+      {
+       "id": "101.HG00Y",
+       "name": "铜"
+      },
+      {
+       "id": "102.NG00Y",
+       "name": "天然气"
+      }
+     ]
+    },
+    {
+     "title": "全球产业数据",
+     "kind": "theme",
+     "session": "us",
+     "items": [
+      "ai-compute",
+      "cpo",
+      "semi",
+      "storage",
+      "datacenter",
+      "cloud",
+      "space",
+      "satellite",
+      "robot",
+      "autodrive",
+      "nuclear",
+      "rareearth"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "metals",
+   "name": "有色",
+   "sections": [
+    {
+     "title": "金银",
+     "kind": "theme",
+     "items": [
+      "gold",
+      "silver"
+     ]
+    },
+    {
+     "title": "工业金属",
+     "kind": "theme",
+     "items": [
+      "copper",
+      "aluminum",
+      "zinc",
+      "nickel",
+      "tin"
+     ]
+    },
+    {
+     "title": "其他金属",
+     "kind": "theme",
+     "items": [
+      "tungsten",
+      "molybdenum",
+      "germanium",
+      "indium",
+      "antimony"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "ai",
+   "name": "AI",
+   "sections": [
+    {
+     "title": "AI 产品价格",
+     "kind": "theme",
+     "items": [
+      "cloud-compute",
+      "token"
+     ]
+    },
+    {
+     "title": "AI 设备价格",
+     "kind": "theme",
+     "items": [
+      "dram",
+      "nand",
+      "hbm",
+      "ssd",
+      "optical-module",
+      "fiber",
+      "pcb",
+      "mlcc",
+      "gpu",
+      "cpu",
+      "advanced-node",
+      "packaging",
+      "power",
+      "power-equip",
+      "cooling",
+      "compute-lease"
+     ]
+    }
+   ]
+  }
+ ],
+ "themes": {
+  "ai-compute": {
+   "name": "AI算力",
+   "icon": "🧠",
+   "kw": "算力|AI芯片|GPU|英伟达|Nvidia|AMD|博通|Broadcom|AI chip|accelerator",
+   "stocks": [
+    "105.NVDA",
+    "105.AMD",
+    "105.AVGO",
+    "106.TSM",
+    "105.SMCI",
+    "106.DELL",
+    "105.CRWV",
+    "105.ARM"
+   ]
+  },
+  "cpo": {
+   "name": "CPO",
+   "icon": "💡",
+   "kw": "CPO|共封装光学|光模块|硅光|optical|Coherent|Lumentum|中际旭创|新易盛",
+   "stocks": [
+    "106.COHR",
+    "105.LITE",
+    "106.FN",
+    "105.AAOI",
+    "106.CIEN",
+    "105.MRVL",
+    "105.CRDO",
+    "0.300308",
+    "0.300502"
+   ]
+  },
+  "semi": {
+   "name": "半导体",
+   "icon": "🔬",
+   "kw": "半导体|芯片|晶圆|semiconductor|chip|台积电|TSMC|ASML|光刻",
+   "stocks": [
+    "106.TSM",
+    "105.AVGO",
+    "105.AMD",
+    "105.QCOM",
+    "105.TXN",
+    "105.INTC",
+    "105.MU",
+    "105.ASML",
+    "105.AMAT",
+    "105.LRCX",
+    "105.KLAC"
+   ]
+  },
+  "storage": {
+   "name": "存储",
+   "icon": "💾",
+   "kw": "存储|内存|闪存|美光|Micron|闪迪|SanDisk|Western Digital|Seagate|memory",
+   "stocks": [
+    "105.MU",
+    "105.WDC",
+    "105.STX",
+    "105.SNDK",
+    "105.NTAP"
+   ]
+  },
+  "datacenter": {
+   "name": "数据中心",
+   "icon": "🗄️",
+   "kw": "数据中心|IDC|data center|Equinix|Vertiv|Arista",
+   "stocks": [
+    "105.EQIX",
+    "106.DLR",
+    "106.VRT",
+    "106.ANET",
+    "106.IRM",
+    "106.ETN"
+   ]
+  },
+  "cloud": {
+   "name": "云计算",
+   "icon": "☁️",
+   "kw": "云计算|云服务|Azure|AWS|Google Cloud|甲骨文|Oracle|cloud",
+   "stocks": [
+    "105.MSFT",
+    "105.AMZN",
+    "105.GOOGL",
+    "106.ORCL",
+    "106.SNOW",
+    "106.NET",
+    "105.DDOG"
+   ]
+  },
+  "space": {
+   "name": "商业航天",
+   "icon": "🚀",
+   "kw": "商业航天|火箭|发射|SpaceX|Rocket Lab|航天|rocket|launch|space",
+   "stocks": [
+    "105.RKLB",
+    "105.LUNR",
+    "106.RDW",
+    "105.FLY",
+    "106.VOYG",
+    "105.ASTS"
+   ]
+  },
+  "satellite": {
+   "name": "卫星",
+   "icon": "🛰️",
+   "kw": "卫星|星链|Starlink|satellite|AST SpaceMobile|低轨",
+   "stocks": [
+    "105.ASTS",
+    "105.IRDM",
+    "106.PL",
+    "105.VSAT",
+    "105.GSAT",
+    "106.BKSY"
+   ]
+  },
+  "robot": {
+   "name": "机器人",
+   "icon": "🤖",
+   "kw": "机器人|人形机器人|Optimus|robot|humanoid|具身智能",
+   "stocks": [
+    "105.TSLA",
+    "105.ISRG",
+    "105.SYM",
+    "105.TER",
+    "106.ROK",
+    "105.SERV"
+   ]
+  },
+  "autodrive": {
+   "name": "自动驾驶",
+   "icon": "🚗",
+   "kw": "自动驾驶|智驾|Robotaxi|无人驾驶|Waymo|FSD|autonomous|self-driving|激光雷达",
+   "stocks": [
+    "105.TSLA",
+    "105.MBLY",
+    "105.PONY",
+    "105.WRD",
+    "106.UBER",
+    "105.HSAI"
+   ]
+  },
+  "nuclear": {
+   "name": "核电",
+   "icon": "⚛️",
+   "kw": "核电|核能|铀|SMR|小型堆|nuclear|uranium|Oklo|Cameco",
+   "stocks": [
+    "105.CEG",
+    "106.VST",
+    "106.OKLO",
+    "106.SMR",
+    "106.CCJ",
+    "106.LEU",
+    "105.NNE",
+    "106.BWXT"
+   ]
+  },
+  "rareearth": {
+   "name": "稀土",
+   "icon": "🧲",
+   "kw": "稀土|rare earth|MP Materials|永磁",
+   "stocks": [
+    "106.MP",
+    "105.USAR",
+    "1.600111",
+    "1.600392"
+   ]
+  },
+  "gold": {
+   "name": "黄金",
+   "icon": "🥇",
+   "kw": "黄金|金价|gold|bullion",
+   "stocks": [
+    "106.NEM",
+    "106.AEM",
+    "1.601899",
+    "1.600547",
+    "1.600489"
+   ],
+   "quote": "113.aum"
+  },
+  "silver": {
+   "name": "白银",
+   "icon": "🥈",
+   "kw": "白银|银价|silver",
+   "stocks": [
+    "106.PAAS",
+    "106.AG",
+    "106.HL",
+    "0.002716",
+    "0.000603"
+   ],
+   "quote": "113.agm"
+  },
+  "copper": {
+   "name": "铜",
+   "icon": "🟠",
+   "kw": "铜价|沪铜|伦铜|copper|铜矿",
+   "stocks": [
+    "106.FCX",
+    "106.SCCO",
+    "1.601899",
+    "1.600362",
+    "0.000630",
+    "1.603993"
+   ],
+   "quote": "113.cum"
+  },
+  "aluminum": {
+   "name": "铝",
+   "icon": "⚪",
+   "kw": "铝价|沪铝|电解铝|氧化铝|aluminum|aluminium",
+   "stocks": [
+    "106.AA",
+    "1.601600",
+    "0.000807",
+    "116.01378"
+   ],
+   "quote": "113.alm"
+  },
+  "zinc": {
+   "name": "锌",
+   "icon": "🔘",
+   "kw": "锌价|沪锌|zinc",
+   "stocks": [
+    "1.600497",
+    "0.000751",
+    "0.000060",
+    "106.TECK"
+   ],
+   "quote": "113.znm"
+  },
+  "nickel": {
+   "name": "镍",
+   "icon": "🔋",
+   "kw": "镍价|沪镍|nickel|印尼镍",
+   "stocks": [
+    "1.603799",
+    "0.002340",
+    "0.300919",
+    "106.VALE"
+   ],
+   "quote": "113.nim"
+  },
+  "tin": {
+   "name": "锡",
+   "icon": "🥫",
+   "kw": "锡价|沪锡|tin",
+   "stocks": [
+    "0.000960",
+    "0.000426",
+    "1.600301"
+   ],
+   "quote": "113.snm"
+  },
+  "tungsten": {
+   "name": "钨",
+   "icon": "⚙️",
+   "kw": "钨|tungsten",
+   "stocks": [
+    "0.000657",
+    "1.600549",
+    "0.002378",
+    "0.002842"
+   ],
+   "board": "90.BK1625"
+  },
+  "molybdenum": {
+   "name": "钼",
+   "icon": "🔩",
+   "kw": "钼|molybdenum",
+   "stocks": [
+    "1.601958",
+    "0.001257",
+    "0.000688"
+   ],
+   "board": "90.BK1623"
+  },
+  "germanium": {
+   "name": "锗",
+   "icon": "💠",
+   "kw": "锗|germanium",
+   "stocks": [
+    "0.002428",
+    "1.600497",
+    "1.600206"
+   ]
+  },
+  "indium": {
+   "name": "铟",
+   "icon": "🔷",
+   "kw": "铟|indium",
+   "stocks": [
+    "0.000960",
+    "1.600961",
+    "1.600301"
+   ]
+  },
+  "antimony": {
+   "name": "锑",
+   "icon": "🔶",
+   "kw": "锑|antimony",
+   "stocks": [
+    "0.002155",
+    "1.601020",
+    "1.600301"
+   ]
+  },
+  "cloud-compute": {
+   "name": "云算力",
+   "icon": "☁️",
+   "kw": "云算力|算力云|GPU云|CoreWeave|Nebius|neocloud|算力价格",
+   "stocks": [
+    "105.CRWV",
+    "105.NBIS",
+    "106.ORCL",
+    "105.IREN",
+    "105.APLD"
+   ],
+   "note": "没有公开的云算力价格指数，用 GPU 云服务商股票篮子代替"
+  },
+  "token": {
+   "name": "Token",
+   "icon": "🔤",
+   "kw": "Token|大模型|模型调用|API价格|OpenAI|Anthropic|Gemini|智谱|MiniMax|通义|文心|LLM",
+   "stocks": [
+    "105.GOOGL",
+    "105.MSFT",
+    "105.META",
+    "116.09988",
+    "116.09888",
+    "116.00700",
+    "116.02513",
+    "116.00100"
+   ],
+   "note": "没有公开的 Token 价格指数，用大模型厂商股票篮子代替"
+  },
+  "dram": {
+   "name": "DRAM",
+   "icon": "🧩",
+   "kw": "DRAM|内存|DDR5|DDR4|存储芯片|美光|三星电子|SK海力士",
+   "stocks": [
+    "105.MU",
+    "177.005930",
+    "177.000660",
+    "1.603986",
+    "178.2408"
+   ]
+  },
+  "nand": {
+   "name": "NAND",
+   "icon": "💽",
+   "kw": "NAND|闪存|铠侠|Kioxia|闪迪|SanDisk",
+   "stocks": [
+    "105.SNDK",
+    "177.005930",
+    "177.000660",
+    "176.285A",
+    "0.301308",
+    "105.WDC"
+   ]
+  },
+  "hbm": {
+   "name": "HBM",
+   "icon": "🧱",
+   "kw": "HBM|高带宽内存|SK海力士|SK Hynix",
+   "stocks": [
+    "177.000660",
+    "177.005930",
+    "105.MU",
+    "177.042700",
+    "0.002409"
+   ]
+  },
+  "ssd": {
+   "name": "SSD",
+   "icon": "💾",
+   "kw": "SSD|固态硬盘|企业级存储|江波龙|佰维",
+   "stocks": [
+    "0.301308",
+    "1.688525",
+    "105.SNDK",
+    "0.001309"
+   ]
+  },
+  "optical-module": {
+   "name": "光模块",
+   "icon": "🔦",
+   "kw": "光模块|800G|1.6T|中际旭创|新易盛|天孚|optical module|transceiver",
+   "stocks": [
+    "0.300308",
+    "0.300502",
+    "0.300394",
+    "106.COHR",
+    "105.LITE",
+    "106.FN"
+   ]
+  },
+  "fiber": {
+   "name": "光纤",
+   "icon": "🧵",
+   "kw": "光纤|光缆|空芯光纤|康宁|Corning|fiber",
+   "stocks": [
+    "1.601869",
+    "1.600487",
+    "1.600522",
+    "106.GLW",
+    "1.600498"
+   ]
+  },
+  "pcb": {
+   "name": "PCB",
+   "icon": "🟩",
+   "kw": "PCB|印制电路板|覆铜板|胜宏|沪电|深南",
+   "stocks": [
+    "0.300476",
+    "0.002463",
+    "0.002916",
+    "105.TTMI",
+    "0.002938"
+   ]
+  },
+  "mlcc": {
+   "name": "MLCC",
+   "icon": "🔲",
+   "kw": "MLCC|被动元件|电容|村田|Murata|国巨",
+   "stocks": [
+    "176.6981",
+    "177.009150",
+    "176.6976",
+    "0.000636",
+    "178.2327"
+   ]
+  },
+  "gpu": {
+   "name": "GPU",
+   "icon": "🎮",
+   "kw": "GPU|显卡|英伟达|Nvidia|寒武纪|摩尔线程|沐曦|海光",
+   "stocks": [
+    "105.NVDA",
+    "105.AMD",
+    "1.688256",
+    "1.688041",
+    "1.688795",
+    "1.688802"
+   ]
+  },
+  "cpu": {
+   "name": "CPU",
+   "icon": "🖥️",
+   "kw": "CPU|处理器|英特尔|Intel|Arm|龙芯|海光",
+   "stocks": [
+    "105.INTC",
+    "105.AMD",
+    "105.ARM",
+    "105.QCOM",
+    "1.688041",
+    "1.688047"
+   ]
+  },
+  "advanced-node": {
+   "name": "先进制程",
+   "icon": "🔬",
+   "kw": "先进制程|2nm|3nm|18A|晶圆代工|台积电|TSMC|中芯国际|foundry",
+   "stocks": [
+    "106.TSM",
+    "1.688981",
+    "177.005930",
+    "105.INTC",
+    "105.ASML"
+   ]
+  },
+  "packaging": {
+   "name": "封装",
+   "icon": "📦",
+   "kw": "先进封装|CoWoS|封装|封测|日月光|Amkor|长电",
+   "stocks": [
+    "106.ASX",
+    "105.AMKR",
+    "1.600584",
+    "0.002156",
+    "0.002185"
+   ]
+  },
+  "power": {
+   "name": "电力",
+   "icon": "⚡",
+   "kw": "电力|电价|发电|用电|电网|power grid|electricity|utility|Constellation|Vistra",
+   "stocks": [
+    "105.CEG",
+    "106.VST",
+    "106.NRG",
+    "1.600900",
+    "1.600011"
+   ]
+  },
+  "power-equip": {
+   "name": "电力设备",
+   "icon": "🔌",
+   "kw": "电力设备|变压器|燃气轮机|电网设备|GE Vernova|transformer|turbine|特变电工|思源",
+   "stocks": [
+    "106.GEV",
+    "106.ETN",
+    "0.002028",
+    "1.600089",
+    "176.6501"
+   ]
+  },
+  "cooling": {
+   "name": "散热",
+   "icon": "❄️",
+   "kw": "散热|液冷|冷板|liquid cooling|Vertiv|英维克",
+   "stocks": [
+    "106.VRT",
+    "0.002837",
+    "0.300499",
+    "0.301018",
+    "106.MOD",
+    "178.3324",
+    "178.3017"
+   ]
+  },
+  "compute-lease": {
+   "name": "算力租赁",
+   "icon": "🏷️",
+   "kw": "算力租赁|GPU租赁|智算中心|CoreWeave|Nebius|润泽",
+   "stocks": [
+    "105.CRWV",
+    "105.NBIS",
+    "105.IREN",
+    "105.APLD",
+    "0.300442",
+    "0.300857"
+   ]
+  }
+ },
+ "names": {
+  "112.B00Y": "布伦特原油",
+  "cboe.VIX": "恐慌指数",
+  "100.UDI": "美元强弱",
+  "105.TLT": "美债长债",
+  "122.XAU": "黄金盘司",
+  "122.XAG": "白银盘司",
+  "101.HG00Y": "铜",
+  "102.NG00Y": "天然气",
+  "105.NVDA": "英伟达",
+  "105.AMD": "超威半导体",
+  "105.AVGO": "博通",
+  "106.TSM": "台积电",
+  "105.SMCI": "超微电脑",
+  "106.DELL": "戴尔科技",
+  "105.CRWV": "CoreWeave Inc-A",
+  "105.ARM": "Arm Holdings plc ADR",
+  "106.COHR": "Coherent Corp",
+  "105.LITE": "Lumentum Holdings Inc",
+  "106.FN": "Fabrinet",
+  "105.AAOI": "应用光电",
+  "106.CIEN": "Ciena科技",
+  "105.MRVL": "迈威尔科技",
+  "105.CRDO": "Credo Technology Group Holding ",
+  "0.300308": "中际旭创",
+  "0.300502": "新易盛",
+  "105.QCOM": "高通",
+  "105.TXN": "德州仪器",
+  "105.INTC": "英特尔",
+  "105.MU": "美光科技",
+  "105.ASML": "阿斯麦",
+  "105.AMAT": "应用材料",
+  "105.LRCX": "拉姆研究",
+  "105.KLAC": "科磊",
+  "105.WDC": "西部数据",
+  "105.STX": "希捷科技",
+  "105.SNDK": "闪迪",
+  "105.NTAP": "美国网存",
+  "105.EQIX": "易昆尼克斯",
+  "106.DLR": "数字房地产信托",
+  "106.VRT": "Vertiv Holdings Co-A",
+  "106.ANET": "Arista Networks Inc",
+  "106.IRM": "铁山",
+  "106.ETN": "伊顿",
+  "105.MSFT": "微软",
+  "105.AMZN": "亚马逊",
+  "105.GOOGL": "谷歌-A",
+  "106.ORCL": "甲骨文",
+  "106.SNOW": "Snowflake Inc",
+  "106.NET": "Cloudflare Inc-A",
+  "105.DDOG": "Datadog Inc-A",
+  "105.RKLB": "Rocket Lab Corp",
+  "105.LUNR": "Intuitive Machines Inc-A",
+  "106.RDW": "Redwire Corp",
+  "105.FLY": "Firefly Aerospace Inc",
+  "106.VOYG": "Voyager Technologies Inc-A",
+  "105.ASTS": "AST SpaceMobile Inc-A",
+  "105.IRDM": "铱星通讯",
+  "106.PL": "Planet Labs PBC-A",
+  "105.VSAT": "卫讯公司",
+  "105.GSAT": "全球星",
+  "106.BKSY": "BlackSky Technology Inc-A",
+  "105.TSLA": "特斯拉",
+  "105.ISRG": "直觉外科",
+  "105.SYM": "Symbotic Inc-A",
+  "105.TER": "泰瑞达",
+  "106.ROK": "罗克韦尔自动化",
+  "105.SERV": "Serve Robotics Inc",
+  "105.MBLY": "Mobileye Global Inc-A",
+  "105.PONY": "小马智行",
+  "105.WRD": "文远知行",
+  "106.UBER": "优步",
+  "105.HSAI": "禾赛",
+  "105.CEG": "Constellation Energy Corp",
+  "106.VST": "Vistra Corp",
+  "106.OKLO": "Oklo Inc-A",
+  "106.SMR": "NuScale Power Corp-A",
+  "106.CCJ": "卡梅科",
+  "106.LEU": "Centrus Energy Corp-A",
+  "105.NNE": "Nano Nuclear Energy Inc",
+  "106.BWXT": "BWX Technologies Inc",
+  "106.MP": "MP Materials Corp-A",
+  "105.USAR": "USA Rare Earth Inc",
+  "1.600111": "北方稀土",
+  "1.600392": "盛和资源",
+  "106.NEM": "纽蒙特",
+  "106.AEM": "伊格尔矿业",
+  "1.601899": "紫金矿业",
+  "1.600547": "山东黄金",
+  "1.600489": "中金黄金",
+  "106.PAAS": "泛美白银",
+  "106.AG": "First Majestic Silver Corp",
+  "106.HL": "赫克拉矿业",
+  "0.002716": "湖南白银",
+  "0.000603": "盛达资源",
+  "106.FCX": "自由港麦克莫兰",
+  "106.SCCO": "南方铜业",
+  "1.600362": "江西铜业",
+  "0.000630": "铜陵有色",
+  "1.603993": "洛阳钼业",
+  "106.AA": "美国铝业",
+  "1.601600": "中国铝业",
+  "0.000807": "云铝股份",
+  "116.01378": "中国宏桥",
+  "1.600497": "驰宏锌锗",
+  "0.000751": "锌业股份",
+  "0.000060": "中金岭南",
+  "106.TECK": "泰克资源",
+  "1.603799": "华友钴业",
+  "0.002340": "格林美",
+  "0.300919": "中伟新材",
+  "106.VALE": "淡水河谷",
+  "0.000960": "锡业股份",
+  "0.000426": "兴业银锡",
+  "1.600301": "华锡有色",
+  "0.002428": "云南锗业",
+  "1.600206": "有研新材",
+  "1.600961": "株冶集团",
+  "0.002155": "湖南黄金",
+  "1.601020": "华钰矿业",
+  "105.NBIS": "Nebius Group NV-A",
+  "105.IREN": "IREN Ltd",
+  "105.APLD": "Applied Digital Corp",
+  "105.META": "Meta Platforms Inc-A",
+  "116.09988": "阿里巴巴-W",
+  "116.09888": "百度集团-W",
+  "116.00700": "腾讯控股",
+  "116.02513": "智谱",
+  "116.00100": "MINIMAX-W",
+  "177.005930": "三星电子",
+  "177.000660": "SK海力士",
+  "1.603986": "兆易创新",
+  "178.2408": "南亚科",
+  "176.285A": "铠侠",
+  "0.301308": "江波龙",
+  "177.042700": "Hanmi Semicon",
+  "0.002409": "雅克科技",
+  "1.688525": "佰维存储",
+  "0.001309": "德明利",
+  "0.300394": "天孚通信",
+  "1.601869": "长飞光纤",
+  "1.600487": "亨通光电",
+  "1.600522": "中天科技",
+  "106.GLW": "康宁",
+  "1.600498": "烽火通信",
+  "0.300476": "胜宏科技",
+  "0.002463": "沪电股份",
+  "0.002916": "深南电路",
+  "105.TTMI": "TTM科技",
+  "0.002938": "鹏鼎控股",
+  "176.6981": "村田制作所",
+  "177.009150": "Samsung Electro-Mechanics",
+  "176.6976": "太阳诱电",
+  "0.000636": "风华高科",
+  "178.2327": "国巨*",
+  "1.688256": "寒武纪",
+  "1.688041": "海光信息",
+  "1.688795": "摩尔线程-U",
+  "1.688802": "沐曦股份-U",
+  "1.688047": "龙芯中科",
+  "1.688981": "中芯国际",
+  "106.ASX": "日月光半导体",
+  "105.AMKR": "艾马克技术",
+  "1.600584": "长电科技",
+  "0.002156": "通富微电",
+  "0.002185": "华天科技",
+  "106.NRG": "NRG Energy Inc",
+  "1.600900": "长江电力",
+  "1.600011": "华能国际",
+  "106.GEV": "GE Vernova Inc",
+  "0.002028": "思源电气",
+  "1.600089": "特变电工",
+  "176.6501": "日立",
+  "0.002837": "英维克",
+  "0.300499": "高澜股份",
+  "0.301018": "申菱环境",
+  "106.MOD": "摩丁制造",
+  "178.3324": "双鸿",
+  "178.3017": "奇鋐",
+  "0.300442": "润泽科技",
+  "0.300857": "协创数据",
+  "0.000657": "中钨高新",
+  "1.600549": "厦门钨业",
+  "0.002378": "章源钨业",
+  "0.002842": "翔鹭钨业",
+  "1.601958": "金钼股份",
+  "0.001257": "盛龙股份",
+  "0.000688": "国城矿业"
+ }
+}

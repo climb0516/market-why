@@ -16,6 +16,7 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 OUT = Path(__file__).with_name("data.json")
+THEMES = Path(__file__).with_name("themes.json")
 CST = timezone(timedelta(hours=8))
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
                     "(KHTML, like Gecko) Chrome/128.0 Safari/537.36"}
@@ -500,6 +501,48 @@ def build_events(pool, now):
     return events[:60]
 
 
+# ── 主题行情快照（页面平时直连东方财富，这份只在实时接口连不上时兜底）─────────────────
+
+QFIELDS = "f2,f3,f4,f6,f8,f9,f12,f13,f14,f15,f16,f17,f18,f20,f23,f100,f115,f124"
+
+
+def num(v):
+    return v if isinstance(v, (int, float)) else None
+
+
+def norm_quote(x):
+    return {"name": x["f14"], "price": num(x["f2"]), "pct": num(x["f3"]), "chg": num(x["f4"]), "amt": num(x["f6"]),
+            "turn": num(x["f8"]), "pe": num(x["f115"]) or num(x["f9"]), "pb": num(x["f23"]), "high": num(x["f15"]),
+            "low": num(x["f16"]), "open": num(x["f17"]), "prev": num(x["f18"]), "cap": num(x["f20"]),
+            "ind": x["f100"] if x.get("f100") not in (None, "-") else "", "time": num(x["f124"])}
+
+
+def theme_quotes():
+    cfg = json.loads(THEMES.read_text("utf-8"))
+    ids = [it["id"] for tab in cfg["tabs"] for sec in tab["sections"] if sec["kind"] == "quote" for it in sec["items"]]
+    for t in cfg["themes"].values():
+        ids += t["stocks"] + [t[k] for k in ("quote", "board") if t.get(k)]
+    ids = [i for i in dict.fromkeys(ids) if not i.startswith("cboe.")]
+    out = {}
+    for i in range(0, len(ids), 80):
+        d = fetch_json(f"https://push2.eastmoney.com/api/qt/ulist.np/get?fltt=2&invt=2&ut={EM_UT}"
+                       f"&fields={QFIELDS}&secids={','.join(ids[i:i + 80])}")
+        for x in (d.get("data") or {}).get("diff") or []:
+            if num(x.get("f2")) is not None:
+                out[f"{x['f13']}.{x['f12']}"] = norm_quote(x)
+    return out, len(ids)
+
+
+def vix():
+    """CBOE 官方延时行情（浏览器跨域不让调，只能由爬虫取）。"""
+    d = fetch_json("https://cdn-api.cboe.com/api/global/delayed_quotes/quotes/_VIX.json")["data"]
+    prev = d.get("prev_day_close") or d.get("close")
+    return {"name": "恐慌指数 VIX", "price": d["current_price"], "pct": round(d["price_change_percent"], 2),
+            "chg": d["price_change"], "prev": prev, "open": d.get("open"), "high": d.get("high"), "low": d.get("low"),
+            "time": int(datetime.fromisoformat(d["last_trade_time"]).replace(tzinfo=timezone(timedelta(hours=-5))).timestamp())
+            if d.get("last_trade_time") else None}
+
+
 # ── 主流程 ────────────────────────────────────────────────────────────────────
 
 def run_source(spec):
@@ -555,12 +598,30 @@ def main():
 
     events = build_events(news_list, now)
 
+    quotes = dict(prev.get("quotes", {}))
+    try:
+        got, total = theme_quotes()
+        quotes.update(got)
+        sources.append({"id": "themes", "name": "主题行情快照", "region": "data", "abbr": "主题", "color": "#888",
+                        "paywall": False, "ok": bool(got), "count": len(got), "error": "" if len(got) >= total * 0.9 else f"{total - len(got)} 只取不到"})
+    except Exception as e:
+        sources.append({"id": "themes", "name": "主题行情快照", "region": "data", "abbr": "主题", "color": "#888",
+                        "paywall": False, "ok": False, "count": 0, "error": str(e)[:160]})
+    try:
+        quotes["cboe.VIX"] = vix()
+        sources.append({"id": "vix", "name": "CBOE 恐慌指数", "region": "data", "abbr": "VIX", "color": "#888",
+                        "paywall": False, "ok": True, "count": 1, "error": ""})
+    except Exception as e:
+        sources.append({"id": "vix", "name": "CBOE 恐慌指数", "region": "data", "abbr": "VIX", "color": "#888",
+                        "paywall": False, "ok": False, "count": 0, "error": str(e)[:160]})
+
     data = {
         "updated": datetime.now(CST).isoformat(timespec="seconds"),
         "factors": [{"key": k, "name": n, "weight": w} for k, n, w, _ in FACTORS],
         "sources": sources,
         "markets": markets,
         "events": events,
+        "quotes": quotes,
         "news": news_list,
     }
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), "utf-8")
