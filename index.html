@@ -1,286 +1,325 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="dark light">
-  <meta name="referrer" content="no-referrer">
-  <title>MarketWhy · 行情为什么动</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0a0b0d; --panel: #13151a; --panel-2: #191c22; --hover: rgba(255,255,255,0.04);
-      --line: rgba(255,255,255,0.07); --line-2: rgba(255,255,255,0.13);
-      --text-1: #eceef2; --text-2: #a3a9b4; --text-3: #6b717c;
-      --accent: #4f8cff; --up: #f0444f; --down: #14b37d; --flat: #8a909a;
-      --up-bg: rgba(240,68,79,0.12); --down-bg: rgba(20,179,125,0.12);
-      --f-monetary: #f59e0b; --f-macro: #3b82f6; --f-geo: #ef4444; --f-policy: #a855f7;
-      --f-tech: #06b6d4; --f-earnings: #10b981; --f-commodity: #d97706; --f-fx: #94a3b8;
-      --shadow: 0 0 0 1px var(--line), 0 10px 30px rgba(0,0,0,0.35);
-    }
-    :root[data-theme="light"] {
-      --bg: #f6f7f9; --panel: #ffffff; --panel-2: #f2f4f7; --hover: rgba(10,20,40,0.035);
-      --line: rgba(10,20,40,0.08); --line-2: rgba(10,20,40,0.15);
-      --text-1: #14171c; --text-2: #4f5663; --text-3: #8a919c;
-      --accent: #2563eb; --up: #e0323e; --down: #0e9a69; --flat: #7b818b;
-      --up-bg: rgba(224,50,62,0.08); --down-bg: rgba(14,154,105,0.09);
-      --f-monetary: #d97706; --f-macro: #2563eb; --f-geo: #dc2626; --f-policy: #9333ea;
-      --f-tech: #0891b2; --f-earnings: #059669; --f-commodity: #b45309; --f-fx: #64748b;
-      --shadow: 0 0 0 1px var(--line), 0 8px 24px rgba(20,30,60,0.06);
-    }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text-1); font: 14px/1.55 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
-    a { color: inherit; text-decoration: none; }
-    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-    .num { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
-    .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--flat); }
-    .wrap { max-width: 1320px; margin: 0 auto; padding: 0 20px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="referrer" content="no-referrer">
+<title>MarketWhy · 行情为什么动</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='6' fill='%232962ff'/><path d='M13 4L6 14h5l-1 6 7-10h-5z' fill='white'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* 设计规范：配色参考 TradingView 深色主题，手机上借用 App 式大数字卡片 + 底部标签栏 */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root, :root[data-theme="dark"] {
+    --bg: #0f1218; --panel: #171b24; --panel-2: #1f2430; --line: #2a2f3b; --line-2: #363c4a; --hover: rgba(255,255,255,.035);
+    --text-1: #e8eaf0; --text-2: #9aa1b1; --text-3: #646b7b;
+    --accent: #2962ff; --accent-soft: rgba(41,98,255,.14);
+    --up: #f23645; --down: #089981; --up-bg: rgba(242,54,69,.14); --down-bg: rgba(8,153,129,.15);
+    --heat-gap: #0b0d12; --heat-head: #1a1e27; --heat-zero: #3a3f4b;
+    --f-monetary: #f59e0b; --f-macro: #3b82f6; --f-geo: #ef4444; --f-policy: #a855f7; --f-tech: #06b6d4; --f-earnings: #10b981; --f-commodity: #d97706; --f-fx: #94a3b8;
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f5f8; --panel: #ffffff; --panel-2: #f0f2f6; --line: #e2e5eb; --line-2: #d0d5de; --hover: rgba(19,23,34,.035);
+    --text-1: #131722; --text-2: #4c5262; --text-3: #8a90a0;
+    --accent: #2962ff; --accent-soft: rgba(41,98,255,.1);
+    --up: #e5283a; --down: #078a73; --up-bg: rgba(229,40,58,.1); --down-bg: rgba(7,138,115,.1);
+    --heat-gap: #ffffff; --heat-head: #e9ecf1; --heat-zero: #8b919d;
+    --f-monetary: #d97706; --f-macro: #2563eb; --f-geo: #dc2626; --f-policy: #9333ea; --f-tech: #0891b2; --f-earnings: #059669; --f-commodity: #b45309; --f-fx: #64748b;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text-1); font: 14px/1.55 Inter, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .num { font-variant-numeric: tabular-nums; }
+  .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--text-2); }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+  svg.ic { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
-    /* 顶栏 */
-    header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
-    .bar { display: flex; align-items: center; gap: 18px; height: 58px; }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
-    .brand .logo { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: linear-gradient(135deg, #4f8cff, #a855f7); color: #fff; font-size: 15px; }
-    .brand small { font-weight: 500; color: var(--text-3); font-size: 12px; }
-    nav.tabs { display: flex; gap: 4px; }
-    nav.tabs button { padding: 7px 14px; border-radius: 8px; color: var(--text-2); font-weight: 600; font-size: 13.5px; }
-    nav.tabs button:hover { background: var(--hover); color: var(--text-1); }
-    nav.tabs button.on { background: var(--panel-2); color: var(--text-1); box-shadow: 0 0 0 1px var(--line-2); }
-    .spacer { flex: 1; }
-    .meta { color: var(--text-3); font-size: 12px; white-space: nowrap; }
-    .icon-btn { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; color: var(--text-2); }
-    .icon-btn:hover { background: var(--hover); color: var(--text-1); }
-    .links { display: flex; gap: 2px; }
+  /* 顶栏 */
+  header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .bar { display: flex; align-items: center; gap: 22px; height: 56px; }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 17px; white-space: nowrap; }
+  .brand .logo { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; color: #fff; }
+  .brand .logo svg { width: 16px; height: 16px; fill: #fff; stroke: none; }
+  .brand small { font-weight: 500; color: var(--text-3); font-size: 12px; }
+  nav.tabs { display: flex; gap: 2px; }
+  nav.tabs button { padding: 7px 13px; border-radius: 8px; color: var(--text-2); font-weight: 600; font-size: 13.5px; }
+  nav.tabs button:hover { color: var(--text-1); background: var(--hover); }
+  nav.tabs button.on { color: var(--text-1); background: var(--panel-2); }
+  .spacer { flex: 1; }
+  .meta { color: var(--text-3); font-size: 12px; white-space: nowrap; }
+  .tools { display: flex; gap: 2px; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; color: var(--text-2); }
+  .icon-btn:hover { background: var(--hover); color: var(--text-1); }
 
-    /* 行情条 */
-    .ticker { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 18px 0 6px; }
-    .tk { background: var(--panel); border-radius: 10px; padding: 9px 12px; box-shadow: 0 0 0 1px var(--line); cursor: pointer; position: relative; overflow: hidden; transition: box-shadow .15s; }
-    .tk:hover { box-shadow: 0 0 0 1px var(--line-2); }
-    .tk.on { box-shadow: 0 0 0 1.5px var(--accent); }
-    .tk .n { font-size: 12px; color: var(--text-2); display: flex; justify-content: space-between; gap: 6px; }
-    .tk .n .mv { font-size: 10.5px; font-weight: 700; padding: 0 5px; border-radius: 4px; background: var(--panel-2); color: var(--text-2); }
-    .tk .p { display: flex; justify-content: space-between; align-items: baseline; margin-top: 2px; }
-    .tk .p b { font-size: 14.5px; font-weight: 600; }
-    .tk .p span { font-size: 12.5px; font-weight: 600; }
-    .tk svg { position: absolute; inset: auto 0 0 0; width: 100%; height: 26px; opacity: .35; pointer-events: none; }
+  /* 手机底部标签栏 */
+  nav.tabbar { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: color-mix(in srgb, var(--panel) 92%, transparent); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--line); padding: 6px 0 calc(6px + env(safe-area-inset-bottom)); justify-content: space-around; }
+  nav.tabbar button { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-3); font-size: 11px; font-weight: 600; min-width: 58px; padding: 2px 0; }
+  nav.tabbar button svg.ic { width: 24px; height: 24px; stroke-width: 1.6; }
+  nav.tabbar button.on { color: var(--accent); }
 
-    /* 卡片 */
-    .grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; margin: 18px 0 40px; align-items: start; }
-    .card { background: var(--panel); border-radius: 14px; box-shadow: var(--shadow); }
-    .card > h2 { font-size: 15px; font-weight: 700; padding: 15px 18px 10px; display: flex; align-items: center; gap: 8px; }
-    .card > h2 small { font-weight: 500; color: var(--text-3); font-size: 12px; }
-    .card > h2 .r { margin-left: auto; }
-    .hint { color: var(--text-3); font-size: 12px; padding: 0 18px 12px; }
-    .empty { color: var(--text-3); padding: 28px 18px; text-align: center; font-size: 13px; }
+  /* 行情条 */
+  .ticker { display: flex; gap: 10px; overflow-x: auto; padding: 16px 0 2px; scrollbar-width: none; }
+  .ticker::-webkit-scrollbar { display: none; }
+  .tk { flex: 0 0 158px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px 6px; cursor: pointer; transition: border-color .15s; }
+  .tk:hover { border-color: var(--line-2); }
+  .tk.on { border-color: var(--accent); }
+  .tk .n { font-size: 12.5px; color: var(--text-2); display: flex; justify-content: space-between; gap: 6px; white-space: nowrap; }
+  .tk .n em { font-style: normal; font-size: 10.5px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 4px; padding: 0 5px; }
+  .tk .v { display: flex; justify-content: space-between; align-items: baseline; margin-top: 1px; }
+  .tk .v b { font-size: 15px; font-weight: 700; }
+  .tk .v span { font-size: 12.5px; font-weight: 600; }
+  .tk svg.sp { width: 100%; height: 24px; display: block; margin-top: 3px; }
 
-    /* 异动时间线 */
-    .tl { padding: 0 10px 10px; }
-    .mv-card { display: grid; grid-template-columns: 74px 1fr; gap: 12px; padding: 12px 8px; border-top: 1px solid var(--line); cursor: pointer; border-radius: 8px; }
-    .mv-card:hover { background: var(--hover); }
-    .mv-card .when { font-size: 12px; color: var(--text-3); }
-    .mv-card .when b { display: block; font-size: 13.5px; color: var(--text-1); font-weight: 600; }
-    .mv-card .head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .mv-card .head .mk { font-weight: 700; }
-    .pill { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; padding: 1px 7px; border-radius: 5px; }
-    .pill.up { background: var(--up-bg); } .pill.down { background: var(--down-bg); }
-    .kind { font-size: 11px; color: var(--text-3); border: 1px solid var(--line-2); border-radius: 4px; padding: 0 5px; }
-    .why { margin-top: 6px; display: grid; gap: 4px; }
-    .why a { display: flex; gap: 8px; font-size: 13px; color: var(--text-2); align-items: baseline; }
-    .why a:hover { color: var(--text-1); }
-    .why a .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .why .nowhy { font-size: 12.5px; color: var(--text-3); }
+  /* 卡片与栅格 */
+  .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 14px; }
+  @media (min-width: 980px) { .row { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); } }
+  .page { display: grid; gap: 14px; margin: 16px 0 40px; }
+  .page > * { min-width: 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; min-width: 0; }
+  .card > h2, .ch { font-size: 15.5px; font-weight: 700; padding: 15px 18px 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card > h2 small, .ch small { color: var(--text-3); font-weight: 500; font-size: 12px; }
+  .card > h2 .r, .ch .r { margin-left: auto; }
+  .card > h2 svg.ic { color: var(--accent); }
+  .pad { padding: 0 18px 16px; }
+  .empty { color: var(--text-3); padding: 26px 18px; text-align: center; font-size: 13px; }
+  .hint { color: var(--text-3); font-size: 12px; padding: 0 18px 14px; }
+  .more-link { color: var(--accent); font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; }
 
-    .src { flex: none; font-size: 10.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; color: #fff; letter-spacing: .02em; line-height: 1.5; }
-    .ftag { font-size: 11px; font-weight: 600; padding: 0 6px; border-radius: 4px; line-height: 18px; white-space: nowrap; }
-    .lock { font-size: 10px; opacity: .7; }
+  /* 涨跌：彩色文字 / 彩色底块 */
+  .pct { font-weight: 700; white-space: nowrap; }
+  .chg { display: inline-block; min-width: 70px; padding: 2px 7px; border-radius: 6px; font-weight: 700; font-size: 13px; text-align: center; color: #fff; white-space: nowrap; }
+  .bx { flex: none; min-width: 66px; height: 38px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; font-size: 13px; padding: 0 6px; }
+  .bx.up { background: var(--up-bg); color: var(--up); } .bx.down { background: var(--down-bg); color: var(--down); } .bx.flat { background: var(--panel-2); }
 
-    /* 大事 */
-    .ev { padding: 12px 18px; border-top: 1px solid var(--line); }
-    .ev .top { display: flex; gap: 10px; align-items: flex-start; }
-    .ev .rk { font-weight: 800; font-size: 14px; color: var(--text-3); width: 18px; flex: none; }
-    .ev .rk.hot { color: var(--up); }
-    .ev .tt { font-weight: 600; font-size: 14px; line-height: 1.45; flex: 1; }
-    .ev .sub { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 6px 0 0 28px; }
-    .ev .sub .tm { color: var(--text-3); font-size: 12px; margin-right: 2px; }
-    .ev .sum { margin: 6px 0 0 28px; color: var(--text-2); font-size: 12.5px; display: none; }
-    .ev.open .sum { display: block; }
-    .ev .refs { margin: 6px 0 0 28px; display: none; gap: 3px; flex-direction: column; }
-    .ev.open .refs { display: flex; }
-    .ev .refs a { font-size: 12.5px; color: var(--text-2); display: flex; gap: 6px; }
-    .ev .refs a:hover { color: var(--accent); }
+  .src { flex: none; display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px; color: #fff; line-height: 1.55; }
+  .src svg.ic { width: 10px; height: 10px; stroke-width: 2.4; }
+  .ftag { font-size: 11px; font-weight: 600; padding: 0 6px; border-radius: 4px; line-height: 18px; white-space: nowrap; }
 
-    /* 因素热度 */
-    .fac { padding: 4px 18px 16px; display: grid; gap: 9px; }
-    .fac-row { display: grid; grid-template-columns: 70px 1fr 34px; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; }
-    .fac-row:hover .bar-in { filter: brightness(1.15); }
-    .fac-row .bar { height: 8px; border-radius: 4px; background: var(--panel-2); overflow: hidden; }
-    .fac-row .bar-in { height: 100%; border-radius: 4px; }
-    .fac-row .c { text-align: right; color: var(--text-2); font-size: 12px; }
+  /* 今日市场总结 */
+  .sum ul { list-style: none; display: grid; gap: 11px; padding: 0 18px; }
+  .sum li { font-size: 14.5px; line-height: 1.75; padding-left: 16px; position: relative; color: var(--text-1); }
+  .sum li::before { content: ''; position: absolute; left: 0; top: .72em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .sum li b { font-weight: 700; }
+  .cite { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--panel-2); border: 1px solid var(--line-2); color: var(--text-2); font-size: 10.5px; font-weight: 700; vertical-align: 2px; margin-left: 2px; }
+  .cite:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .srcs { display: flex; gap: 8px; overflow-x: auto; margin: 14px 18px 0; padding: 14px 0 2px; border-top: 1px solid var(--line); scrollbar-width: none; }
+  .srcs a { flex: 0 0 210px; background: var(--panel-2); border-radius: 10px; padding: 9px 11px; font-size: 12px; color: var(--text-3); }
+  .srcs a:hover { box-shadow: 0 0 0 1px var(--line-2); }
+  .srcs b { color: var(--text-1); font-weight: 600; font-size: 12.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 3px; }
+  .gen { color: var(--text-3); font-size: 11.5px; padding: 10px 18px 16px; }
 
-    /* 行情归因 */
-    .mk-head { display: flex; align-items: baseline; gap: 14px; padding: 16px 18px 4px; flex-wrap: wrap; }
-    .mk-head h3 { font-size: 20px; font-weight: 800; }
-    .mk-head .big { font-size: 22px; font-weight: 600; }
-    .mk-head .chg { font-size: 15px; font-weight: 600; }
-    .mk-head .th { color: var(--text-3); font-size: 12px; margin-left: auto; }
-    .chart { padding: 6px 10px 4px; position: relative; }
-    .chart svg { width: 100%; height: auto; display: block; overflow: visible; }
-    .chart .tip { position: absolute; pointer-events: none; background: var(--panel-2); box-shadow: 0 0 0 1px var(--line-2); border-radius: 6px; padding: 4px 8px; font-size: 12px; white-space: nowrap; display: none; }
-    .mv-list { padding: 4px 10px 12px; }
-    .mv-item { border-top: 1px solid var(--line); padding: 12px 8px; border-radius: 8px; }
-    .mv-item.on { background: var(--hover); }
-    .mv-item .head { display: flex; gap: 10px; align-items: center; cursor: pointer; flex-wrap: wrap; }
-    .mv-item .no { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; flex: none; }
-    .mv-item .rng { font-weight: 600; }
-    .reasons { margin: 10px 0 0 32px; display: grid; gap: 8px; }
-    .reason { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: start; }
-    .reason .tm { font-size: 12px; color: var(--text-3); padding-top: 1px; }
-    .reason .tt { font-size: 13.5px; font-weight: 500; }
-    .reason .tt:hover { color: var(--accent); }
-    .reason .ln { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 3px; }
-    .reason .sm { font-size: 12.5px; color: var(--text-2); margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .disclaimer { font-size: 12px; color: var(--text-3); padding: 0 18px 14px; }
-    .mk-pick { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 18px 14px; }
-    .mk-pick button { font-size: 12.5px; padding: 4px 10px; border-radius: 7px; background: var(--panel-2); color: var(--text-2); }
-    .mk-pick button.on { background: var(--accent); color: #fff; }
+  /* 列表行：异动、大事 */
+  .li { display: flex; gap: 12px; padding: 11px 18px; border-top: 1px solid var(--line); cursor: pointer; align-items: flex-start; }
+  .li:hover { background: var(--hover); }
+  .li .body { min-width: 0; flex: 1; }
+  .li .t { font-weight: 600; font-size: 14px; line-height: 1.45; }
+  .li .t span { color: var(--text-3); font-weight: 500; font-size: 12px; margin-left: 6px; }
+  .li .s { color: var(--text-2); font-size: 13px; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .li .m { color: var(--text-3); font-size: 12px; margin-top: 4px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .li .rk { width: 20px; flex: none; font-weight: 800; font-size: 15px; color: var(--text-3); padding-top: 1px; }
+  .li .rk.hot { color: var(--accent); }
+  .ev .more { display: none; margin-top: 8px; }
+  .ev.open .more { display: block; }
+  .ev .more p { color: var(--text-2); font-size: 13px; margin-bottom: 6px; }
+  .ev .more a { display: flex; gap: 6px; font-size: 12.5px; color: var(--text-2); padding: 2px 0; align-items: baseline; }
+  .ev .more a:hover { color: var(--accent); }
 
-    /* 快讯 */
-    .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 0 18px 12px; }
-    .seg { display: inline-flex; background: var(--panel-2); border-radius: 8px; padding: 2px; }
-    .seg button { padding: 4px 11px; border-radius: 6px; font-size: 12.5px; color: var(--text-2); font-weight: 600; }
-    .seg button.on { background: var(--panel); color: var(--text-1); box-shadow: 0 0 0 1px var(--line-2); }
-    .chip { font-size: 12.5px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--text-2); }
-    .chip.on { color: #fff; border-color: transparent; }
-    .search { flex: 1; min-width: 160px; background: var(--panel-2); border: 1px solid transparent; border-radius: 8px; padding: 6px 10px; color: var(--text-1); font: inherit; font-size: 13px; outline: none; }
-    .search:focus { border-color: var(--accent); }
-    .feed .day { padding: 10px 18px 6px; font-size: 12px; font-weight: 700; color: var(--text-3); position: sticky; top: 58px; background: var(--panel); z-index: 2; border-top: 1px solid var(--line); }
-    .fi { display: grid; grid-template-columns: 46px 1fr; gap: 10px; padding: 10px 18px; border-top: 1px solid var(--line); }
-    .fi .tm { color: var(--text-3); font-size: 12.5px; padding-top: 1px; }
-    .fi .tt { font-size: 14px; line-height: 1.5; }
-    .fi.imp .tt { font-weight: 650; }
-    .fi.imp .tt::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--up); margin: 0 6px 2px 0; }
-    .fi .sm { font-size: 12.5px; color: var(--text-2); margin-top: 3px; }
-    .fi .ln { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 5px; }
-    .fi a.tt:hover { color: var(--accent); }
-    .more { display: block; width: 100%; padding: 12px; color: var(--accent); font-weight: 600; border-top: 1px solid var(--line); }
+  /* 因素热度 */
+  .fac { padding: 2px 18px 16px; display: grid; gap: 9px; }
+  .fac-row { display: grid; grid-template-columns: 70px 1fr 34px; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; }
+  .fac-row .bar { height: 8px; border-radius: 4px; background: var(--panel-2); overflow: hidden; }
+  .fac-row .bar i { display: block; height: 100%; border-radius: 4px; }
+  .fac-row .c { text-align: right; color: var(--text-2); font-size: 12px; }
 
-    /* 来源状态 */
-    dialog { margin: auto; border: 0; border-radius: 14px; background: var(--panel); color: var(--text-1); box-shadow: var(--shadow); width: min(560px, calc(100vw - 32px)); padding: 0; }
-    dialog::backdrop { background: rgba(0,0,0,.45); }
-    dialog h3 { padding: 16px 18px 6px; font-size: 15px; }
-    dialog p { padding: 0 18px 10px; color: var(--text-3); font-size: 12.5px; }
-    .src-row { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; padding: 8px 18px; border-top: 1px solid var(--line); font-size: 13px; }
-    .src-row .err { color: var(--up); font-size: 12px; grid-column: 2 / 4; }
-    dialog .close { display: block; width: 100%; padding: 12px; border-top: 1px solid var(--line); color: var(--accent); font-weight: 600; }
+  /* 热力图（Finviz 风格）*/
+  .heat { position: relative; width: 100%; background: var(--heat-gap); border-radius: 8px; overflow: hidden; }
+  .heat .grp { position: absolute; border: 2px solid var(--heat-gap); }
+  .heat .gl { position: absolute; left: 0; right: 0; top: 0; height: 20px; padding: 0 6px; font-size: 11.5px; font-weight: 700; color: var(--text-1); background: var(--heat-head); display: flex; justify-content: space-between; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; cursor: pointer; }
+  .heat .gl:hover { color: var(--accent); }
+  .heat .cell { position: absolute; border: 1px solid var(--heat-gap); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; color: #fff; line-height: 1.15; cursor: pointer; }
+  .heat .cell:hover { filter: brightness(1.18); }
+  .heat .cell b { font-weight: 700; } .heat .cell span { opacity: .92; }
+  .legend { display: inline-flex; align-items: center; gap: 2px; font-size: 11px; color: var(--text-2); font-weight: 500; }
+  .legend i { width: 22px; height: 10px; display: inline-block; }
 
-    /* 全球 / 有色 / AI 板块 */
-    .board { display: grid; gap: 18px; margin: 18px 0 40px; }
-    .sec { background: var(--panel); border-radius: 16px; box-shadow: var(--shadow); padding: 16px; }
-    .sec-h { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .sec-h h2 { font-size: 17px; font-weight: 800; padding-left: 10px; border-left: 4px solid #f97316; line-height: 1.1; }
-    .sec-h .st { margin-left: auto; font-size: 12px; color: var(--text-2); border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 10px; display: inline-flex; align-items: center; gap: 6px; }
-    .sec-h .st i { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
-    .sec-h .st.live i { background: var(--down); }
-    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
-    .qc, .tc { background: var(--panel-2); border-radius: 12px; padding: 12px 14px; cursor: pointer; box-shadow: 0 0 0 1px var(--line); transition: box-shadow .15s, transform .15s; }
-    .qc:hover, .tc:hover { box-shadow: 0 0 0 1px var(--line-2); transform: translateY(-1px); }
-    .qc .n { font-size: 13.5px; color: var(--text-2); }
-    .qc .r { display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; gap: 8px; }
-    .qc .r b { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
-    .pct { font-weight: 700; font-size: 15px; white-space: nowrap; }
-    .tc { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 56px; }
-    .tc .n { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; min-width: 0; }
-    .tc .n span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .tc .sub { font-size: 11.5px; color: var(--text-3); font-weight: 500; }
-    .skel { color: var(--text-3); }
+  /* 板块页：分区、卡片 */
+  .board { display: grid; gap: 14px; margin: 16px 0 40px; }
+  .sec-h { display: flex; align-items: center; gap: 10px; padding: 15px 18px 12px; flex-wrap: wrap; }
+  .sec-h h2 { font-size: 17px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+  .sec-h h2::before { content: ''; width: 4px; height: 18px; border-radius: 2px; background: var(--accent); }
+  .sec-h .r { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .stt { font-size: 12px; color: var(--text-2); border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 10px; display: inline-flex; align-items: center; gap: 6px; }
+  .stt i { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
+  .stt.live i { background: var(--down); box-shadow: 0 0 6px var(--down); }
+  .vt { display: inline-flex; background: var(--panel-2); border-radius: 8px; padding: 2px; }
+  .vt button { width: 30px; height: 26px; border-radius: 6px; display: grid; place-items: center; color: var(--text-3); }
+  .vt button.on { background: var(--panel); color: var(--text-1); box-shadow: 0 0 0 1px var(--line-2); }
+  .vt svg.ic { width: 15px; height: 15px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; padding: 0 18px 18px; }
+  .cards > * { min-width: 0; }
+  .qc { background: var(--panel-2); border-radius: 12px; padding: 12px 14px; cursor: pointer; position: relative; overflow: hidden; border: 1px solid transparent; }
+  .qc:hover, .tc:hover { border-color: var(--line-2); }
+  .qc .n { font-size: 13.5px; color: var(--text-2); }
+  .qc b { display: block; font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin-top: 2px; }
+  .qc .pct { font-size: 14px; }
+  .qc svg.sp { position: absolute; right: 12px; bottom: 12px; width: 84px; height: 30px; }
+  .tc { background: var(--panel-2); border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; min-height: 58px; border: 1px solid transparent; }
+  .tc .ico { width: 32px; height: 32px; border-radius: 9px; background: var(--panel); display: grid; place-items: center; color: var(--text-2); flex: none; }
+  .tc .n { flex: 1; min-width: 0; }
+  .tc .n b { display: block; font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tc .n span { font-size: 11.5px; color: var(--text-3); }
+  .tc .pct { font-size: 15px; }
+  .board-foot { text-align: center; color: var(--text-3); font-size: 12px; }
 
-    /* 主题详情 / 个股详情 */
-    .page { margin: 18px 0 40px; display: grid; gap: 18px; }
-    .back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-2); font-size: 13px; font-weight: 600; padding: 6px 0; }
-    .back:hover { color: var(--text-1); }
-    .ph { padding: 18px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-    .ph .ic { font-size: 34px; }
-    .ph h1 { font-size: 22px; font-weight: 800; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-    .ph h1 small { font-size: 13px; color: var(--text-3); font-weight: 500; }
-    .ph .px { display: flex; gap: 12px; align-items: baseline; margin-top: 4px; flex-wrap: wrap; }
-    .ph .px b { font-size: 26px; font-weight: 700; }
-    .ph .px span { font-size: 16px; font-weight: 600; }
-    .ph .note { width: 100%; font-size: 12.5px; color: var(--text-3); }
-    .mtag { font-size: 10.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; background: var(--panel-2); color: var(--text-2); box-shadow: 0 0 0 1px var(--line-2); }
-    table.st { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-    table.st th { text-align: right; font-weight: 600; color: var(--text-3); font-size: 12px; padding: 8px 18px; border-top: 1px solid var(--line); }
-    table.st th:first-child, table.st td:first-child { text-align: left; }
-    table.st td { text-align: right; padding: 10px 18px; border-top: 1px solid var(--line); white-space: nowrap; }
-    table.st tr[data-stock] { cursor: pointer; }
-    table.st tr[data-stock]:hover td { background: var(--hover); }
-    table.st .nm { font-weight: 600; display: flex; align-items: center; gap: 8px; }
-    table.st .cd { color: var(--text-3); font-size: 12px; font-weight: 500; }
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-    .stats div { background: var(--panel); padding: 10px 18px; }
-    .stats span { display: block; font-size: 12px; color: var(--text-3); }
-    .stats b { font-size: 14px; font-weight: 600; }
-    .seg-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 0; gap: 8px; }
-    .prose { padding: 0 18px 16px; color: var(--text-2); font-size: 13.5px; line-height: 1.75; white-space: pre-wrap; }
-    .prose.clamp { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
-    .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 18px; padding: 0 18px 14px; font-size: 13px; }
-    .facts .wide { grid-column: 1 / -1; }
-    .facts span { color: var(--text-3); margin-right: 8px; }
-    .linkbtn { color: var(--accent); font-weight: 600; font-size: 13px; padding: 0 18px 14px; display: block; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 16px; }
-    .chips a { font-size: 13px; padding: 5px 10px; border-radius: 8px; background: var(--panel-2); box-shadow: 0 0 0 1px var(--line); display: inline-flex; gap: 6px; }
-    .chips a:hover { box-shadow: 0 0 0 1px var(--line-2); }
+  /* 详情页公共 */
+  .back { display: inline-flex; align-items: center; gap: 4px; color: var(--text-2); font-size: 13px; font-weight: 600; padding: 4px 0; }
+  .back:hover { color: var(--text-1); }
+  .ph { padding: 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .ph .big-ico { width: 48px; height: 48px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+  .ph .big-ico svg.ic { width: 26px; height: 26px; }
+  .ph h1 { font-size: 22px; font-weight: 800; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .ph h1 small { font-size: 13px; color: var(--text-3); font-weight: 500; }
+  .ph .px { display: flex; gap: 12px; align-items: baseline; margin-top: 3px; flex-wrap: wrap; }
+  .ph .px b { font-size: 28px; font-weight: 800; letter-spacing: -.01em; }
+  .ph .px span { font-size: 16px; font-weight: 700; }
+  .ph .note { width: 100%; font-size: 12.5px; color: var(--text-3); background: var(--panel-2); border-radius: 8px; padding: 7px 10px; }
+  .mtag { font-size: 10.5px; font-weight: 700; padding: 0 5px; border-radius: 4px; background: var(--panel-2); color: var(--text-2); border: 1px solid var(--line-2); }
+  table.st { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.st th { text-align: right; font-weight: 500; color: var(--text-3); font-size: 12px; padding: 7px 18px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  table.st th:first-child, table.st td:first-child { text-align: left; }
+  table.st td { text-align: right; padding: 9px 18px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  table.st tr:last-child td { border-bottom: 0; }
+  table.st tr[data-stock], table.st tr[data-mk] { cursor: pointer; }
+  table.st tr[data-stock]:hover td, table.st tr[data-mk]:hover td { background: var(--hover); }
+  table.st .nm { font-weight: 600; display: flex; align-items: center; gap: 7px; }
+  table.st .cd { color: var(--text-3); font-size: 11.5px; font-weight: 500; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
+  .stats div { padding: 10px 18px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
+  .stats div:nth-child(4n) { border-right: 0; }
+  .stats span { display: block; font-size: 11.5px; color: var(--text-3); }
+  .stats b { font-size: 14px; font-weight: 600; }
+  .seg { display: inline-flex; background: var(--panel-2); border-radius: 8px; padding: 2px; }
+  .seg button { padding: 4px 12px; border-radius: 6px; font-size: 12.5px; color: var(--text-2); font-weight: 600; white-space: nowrap; }
+  .seg button.on { background: var(--panel); color: var(--text-1); box-shadow: 0 0 0 1px var(--line-2); }
+  .seg-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 0; gap: 8px; }
+  .chart { padding: 8px 12px 6px; position: relative; }
+  .chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .chart .tip { position: absolute; top: 0; pointer-events: none; background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 6px; padding: 3px 8px; font-size: 12px; white-space: nowrap; display: none; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 16px; }
+  .chips a { font-size: 13px; padding: 5px 8px 5px 10px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line); display: inline-flex; gap: 7px; align-items: center; }
+  .chips a:hover { border-color: var(--line-2); }
+  .chips .chg { min-width: 0; font-size: 12px; padding: 1px 6px; }
+  .prose { padding: 0 18px 14px; color: var(--text-2); font-size: 13.5px; line-height: 1.8; white-space: pre-wrap; }
+  .prose.clamp { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+  .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px 18px; padding: 0 18px 14px; font-size: 13px; }
+  .facts .wide { grid-column: 1 / -1; }
+  .facts span { color: var(--text-3); margin-right: 8px; }
+  .linkbtn { color: var(--accent); font-weight: 600; font-size: 13px; padding: 0 18px 16px; display: inline-flex; gap: 4px; align-items: center; }
 
-    /* 新闻详情 */
-    .art { padding: 20px 22px; }
-    .art-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--text-3); font-size: 13px; }
-    .impt { font-size: 11px; font-weight: 700; color: #fff; background: var(--up); border-radius: 4px; padding: 0 6px; }
-    .art-t { font-size: 22px; line-height: 1.45; font-weight: 800; margin: 12px 0 14px; }
-    .art-body { font-size: 15.5px; line-height: 1.9; color: var(--text-1); white-space: pre-wrap; }
-    .art-note { margin-top: 12px; font-size: 13px; color: var(--text-3); background: var(--panel-2); border-radius: 8px; padding: 8px 12px; }
-    .art-act { margin-top: 16px; }
-    .btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; font-weight: 600; font-size: 13.5px; padding: 8px 14px; border-radius: 8px; }
-    .btn:hover { filter: brightness(1.1); }
-    iframe.orig { display: block; width: 100%; height: 80vh; border: 0; border-top: 1px solid var(--line); border-radius: 0 0 14px 14px; background: #fff; }
-    .fi .sm, .ev .sum { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  /* 异动归因 */
+  .mk-head { display: flex; align-items: baseline; gap: 14px; padding: 18px 18px 4px; flex-wrap: wrap; }
+  .mk-head h3 { font-size: 21px; font-weight: 800; }
+  .mk-head .big { font-size: 24px; font-weight: 800; }
+  .mk-head .pct { font-size: 15px; }
+  .mk-head .th { color: var(--text-3); font-size: 12px; margin-left: auto; }
+  .mv-item { border-top: 1px solid var(--line); padding: 12px 18px; }
+  .mv-item.on { background: var(--hover); }
+  .mv-item .head { display: flex; gap: 12px; align-items: center; cursor: pointer; }
+  .mv-item .no { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11.5px; font-weight: 700; color: #fff; flex: none; }
+  .mv-item .rng { font-weight: 600; }
+  .mv-item .sub { color: var(--text-3); font-size: 12px; }
+  .reasons { margin: 10px 0 2px 34px; display: grid; gap: 4px; }
+  .reason { display: grid; grid-template-columns: 44px 1fr; gap: 8px; padding: 7px 0; border-top: 1px dashed var(--line); }
+  .reason:first-child { border-top: 0; }
+  .reason .tm { font-size: 12px; color: var(--text-3); padding-top: 2px; }
+  .reason .tt { font-size: 14px; font-weight: 600; }
+  .reason .tt:hover { color: var(--accent); }
+  .reason .ln { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
+  .reason .sm { font-size: 12.5px; color: var(--text-2); margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-    footer { color: var(--text-3); font-size: 12px; text-align: center; padding: 10px 16px 40px; }
-    footer a { color: var(--text-2); text-decoration: underline; text-underline-offset: 2px; }
+  /* 快讯：紧凑时间线 */
+  .filters { display: flex; gap: 8px; align-items: center; padding: 0 18px 10px; overflow-x: auto; scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .chip { flex: none; font-size: 12.5px; padding: 4px 11px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--text-2); white-space: nowrap; }
+  .chip.on { color: #fff; border-color: transparent; }
+  .search { flex: 1; min-width: 150px; background: var(--panel-2); border: 1px solid transparent; border-radius: 8px; padding: 6px 10px; color: var(--text-1); font: inherit; font-size: 13px; outline: none; }
+  .search:focus { border-color: var(--accent); }
+  .day { padding: 8px 18px; font-size: 12px; font-weight: 700; color: var(--text-3); background: var(--panel-2); position: sticky; top: 56px; z-index: 2; }
+  .fi { display: grid; grid-template-columns: 44px 1fr; gap: 10px; padding: 9px 18px 9px 15px; border-top: 1px solid var(--line); border-left: 3px solid transparent; }
+  .fi.imp { border-left-color: var(--up); }
+  .fi .tm { color: var(--text-3); font-size: 12.5px; padding-top: 1px; }
+  .fi .tt { font-size: 14px; line-height: 1.5; }
+  .fi.imp .tt { font-weight: 700; }
+  .fi a.tt:hover { color: var(--accent); }
+  .fi .sm { font-size: 12.5px; color: var(--text-2); margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .fi .ln { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
+  .more { display: block; width: 100%; padding: 12px; color: var(--accent); font-weight: 600; border-top: 1px solid var(--line); }
 
-    @media (max-width: 960px) {
-      .grid { grid-template-columns: 1fr; }
-      .brand small, .meta { display: none; }
-    }
-    @media (max-width: 640px) {
-      .wrap { padding: 0 16px; }
-      .bar { gap: 8px; height: auto; padding: 10px 0; flex-wrap: wrap; }
-      nav.tabs { order: 3; width: 100%; }
-      nav.tabs button { flex: 1; }
-      .ticker { grid-template-columns: repeat(2, 1fr); }
-      nav.tabs { overflow-x: auto; scrollbar-width: none; }
-      nav.tabs button { flex: none; }
-      .cards { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .sec { padding: 14px 12px; }
-      .qc { padding: 10px 12px; } .qc .r { flex-direction: column; align-items: flex-start; gap: 0; } .qc .r b { font-size: 19px; }
-      .tc { padding: 10px 12px; } .tc .n { font-size: 14.5px; gap: 6px; } .pct { font-size: 13.5px; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      table.st th, table.st td { padding: 9px 10px; }
-      table.st .hide-m { display: none; }
-      .facts { grid-template-columns: 1fr; }
-      .feed .day { top: 104px; }
-      .mv-card { grid-template-columns: 1fr; gap: 4px; }
-      .mv-card .when b { display: inline; margin-right: 6px; }
-      .reasons { margin-left: 0; }
-    }
-  </style>
+  /* 新闻详情 */
+  .art { padding: 22px 18px; }
+  .art-in { max-width: 760px; margin: 0 auto; }
+  .art-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--text-3); font-size: 13px; }
+  .impt { font-size: 11px; font-weight: 700; color: #fff; background: var(--up); border-radius: 4px; padding: 0 6px; }
+  .art-t { font-size: 24px; line-height: 1.45; font-weight: 800; margin: 12px 0 16px; letter-spacing: -.01em; }
+  .art-body { font-size: 16px; line-height: 1.95; color: var(--text-1); white-space: pre-wrap; }
+  .art-note { margin-top: 14px; font-size: 13px; color: var(--text-3); background: var(--panel-2); border-radius: 8px; padding: 8px 12px; display: flex; gap: 6px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; font-weight: 600; font-size: 13.5px; padding: 8px 14px; border-radius: 8px; margin-top: 18px; }
+  .btn:hover { filter: brightness(1.1); }
+  iframe.orig { display: block; width: 100%; height: 80vh; border: 0; border-top: 1px solid var(--line); border-radius: 0 0 14px 14px; background: #fff; }
+
+  /* 来源状态 */
+  dialog { margin: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--text-1); width: min(560px, calc(100vw - 32px)); padding: 0; }
+  dialog::backdrop { background: rgba(0,0,0,.5); }
+  dialog h3 { padding: 16px 18px 6px; font-size: 15px; }
+  dialog p { padding: 0 18px 10px; color: var(--text-3); font-size: 12.5px; }
+  .src-row { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; padding: 8px 18px; border-top: 1px solid var(--line); font-size: 13px; }
+  .src-row .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .src-row .err { color: var(--up); font-size: 12px; grid-column: 2 / 4; }
+  dialog .close { display: block; width: 100%; padding: 12px; border-top: 1px solid var(--line); color: var(--accent); font-weight: 600; }
+
+  footer { color: var(--text-3); font-size: 12px; text-align: center; padding: 6px 16px 40px; line-height: 1.8; }
+
+  @media (max-width: 1080px) { .brand small { display: none; } }
+  @media (max-width: 860px) {
+    nav.tabs, .meta { display: none; }
+    nav.tabbar { display: flex; }
+    body { padding-bottom: calc(68px + env(safe-area-inset-bottom)); }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 12px; }
+    .bar { height: 52px; gap: 10px; }
+    .day { top: 52px; }
+    .card > h2, .ch { padding: 14px 14px 10px; }
+    .li { padding: 11px 14px; }
+    .sum ul { padding: 0 14px; } .srcs { margin: 14px 14px 0; } .gen { padding: 10px 14px 14px; }
+    /* 手机：App 式两列大数字卡片 */
+    .cards { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 0 12px 14px; }
+    .sec-h { padding: 14px 12px 10px; }
+    .qc { padding: 11px 12px; } .qc b { font-size: 22px; } .qc svg.sp { display: none; }
+    /* 主题卡片：图标在左，名字和涨跌上下排，避免名字被挤掉 */
+    .tc { padding: 10px; display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 9px; row-gap: 1px; align-items: center; min-height: 0; }
+    .tc .ico { width: 30px; height: 30px; grid-row: 1 / 3; } .tc .n b { font-size: 15px; } .tc .n span { display: none; } .tc .pct { font-size: 14px; grid-column: 2; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stats div:nth-child(4n) { border-right: 1px solid var(--line); } .stats div:nth-child(2n) { border-right: 0; }
+    table.st th, table.st td { padding: 9px 10px; }
+    table.st .hide-m { display: none; }
+    .facts { grid-template-columns: 1fr; }
+    .reasons { margin-left: 0; }
+    .mv-item { padding: 12px 14px; }
+    .art-t { font-size: 21px; } .art-body { font-size: 15.5px; }
+    .fi { padding: 9px 14px 9px 11px; }
+    .filters { padding: 0 14px 10px; }
+  }
+</style>
 </head>
 <body>
 <header>
   <div class="wrap bar">
-    <div class="brand"><span class="logo">⚡</span>MarketWhy <small>行情为什么动</small></div>
+    <div class="brand"><span class="logo"><svg viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg></span>MarketWhy <small>行情为什么动</small></div>
     <nav class="tabs">
       <button data-tab="overview">总览</button>
       <button data-tab="global">全球</button>
@@ -291,11 +330,11 @@
     </nav>
     <div class="spacer"></div>
     <span class="meta" id="updated">加载中…</span>
-    <div class="links">
-      <button class="icon-btn" id="btnSrc" title="来源状态">📡</button>
-      <a class="icon-btn" href="https://climb0516.github.io/market-board/" target="_blank" title="Market Board 行情看板">📊</a>
-      <a class="icon-btn" href="https://climb0516.github.io/earnings-calendar/" target="_blank" title="财报与宏观日历">📅</a>
-      <button class="icon-btn" id="btnTheme" title="切换深浅色">☾</button>
+    <div class="tools">
+      <button class="icon-btn" id="btnSrc" title="来源状态" data-ic="signal"></button>
+      <a class="icon-btn" href="https://climb0516.github.io/market-board/" target="_blank" title="Market Board 行情看板" data-ic="chartline"></a>
+      <a class="icon-btn" href="https://climb0516.github.io/earnings-calendar/" target="_blank" title="财报与宏观日历" data-ic="calendar"></a>
+      <button class="icon-btn" id="btnTheme" title="切换深浅色" data-ic="moon"></button>
     </div>
   </div>
 </header>
@@ -306,9 +345,17 @@
 </main>
 
 <footer>
-  异动按「30 分钟内涨跌超过阈值」检测，原因是同时段新闻按相关度匹配出来的<b>可能因素</b>，不构成因果判断或投资建议。<br>
-  数据：东方财富（行情）、新浪财经、华尔街见闻、东方财富、同花顺、格隆汇、Bloomberg、Reuters、WSJ、FT、CNBC 等。点快讯进入站内详情；东财、同花顺、见闻、格隆汇在详情页内嵌原文，收费媒体只展示标题与摘要。
+  异动按「30 分钟内涨跌超过阈值」检测，原因是同时段新闻按相关度匹配出来的可能因素，不构成因果判断或投资建议。<br>
+  数据：东方财富（行情）、CBOE、新浪财经、华尔街见闻、东方财富、同花顺、格隆汇、Bloomberg、Reuters、WSJ、FT、CNBC 等。收费媒体只展示标题与摘要。
 </footer>
+
+<nav class="tabbar">
+  <button data-tab="overview" data-ic="home">总览</button>
+  <button data-tab="global" data-ic="globe">全球</button>
+  <button data-tab="metals" data-ic="ingot">有色</button>
+  <button data-tab="ai" data-ic="chip">AI</button>
+  <button data-tab="feed" data-ic="news">快讯</button>
+</nav>
 
 <dialog id="dlgSrc"></dialog>
 
@@ -319,6 +366,60 @@ const LS = { get(k, d) { try { return localStorage.getItem(k) ?? d; } catch { re
 
 let D = null, NEWS = {}, SRC = {}, FAC = {};
 const state = { tab: 'overview', market: null, move: 0, lang: 'all', factor: '', imp: false, q: '', limit: 80, theme: null, stock: null, depth: 0, from: 'global' };
+
+// ── 线性图标（统一替代 emoji）──
+const I = {
+  home: '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+  news: '<path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+  bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  signal: '<path d="M5 12a7 7 0 0114 0M8 12a4 4 0 018 0"/><circle cx="12" cy="12" r="1"/><path d="M12 13v8"/>',
+  chartline: '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',
+  calendar: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+  moon: '<path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  ext: '<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>',
+  arrow: '<path d="M9 5l7 7-7 7"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+  heat: '<rect x="3" y="3" width="10" height="10"/><rect x="15" y="3" width="6" height="6"/><rect x="15" y="11" width="6" height="10"/><rect x="3" y="15" width="10" height="6"/>',
+  grid: '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/>',
+  spark: '<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',
+  compass: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  chip: '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M10 10h4v4h-4zM9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>',
+  optic: '<circle cx="12" cy="12" r="3"/><path d="M2 12h7M15 12h7M5 7l4 3M5 17l4-3M19 7l-4 3M19 17l-4-3"/>',
+  wafer: '<circle cx="12" cy="12" r="9"/><path d="M8 8h3v3H8zM13 8h3v3h-3zM8 13h3v3H8zM13 13h3v3h-3z"/>',
+  db: '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  server: '<rect x="4" y="3" width="16" height="7" rx="1.5"/><rect x="4" y="14" width="16" height="7" rx="1.5"/><path d="M8 6.5h.01M8 17.5h.01"/>',
+  cloud: '<path d="M7 18a5 5 0 010-10 6 6 0 0111.5 1.5A4 4 0 0118 18z"/>',
+  rocket: '<path d="M12 2c3 3 4 7 4 11l-4 4-4-4c0-4 1-8 4-11z"/><circle cx="12" cy="10" r="1.5"/><path d="M8 13l-3 3 1 3 3-1M16 13l3 3-1 3-3-1"/>',
+  satellite: '<path d="M5 9l4-4 4 4-4 4z"/><path d="M11 11l4 4M13 17l4-4 3 3-4 4zM15 3a6 6 0 016 6"/>',
+  robot: '<rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 4v4M9.5 13h.01M14.5 13h.01M9 16.5h6"/>',
+  car: '<path d="M5 16l1.5-5h11l1.5 5M3 16h18v3H3z"/><circle cx="7" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>',
+  atom: '<circle cx="12" cy="12" r="1.5"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/>',
+  magnet: '<path d="M6 3v8a6 6 0 0012 0V3h-4v8a2 2 0 01-4 0V3z"/>',
+  coin: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/>',
+  ingot: '<path d="M3 18l3-8h12l3 8z"/><path d="M6 10l2-4h8l2 4"/>',
+  battery: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10v4M7 10v4M11 10v4"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+  hex: '<path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/>',
+  gem: '<path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21L8 9l4-6 4 6z"/>',
+  token: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+  memory: '<rect x="3" y="7" width="18" height="10" rx="1.5"/><path d="M7 7v10M11 7v10M15 7v10M5 17v3M19 17v3"/>',
+  layers: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5M3 17l9 5 9-5"/>',
+  drive: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 14h.01M11 14h6"/>',
+  fiber: '<path d="M3 8c4 0 4 8 9 8s5-8 9-8"/><path d="M3 15c4 0 4-7 9-7s5 7 9 7" opacity=".55"/>',
+  pcb: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4M17 7v6h-4M7 17h10M11 11l2 2"/>',
+  cap: '<path d="M9 4v16M15 4v16M3 12h6M15 12h6"/>',
+  gpu: '<rect x="2" y="7" width="20" height="10" rx="2"/><circle cx="9" cy="12" r="2.5"/><circle cx="16" cy="12" r="2.5"/><path d="M5 17v3"/>',
+  package: '<path d="M12 3l9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  plug: '<path d="M9 3v5M15 3v5M6 8h12v4a6 6 0 01-12 0zM12 18v3"/>',
+  snow: '<path d="M12 2v20M3.3 7l17.4 10M20.7 7L3.3 17M9 4l3 3 3-3M9 20l3-3 3 3"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
+};
+const ic = name => `<svg class="ic" viewBox="0 0 24 24">${I[name] || I.hex}</svg>`;
+document.querySelectorAll('[data-ic]').forEach(el => el.insertAdjacentHTML('afterbegin', ic(el.dataset.ic)));
 
 // ── 工具 ──
 const pad = n => String(n).padStart(2, '0');
@@ -333,34 +434,113 @@ const cls = v => v > 0 ? 'up' : v < 0 ? 'down' : 'flat';
 const sign = v => (v > 0 ? '+' : '') + v;
 const fmtChg = (v, unit) => unit === 'bp' ? `${sign(v.toFixed(1))}bp` : `${sign(v.toFixed(2))}%`;
 const fmtPx = (v, dec) => Number(v).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const isPhone = () => matchMedia('(max-width: 640px)').matches;
+
+// 热力图 / 涨跌块颜色：红涨绿跌，±6% 封顶
+function heatCol(v) {
+  if (v == null) return 'var(--heat-zero)';
+  const k = Math.min(1, Math.abs(v) / 6);
+  return v >= 0 ? `rgb(${Math.round(70 + 172 * k)},${Math.round(64 - 10 * k)},${Math.round(72 - 3 * k)})`
+                : `rgb(${Math.round(64 - 56 * k)},${Math.round(72 + 81 * k)},${Math.round(78 + 51 * k)})`;
+}
+const pctHtml = v => v == null ? '<span class="pct flat">—</span>' : `<span class="pct num ${cls(v)}">${v > 0 ? '▲' : v < 0 ? '▼' : ''} ${sign(v.toFixed(2))}%</span>`;
+const chgBlock = (v, unit = '%') => v == null ? '<span class="chg num" style="background:var(--heat-zero)">—</span>'
+  : `<span class="chg num" style="background:${heatCol(unit === 'bp' ? v / 10 : v)}">${unit === 'bp' ? fmtChg(v, 'bp') : sign(v.toFixed(2)) + '%'}</span>`;
+const bxHtml = (v, unit) => `<span class="bx num ${cls(v)}">${fmtChg(v, unit)}</span>`;
 
 function srcBadge(id) {
   const s = SRC[id] || { abbr: id, color: '#888' };
-  return `<span class="src" style="background:${s.color}" title="${esc(s.name)}">${esc(s.abbr)}${s.paywall ? ' <span class="lock">🔒</span>' : ''}</span>`;
+  return `<span class="src" style="background:${s.color}" title="${esc(s.name)}${s.paywall ? '（收费）' : ''}">${esc(s.abbr)}${s.paywall ? ic('lock') : ''}</span>`;
 }
 function facTag(k) {
   const f = FAC[k]; if (!f) return '';
   return `<span class="ftag" style="color:var(--f-${k});background:color-mix(in srgb, var(--f-${k}) 14%, transparent)">${esc(f.name)}</span>`;
 }
 
-// ── 迷你分时 ──
-function spark(m, h = 26, w = 150) {
-  const p = m.pts; if (!p || p.length < 2) return '';
-  const vs = p.map(x => x[1]).concat(m.pre);
+// ── 迷你走势 ──
+function sparkPts(pts, pre, w = 150, h = 26) {
+  if (!pts || pts.length < 2) return '';
+  const vs = pts.map(x => x[1]).concat(pre ?? []);
   const lo = Math.min(...vs), hi = Math.max(...vs), r = hi - lo || 1;
-  const xy = p.map((x, i) => `${(i / (p.length - 1) * w).toFixed(1)},${(h - (x[1] - lo) / r * (h - 2) - 1).toFixed(1)}`);
-  const col = m.chg >= 0 ? 'var(--up)' : 'var(--down)';
-  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline fill="none" stroke="${col}" stroke-width="1.4" points="${xy.join(' ')}"/></svg>`;
+  return pts.map((x, i) => `${(i / (pts.length - 1) * w).toFixed(1)},${(h - (x[1] - lo) / r * (h - 2) - 1).toFixed(1)}`).join(' ');
+}
+function spark(m, w = 150, h = 26) {
+  const p = sparkPts(m.pts, m.pre, w, h); if (!p) return '';
+  return `<svg class="sp" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline fill="none" stroke="${m.chg >= 0 ? 'var(--up)' : 'var(--down)'}" stroke-width="1.5" points="${p}"/></svg>`;
 }
 
 function renderTicker() {
   $('#ticker').innerHTML = D.markets.map(m => `
     <div class="tk ${state.tab === 'market' && state.market === m.id ? 'on' : ''}" data-mk="${m.id}">
-      <div class="n"><span>${esc(m.name)}</span>${m.moves.length ? `<span class="mv" title="今日异动次数">⚡${m.moves.length}</span>` : ''}</div>
-      <div class="p"><b class="num">${fmtPx(m.last, m.dec)}</b><span class="num ${cls(m.chg)}">${fmtChg(m.chg, m.unit)}</span></div>
+      <div class="n"><span>${esc(m.name)}</span>${m.moves.length ? `<em title="今日异动次数">${m.moves.length} 异动</em>` : ''}</div>
+      <div class="v"><b class="num">${fmtPx(m.last, m.dec)}</b><span class="num ${cls(m.chg)}">${fmtChg(m.chg, m.unit)}</span></div>
       ${spark(m)}
     </div>`).join('');
 }
+
+// ── 热力图（squarified treemap）──
+// 块大小按美元市值（汇率近似），颜色按今日涨跌
+function usdCap(id) {
+  const q = Q[id]; if (!q?.cap) return 0;
+  const cnh = D.markets.find(m => m.id === '133.USDCNH')?.last || 7.1;
+  const FX = { US: 1, HK: 7.8, CN: cnh, JP: 150, KR: 1400, TW: 32 };
+  return q.cap / (FX[mktOf(id)] || 1);
+}
+function squarify(items, x, y, w, h) {
+  const total = items.reduce((a, i) => a + i.v, 0); if (!total || w <= 0 || h <= 0) return [];
+  const nodes = items.map(i => ({ item: i, a: i.v / total * w * h }));
+  const out = []; let row = [];
+  const worst = (r, s) => { const sum = r.reduce((a, n) => a + n.a, 0), mx = Math.max(...r.map(n => n.a)), mn = Math.min(...r.map(n => n.a)); return Math.max(s * s * mx / (sum * sum), sum * sum / (s * s * mn)); };
+  const place = r => {
+    const sum = r.reduce((a, n) => a + n.a, 0);
+    if (w >= h) { const cw = sum / h; let cy = y; r.forEach(n => { const rh = n.a / cw; out.push({ item: n.item, x, y: cy, w: cw, h: rh }); cy += rh; }); x += cw; w -= cw; }
+    else { const rh = sum / w; let cx = x; r.forEach(n => { const rw = n.a / rh; out.push({ item: n.item, x: cx, y, w: rw, h: rh }); cx += rw; }); y += rh; h -= rh; }
+  };
+  while (nodes.length) {
+    const side = Math.min(w, h), n = nodes[0];
+    if (!row.length || worst([...row, n], side) <= worst(row, side)) row.push(nodes.shift());
+    else { place(row); row = []; }
+  }
+  if (row.length) place(row);
+  return out;
+}
+const shortName = n => String(n || '').replace(/\s(Inc|Corp|Holdings|plc|ADR|Technologies|Group|Ltd|Co)\b[\s\S]*$/i, '').replace(/-[A-Z]+$/, '').trim();
+function stockCells(t) {
+  return t.stocks.map(id => ({ id, name: qName(id), pct: Q[id]?.pct ?? null, v: usdCap(id) })).filter(s => s.v > 0).sort((a, b) => b.v - a.v);
+}
+function cellHtml(s, x, y, w, h) {
+  const fs = Math.max(9, Math.min(18, Math.sqrt(w * h) / 5.5));
+  const label = w > 34 && h > 20;
+  return `<div class="cell" data-stock="${s.id}" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;background:${heatCol(s.pct)}" title="${esc(s.name)} ${s.pct == null ? '' : sign(s.pct.toFixed(2)) + '%'}">
+    ${label ? `<b style="font-size:${fs}px">${esc(shortName(s.name).slice(0, 12))}</b>${h > 36 ? `<span class="num" style="font-size:${fs * 0.78}px">${s.pct == null ? '—' : sign(s.pct.toFixed(2)) + '%'}</span>` : ''}` : ''}</div>`;
+}
+// 画页面上所有 .heat：data-heat="主题1,主题2"（按主题分组）或 data-one="主题"（单个主题的成分股）
+function drawHeats() {
+  document.querySelectorAll('.heat').forEach(box => {
+    const W = box.clientWidth; if (!W) return;
+    let html = '';
+    if (box.dataset.one) {
+      const H = W < 600 ? 420 : Math.round(W * 0.36);
+      box.style.height = H + 'px';
+      squarify(stockCells(TH.themes[box.dataset.one]), 0, 0, W, H).forEach(({ item, x, y, w, h }) => { html += cellHtml(item, x, y, w, h); });
+    } else {
+      const keys = box.dataset.heat.split(',');
+      const groups = keys.map(k => { const t = TH.themes[k], st = stockCells(t); return { key: k, t, st, v: st.reduce((a, s) => a + Math.sqrt(s.v), 0) }; })
+        .filter(g => g.v > 0).sort((a, b) => b.v - a.v);   // 主题块面积用开方市值，避免巨头把小主题挤没
+      const H = W < 600 ? Math.max(560, keys.length * 50) : Math.round(W * (keys.length > 10 ? 0.5 : 0.36));
+      box.style.height = H + 'px';
+      squarify(groups, 0, 0, W, H).forEach(({ item: g, x, y, w, h }) => {
+        const head = h > 40 ? 20 : 0;
+        html += `<div class="grp" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">
+          ${head ? `<div class="gl" data-th="${g.key}"><span>${esc(g.t.name)}</span><span class="num ${cls(themePct(g.t))}">${themePct(g.t) == null ? '' : sign(themePct(g.t).toFixed(2)) + '%'}</span></div>` : ''}`;
+        squarify(g.st, 0, head, w - 4, h - 4 - head).forEach(({ item, x: sx, y: sy, w: sw, h: sh }) => { html += cellHtml(item, sx, sy, sw, sh); });
+        html += '</div>';
+      });
+    }
+    box.innerHTML = html;
+  });
+}
+const legend = () => `<span class="legend">-6%&nbsp;${[-6, -3, -1, 0, 1, 3, 6].map(v => `<i style="background:${heatCol(v === 0 ? null : v)}"></i>`).join('')}&nbsp;+6%</span>`;
 
 // ── 总览 ──
 function allMoves() {
@@ -368,61 +548,78 @@ function allMoves() {
   D.markets.forEach(m => m.moves.forEach((mv, i) => out.push({ m, mv, i })));
   return out;
 }
-function whyLines(mv, n = 2) {
-  const items = (mv.news || []).slice(0, n).map(x => NEWS[x.id]).filter(Boolean);
-  if (!items.length) return `<div class="nowhy">同时段没有匹配到明显相关的新闻</div>`;
-  return items.map(it => `<a href="#news/${it.id}" data-news="${it.id}">${srcBadge(it.src)}<span class="t">${esc(it.title)}</span></a>`).join('');
+// 今日市场总结：按规则从行情和新闻拼句子（不是 AI 撰写），引用的新闻点进站内详情
+function buildSummary() {
+  const cites = [];
+  const cite = n => { if (!n) return ''; let i = cites.findIndex(c => c.id === n.id); if (i < 0) { cites.push(n); i = cites.length - 1; } return `<a class="cite" href="#news/${n.id}" data-news="${n.id}" title="${esc(n.title)}">${i + 1}</a>`; };
+  const M = id => D.markets.find(m => m.id === id);
+  const moveNews = m => (m?.moves || []).slice().sort((a, b) => Math.abs(b.chg) - Math.abs(a.chg)).flatMap(mv => mv.news.map(x => NEWS[x.id])).filter(Boolean);
+  const say = m => `${esc(m.name)} <b class="${cls(m.chg)}">${m.chg > 0 ? '涨' : '跌'} ${Math.abs(m.chg).toFixed(2)}%</b>`;
+  const verb = v => v <= -3 ? '重挫' : v <= -1 ? '走低' : v < 1 ? '窄幅震荡' : v < 3 ? '走高' : '大涨';
+  const lines = [['美股', ['100.NDX', '100.SPX']], ['亚太', ['100.N225', '100.KS11']], ['A股港股', ['1.000001', '100.HSI']]].map(([g, ids]) => {
+    const ms = ids.map(M).filter(Boolean); if (!ms.length) return '';
+    const avg = ms.reduce((a, m) => a + m.chg, 0) / ms.length;
+    const news = moveNews(ms.slice().sort((a, b) => Math.abs(b.chg) - Math.abs(a.chg))[0]);
+    return `<b>${g}${verb(avg)}</b>：${ms.map(say).join('，')}${news[0] ? `。可能相关：${esc(news[0].title)}${cite(news[0])}${cite(news[1])}` : ''}`;
+  }).filter(Boolean);
+  const g = TH.tabs.find(t => t.key === 'global');
+  const ind = g.sections.find(s => s.kind === 'theme').items.map(k => ({ ...TH.themes[k], pct: themePct(TH.themes[k]) })).filter(t => t.pct != null).sort((a, b) => a.pct - b.pct);
+  if (ind.length > 1) lines.push(`<b>产业主题</b>：${esc(ind[0].name)} <b class="${cls(ind[0].pct)}">${sign(ind[0].pct.toFixed(2))}%</b> 表现最弱，${esc(ind.at(-1).name)} <b class="${cls(ind.at(-1).pct)}">${sign(ind.at(-1).pct.toFixed(2))}%</b> 相对最强`);
+  const q = id => Q[id] || {};
+  const p = v => v == null ? '—' : `<b class="${cls(v)}">${sign(v.toFixed(2))}%</b>`;
+  lines.push(`<b>大宗与避险</b>：布伦特原油 ${p(q('112.B00Y').pct)}，黄金 ${p(q('122.XAU').pct)}，恐慌指数 VIX ${q('cboe.VIX').price ?? '—'}（${p(q('cboe.VIX').pct)}）`);
+  const top = D.events[0];
+  if (top) lines.push(`<b>最受关注</b>：${esc(top.title)}（${top.refs.length} 家报道）${top.refs.slice(0, 3).map(id => cite(NEWS[id])).join('')}`);
+  return { lines, cites };
 }
-function renderOverview() {
-  // 异动：按幅度相对阈值的倍数排序，取最显著的 14 个
-  const mv = allMoves().sort((a, b) => Math.abs(b.mv.chg) / b.m.th - Math.abs(a.mv.chg) / a.m.th).slice(0, 14)
-    .sort((a, b) => b.mv.end - a.mv.end);
-  const timeline = mv.length ? mv.map(({ m, mv, i }) => `
-    <div class="mv-card" data-mk="${m.id}" data-mv="${i}">
-      <div class="when"><b class="num">${mv.kind === 'gap' ? '开盘 ' + hm(mv.end) : `${hm(mv.start)}–${hm(mv.end)}`}</b>${dayLabel(mv.end)}</div>
-      <div>
-        <div class="head"><span class="mk">${esc(m.name)}</span><span class="pill num ${cls(mv.chg)}">${mv.dir > 0 ? '▲' : '▼'} ${fmtChg(mv.chg, m.unit)}</span>${mv.kind === 'gap' ? '<span class="kind">开盘跳空</span>' : ''}</div>
-        <div class="why">${whyLines(mv)}</div>
-      </div>
-    </div>`).join('') : '<div class="empty">今天各市场暂无明显异动</div>';
-
-  const events = D.events.slice(0, 12).map((e, i) => eventHtml(e, i)).join('') || '<div class="empty">暂无</div>';
-
-  // 因素热度：近 24 小时重要新闻按因素计数（重要度加权）
-  const since = nowTs() - 86400, cnt = {};
-  D.news.forEach(n => { if (n.ts >= since && n.imp >= 1) n.factors.forEach(f => cnt[f] = (cnt[f] || 0) + n.imp); });
-  const max = Math.max(1, ...Object.values(cnt));
-  const fac = D.factors.slice().sort((a, b) => (cnt[b.key] || 0) - (cnt[a.key] || 0)).map(f => `
-    <div class="fac-row" data-fac="${f.key}"><span>${esc(f.name)}</span>
-      <div class="bar"><div class="bar-in" style="width:${(cnt[f.key] || 0) / max * 100}%;background:var(--f-${f.key})"></div></div>
-      <span class="c num">${cnt[f.key] || 0}</span></div>`).join('');
-
-  $('#view').innerHTML = `
-    <div class="grid">
-      <div class="card">
-        <h2>⚡ 今日异动 <small>哪里动了 · 当时发生了什么</small></h2>
-        <div class="tl">${timeline}</div>
-      </div>
-      <div style="display:grid;gap:18px">
-        <div class="card"><h2>🌐 影响市场的大事 <small>近 24 小时 · 多家来源报道</small></h2>${events}</div>
-        <div class="card"><h2>🧭 因素热度 <small>近 24 小时，点击看相关快讯</small></h2><div class="fac">${fac}</div></div>
-      </div>
-    </div>`;
+function moveRow({ m, mv, i }) {
+  const n = (mv.news || []).map(x => NEWS[x.id]).find(Boolean);
+  return `<div class="li" data-mkmv="${m.id}|${i}">${bxHtml(mv.chg, m.unit)}<div class="body">
+    <div class="t">${esc(m.name)}<span>${mv.kind === 'gap' ? '开盘跳空 ' + hm(mv.end) : `${hm(mv.start)}–${hm(mv.end)}`} · ${dayLabel(mv.end)}</span></div>
+    <div class="s">${n ? esc(n.title) : '同时段没有匹配到明显相关的新闻'}</div></div></div>`;
 }
 function eventHtml(e, i) {
   const refs = e.refs.map(id => NEWS[id]).filter(Boolean);
-  return `<div class="ev" data-ev>
-    <div class="top"><span class="rk ${i < 3 ? 'hot' : ''}">${i + 1}</span><div class="tt">${esc(e.title)}</div></div>
-    <div class="sub"><span class="tm">${whenText(e.ts)}</span>${e.factors.slice(0, 2).map(facTag).join('')}${[...new Set(refs.map(r => r.src))].map(srcBadge).join('')}</div>
-    ${e.summary ? `<div class="sum">${esc(e.summary)}</div>` : ''}
-    <div class="refs">${refs.map(r => `<a href="#news/${r.id}" data-news="${r.id}">${srcBadge(r.src)}<span>${esc(r.title)}</span></a>`).join('')}</div>
-  </div>`;
+  return `<div class="li ev" data-ev><span class="rk ${i < 3 ? 'hot' : ''}">${i + 1}</span><div class="body">
+    <div class="t">${esc(e.title)}</div>
+    <div class="m"><span class="num">${whenText(e.ts)}</span>${e.factors.slice(0, 2).map(facTag).join('')}${[...new Set(refs.map(r => r.src))].map(srcBadge).join('')}</div>
+    <div class="more">${e.summary ? `<p>${esc(e.summary.slice(0, 160))}${e.summary.length > 160 ? '…' : ''}</p>` : ''}
+      ${refs.map(r => `<a href="#news/${r.id}" data-news="${r.id}">${srcBadge(r.src)}<span>${esc(r.title)}</span></a>`).join('')}</div></div></div>`;
+}
+function renderOverview() {
+  const { lines, cites } = buildSummary();
+  const mv = allMoves().sort((a, b) => Math.abs(b.mv.chg) / b.m.th - Math.abs(a.mv.chg) / a.m.th).slice(0, 8).sort((a, b) => b.mv.end - a.mv.end);
+  const since = nowTs() - 86400, cnt = {};
+  D.news.forEach(n => { if (n.ts >= since && n.imp >= 1) n.factors.forEach(f => cnt[f] = (cnt[f] || 0) + n.imp); });
+  const max = Math.max(1, ...Object.values(cnt));
+  const g = TH.tabs.find(t => t.key === 'global'), industry = g.sections.find(s => s.kind === 'theme');
+  const [ss, live] = usSession();
+  $('#view').innerHTML = `
+    <div class="row">
+      <section class="card sum"><h2>${ic('spark')}今日市场总结 <small>${D.updated.slice(5, 16).replace('T', ' ')}</small></h2>
+        <ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>
+        ${cites.length ? `<div class="srcs">${cites.map((n, i) => `<a href="#news/${n.id}" data-news="${n.id}"><span>${i + 1} · ${esc(SRC[n.src]?.name || n.src)} · ${hm(n.ts)}</span><b>${esc(n.title)}</b></a>`).join('')}</div>` : ''}
+        <div class="gen">根据行情异动和同时段新闻按规则自动生成，不是 AI 撰写；只表示时间上相关，不代表因果</div></section>
+      <section class="card"><h2>${ic('bolt')}今日异动 <small>最显著的 ${mv.length} 段</small><a class="r more-link" data-tab="market">全部 ${ic('arrow')}</a></h2>
+        ${mv.length ? mv.map(moveRow).join('') : '<div class="empty">今天各市场暂无明显异动</div>'}</section>
+    </div>
+    <section class="card" style="margin-top:14px"><h2>${ic('heat')}全球产业热力图 <small>块大小 = 美元市值（汇率近似）· 颜色 = 今日涨跌 · <span class="${live ? 'down' : ''}">${ss}</span></small><span class="r">${legend()}</span></h2>
+      <div class="pad"><div class="heat" data-heat="${industry.items.join(',')}"></div></div></section>
+    <div class="row" style="margin-bottom:40px">
+      <section class="card"><h2>${ic('globe')}影响市场的大事 <small>近 24 小时 · 多家来源报道 · 点击展开</small></h2>
+        ${D.events.slice(0, 10).map(eventHtml).join('') || '<div class="empty">暂无</div>'}</section>
+      <section class="card"><h2>${ic('compass')}因素热度 <small>近 24 小时，点击看相关快讯</small></h2><div class="fac">
+        ${D.factors.slice().sort((a, b) => (cnt[b.key] || 0) - (cnt[a.key] || 0)).map(f => `
+        <div class="fac-row" data-fac="${f.key}"><span>${esc(f.name)}</span><div class="bar"><i style="width:${(cnt[f.key] || 0) / max * 100}%;background:var(--f-${f.key})"></i></div><span class="c num">${cnt[f.key] || 0}</span></div>`).join('')}
+      </div></section>
+    </div>`;
+  drawHeats();
 }
 
 // ── 异动归因 ──
-const MV_COLORS = ['#4f8cff', '#a855f7', '#f59e0b', '#06b6d4', '#ec4899', '#84cc16'];
+const MV_COLORS = ['#2962ff', '#7b61ff', '#00b8d4', '#ff9800', '#e040fb', '#8bc34a'];
 function chartSvg(m) {
-  const W = 800, H = 260, P = { l: 8, r: 64, t: 14, b: 24 };
+  const W = 800, H = 270, P = { l: 8, r: 64, t: 14, b: 24 };
   const p = m.pts, n = p.length;
   if (n < 2) return '<div class="empty">暂无分时数据</div>';
   const vs = p.map(x => x[1]).concat(m.pre);
@@ -431,24 +628,24 @@ function chartSvg(m) {
   const idxOf = ts => { let b = 0, bd = Infinity; p.forEach((x, i) => { const d = Math.abs(x[0] - ts); if (d < bd) { bd = d; b = i; } }); return b; };
   const line = p.map((x, i) => `${X(i).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ');
   const col = m.chg >= 0 ? 'var(--up)' : 'var(--down)';
-  const area = `${X(0)},${H - P.b} ${line} ${X(n - 1)},${H - P.b}`;
+  const grid = [0, .25, .5, .75, 1].map(f => `<line x1="${P.l}" x2="${W - P.r}" y1="${P.t + f * (H - P.t - P.b)}" y2="${P.t + f * (H - P.t - P.b)}" stroke="var(--line)" stroke-width="1"/>`).join('');
   let segs = '';
   m.moves.forEach((mv, k) => {
     if (mv.kind === 'gap') return;
     const a = idxOf(mv.start), b = idxOf(mv.end), c = MV_COLORS[k % MV_COLORS.length], on = k === state.move;
-    segs += `<rect x="${X(a)}" y="${P.t}" width="${Math.max(2, X(b) - X(a))}" height="${H - P.t - P.b}" fill="${c}" opacity="${on ? .16 : .07}" data-mvi="${k}" style="cursor:pointer"/>`;
+    segs += `<rect x="${X(a)}" y="${P.t}" width="${Math.max(2, X(b) - X(a))}" height="${H - P.t - P.b}" fill="${c}" opacity="${on ? .16 : .06}" data-mvi="${k}" style="cursor:pointer"/>`;
     segs += `<polyline fill="none" stroke="${c}" stroke-width="${on ? 3 : 2}" points="${p.slice(a, b + 1).map((x, j) => `${X(a + j).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ')}"/>`;
     segs += `<g data-mvi="${k}" style="cursor:pointer"><circle cx="${X(b)}" cy="${Y(p[b][1])}" r="9" fill="${c}"/><text x="${X(b)}" y="${Y(p[b][1]) + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">${k + 1}</text></g>`;
   });
-  // 时间刻度：首尾 + 中间三个
   const ticks = [0, .25, .5, .75, 1].map(f => Math.round(f * (n - 1)));
   const tickTxt = ticks.map(i => `<text x="${X(i)}" y="${H - 6}" font-size="11" fill="var(--text-3)" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${hm(p[i][0])}</text>`).join('');
-  const yTicks = [hi - pd, (hi + lo) / 2, lo + pd].filter(v => Math.abs(Y(v) - Y(m.pre)) > 14).map(v => `<text x="${W - P.r + 6}" y="${Y(v) + 4}" font-size="11" fill="var(--text-3)" class="num">${fmtPx(v, m.dec)}</text>`).join('');
+  const yTicks = [hi - pd, (hi + lo) / 2, lo + pd].filter(v => Math.abs(Y(v) - Y(m.pre)) > 14).map(v => `<text x="${W - P.r + 6}" y="${Y(v) + 4}" font-size="11" fill="var(--text-3)">${fmtPx(v, m.dec)}</text>`).join('');
   return `<svg viewBox="0 0 ${W} ${H}" id="mkChart">
-    <defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".18"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    <defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".2"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    ${grid}
     <line x1="${P.l}" x2="${W - P.r}" y1="${Y(m.pre)}" y2="${Y(m.pre)}" stroke="var(--text-3)" stroke-dasharray="3 4" stroke-width="1"/>
     <text x="${W - P.r + 6}" y="${Y(m.pre) + 4}" font-size="10.5" fill="var(--text-3)">昨收</text>
-    <polygon points="${area}" fill="url(#ga)"/>
+    <polygon points="${X(0)},${H - P.b} ${line} ${X(n - 1)},${H - P.b}" fill="url(#ga)"/>
     <polyline fill="none" stroke="${col}" stroke-width="1.6" points="${line}"/>
     ${segs}${tickTxt}${yTicks}
     <line id="cross" x1="0" x2="0" y1="${P.t}" y2="${H - P.b}" stroke="var(--text-3)" stroke-width="1" style="display:none"/>
@@ -458,8 +655,8 @@ function reasonHtml(x) {
   const n = NEWS[x.id]; if (!n) return '';
   return `<div class="reason"><span class="tm num">${whenText(n.ts)}</span><div>
     <a class="tt" href="#news/${n.id}" data-news="${n.id}">${esc(n.title)}</a>
-    <div class="ln">${srcBadge(n.src)}${n.factors.slice(0, 3).map(facTag).join('')}</div>
     ${n.summary && n.summary !== n.title ? `<div class="sm">${esc(n.summary)}</div>` : ''}
+    <div class="ln">${srcBadge(n.src)}${n.factors.slice(0, 3).map(facTag).join('')}</div>
   </div></div>`;
 }
 function renderMarket() {
@@ -469,23 +666,23 @@ function renderMarket() {
   const list = m.moves.length ? m.moves.map((mv, k) => `
     <div class="mv-item ${k === state.move ? 'on' : ''}" data-mvi="${k}">
       <div class="head">
-        <span class="no" style="background:${mv.kind === 'gap' ? 'var(--text-3)' : MV_COLORS[k % MV_COLORS.length]}">${k + 1}</span>
-        <span class="rng num">${mv.kind === 'gap' ? '开盘 ' + whenText(mv.end) : `${whenText(mv.start)} – ${hm(mv.end)}`}</span>
-        <span class="pill num ${cls(mv.chg)}">${mv.dir > 0 ? '▲' : '▼'} ${fmtChg(mv.chg, m.unit)}</span>
-        <span class="num" style="color:var(--text-3);font-size:12px">${fmtPx(mv.from, m.dec)} → ${fmtPx(mv.to, m.dec)}</span>
-        ${mv.kind === 'gap' ? '<span class="kind">开盘跳空 · 看休市期间消息</span>' : ''}
+        ${bxHtml(mv.chg, m.unit)}
+        <div style="flex:1;min-width:0">
+          <div class="rng num"><span class="no" style="display:inline-grid;vertical-align:-5px;margin-right:6px;background:${mv.kind === 'gap' ? 'var(--text-3)' : MV_COLORS[k % MV_COLORS.length]}">${k + 1}</span>${mv.kind === 'gap' ? '开盘 ' + whenText(mv.end) : `${whenText(mv.start)} – ${hm(mv.end)}`}</div>
+          <div class="sub num">${fmtPx(mv.from, m.dec)} → ${fmtPx(mv.to, m.dec)}${mv.kind === 'gap' ? ' · 开盘跳空，看休市期间的消息' : ''} · ${mv.news.length} 条可能原因</div>
+        </div>
       </div>
-      ${k === state.move ? `<div class="reasons">${mv.news.length ? mv.news.map(reasonHtml).join('') : '<div class="nowhy" style="color:var(--text-3);font-size:13px">同时段没有匹配到明显相关的新闻，可能是资金面、技术面或尚未被报道的因素</div>'}</div>` : ''}
+      ${k === state.move ? `<div class="reasons">${mv.news.length ? mv.news.map(reasonHtml).join('') : '<div style="color:var(--text-3);font-size:13px;padding:6px 0">同时段没有匹配到明显相关的新闻，可能是资金面、技术面或尚未被报道的因素</div>'}</div>` : ''}
     </div>`).join('') : '<div class="empty">今日没有超过阈值的异动</div>';
   $('#view').innerHTML = `
-    <div class="card" style="margin:18px 0 40px">
-      <div class="mk-head"><h3>${esc(m.name)}</h3><span class="big num">${fmtPx(m.last, m.dec)}</span><span class="chg num ${cls(m.chg)}">${fmtChg(m.chg, m.unit)}</span>
+    <div class="page"><div class="card">
+      <div class="mk-head"><h3>${esc(m.name)}</h3><span class="big num">${fmtPx(m.last, m.dec)}</span><span class="pct num ${cls(m.chg)}">${fmtChg(m.chg, m.unit)}</span>
         <span class="th">异动阈值：30 分钟内 ±${m.th}${m.unit === 'bp' ? 'bp' : '%'}</span></div>
       <div class="chart">${chartSvg(m)}</div>
-      <h2 style="font-size:15px;font-weight:700;padding:10px 18px 4px">异动段与可能原因 <small style="font-weight:500;color:var(--text-3);font-size:12px">点击展开，按相关度排序</small></h2>
-      <div class="mv-list">${list}</div>
-      <div class="disclaimer">原因来自异动前 25 分钟到后 10 分钟内的新闻（跳空看休市期间 12 小时），按市场相关词、因素类型和重要度打分，是相关性提示而不是因果判断。</div>
-    </div>`;
+      <div class="ch">异动段与可能原因 <small>点击展开，按相关度排序</small></div>
+      <div>${list}</div>
+      <div class="hint" style="padding-top:12px;border-top:1px solid var(--line)">原因来自异动前 25 分钟到后 10 分钟内的新闻（跳空看休市期间 12 小时），按市场相关词、因素类型和重要度打分，是相关性提示而不是因果判断。</div>
+    </div></div>`;
   bindChart(m);
 }
 function bindChart(m) {
@@ -500,12 +697,18 @@ function bindChart(m) {
     tip.innerHTML = `<span class="num">${hm(t)}</span>　<b class="num">${fmtPx(v, m.dec)}</b>　<span class="num ${cls(c)}">${fmtChg(c, m.unit)}</span>`;
     tip.style.display = 'block';
     const px = X / 800 * r.width;
-    tip.style.left = Math.min(r.width - tip.offsetWidth, Math.max(0, px - tip.offsetWidth / 2)) + 10 + 'px'; tip.style.top = '0px';
+    tip.style.left = Math.min(r.width - tip.offsetWidth, Math.max(0, px - tip.offsetWidth / 2)) + 12 + 'px';
   });
   svg.addEventListener('mouseleave', () => { tip.style.display = 'none'; cross.style.display = 'none'; });
 }
 
-// ── 快讯 ──
+// ── 快讯：紧凑时间线 ──
+function feedItem(n, showSum = true) {
+  return `<div class="fi ${n.imp >= 2 ? 'imp' : ''}"><span class="tm num">${hm(n.ts)}${n.est ? '<span title="来源未给出时间，为首次抓到的时间">~</span>' : ''}</span><div>
+    <a class="tt" href="#news/${n.id}" data-news="${n.id}">${esc(n.title)}</a>
+    ${showSum && n.summary && n.summary !== n.title ? `<div class="sm">${esc(n.summary)}</div>` : ''}
+    <div class="ln">${srcBadge(n.src)}${n.factors.slice(0, 3).map(facTag).join('')}</div></div></div>`;
+}
 function renderFeed() {
   const q = state.q.trim().toLowerCase();
   const list = D.news.filter(n =>
@@ -513,28 +716,24 @@ function renderFeed() {
     (!state.factor || n.factors.includes(state.factor)) &&
     (!state.imp || n.imp >= 2) &&
     (!q || (n.title + n.summary).toLowerCase().includes(q)));
-  const chips = D.factors.map(f => `<button class="chip ${state.factor === f.key ? 'on' : ''}" data-f="${f.key}" style="${state.factor === f.key ? `background:var(--f-${f.key})` : ''}">${esc(f.name)}</button>`).join('');
   let html = '', lastDay = '';
   list.slice(0, state.limit).forEach(n => {
     const d = dayLabel(n.ts);
     if (d !== lastDay) { html += `<div class="day">${d}</div>`; lastDay = d; }
-    html += `<div class="fi ${n.imp >= 2 ? 'imp' : ''}"><span class="tm num">${hm(n.ts)}${n.est ? '<span title="来源未给出时间，为首次抓到的时间">~</span>' : ''}</span><div>
-      <a class="tt" href="#news/${n.id}" data-news="${n.id}">${esc(n.title)}</a>
-      ${n.summary && n.summary !== n.title ? `<div class="sm">${esc(n.summary)}</div>` : ''}
-      <div class="ln">${srcBadge(n.src)}${n.factors.map(facTag).join('')}</div></div></div>`;
+    html += feedItem(n);
   });
   $('#view').innerHTML = `
-    <div class="card feed" style="margin:18px 0 40px">
-      <h2>📰 快讯流 <small>${list.length} 条 · 近 48 小时</small></h2>
+    <div class="page"><div class="card">
+      <h2>${ic('news')}快讯 <small>${list.length} 条 · 近 48 小时 · 红条为重要</small></h2>
       <div class="filters">
+        <input class="search" id="q" placeholder="搜索快讯（按 / 聚焦）" value="${esc(state.q)}">
         <div class="seg" id="segLang">${[['all', '全部'], ['zh', '中文'], ['en', '海外']].map(([k, t]) => `<button data-l="${k}" class="${state.lang === k ? 'on' : ''}">${t}</button>`).join('')}</div>
         <button class="chip ${state.imp ? 'on' : ''}" id="chipImp" style="${state.imp ? 'background:var(--up)' : ''}">只看重要</button>
-        <input class="search" id="q" placeholder="搜索快讯（按 / 聚焦）" value="${esc(state.q)}">
       </div>
-      <div class="filters">${chips}</div>
+      <div class="filters">${D.factors.map(f => `<button class="chip ${state.factor === f.key ? 'on' : ''}" data-f="${f.key}" style="${state.factor === f.key ? `background:var(--f-${f.key})` : ''}">${esc(f.name)}</button>`).join('')}</div>
       ${html || '<div class="empty">没有符合条件的快讯</div>'}
       ${list.length > state.limit ? `<button class="more" id="more">加载更多（还有 ${list.length - state.limit} 条）</button>` : ''}
-    </div>`;
+    </div></div>`;
 }
 
 // ── 全球 / 有色 / AI：实时行情（浏览器直连东方财富，失败时用 data.json 里的快照）──
@@ -585,9 +784,8 @@ function tabIds(tab) {
   tab.sections.forEach(sec => sec.items.forEach(it => { if (sec.kind === 'quote') ids.push(it.id); else ids.push(...themeIds(TH.themes[it])); }));
   return ids;
 }
-const pctHtml = v => v == null ? '<span class="pct skel">—</span>' : `<span class="pct num ${cls(v)}">${v > 0 ? '▲' : v < 0 ? '▼' : ''} ${sign(v.toFixed(2))}%</span>`;
 const fmtBig = v => v == null ? '—' : Math.abs(v) >= 1e12 ? (v / 1e12).toFixed(2) + '万亿' : Math.abs(v) >= 1e8 ? (v / 1e8).toFixed(2) + '亿' : Math.abs(v) >= 1e4 ? (v / 1e4).toFixed(2) + '万' : String(v);
-const fmtP = v => v == null ? '—' : Number(v).toLocaleString('en-US', { maximumFractionDigits: Math.abs(v) >= 1000 ? 2 : Math.abs(v) >= 10 ? 2 : 4 });
+const fmtP = v => v == null ? '—' : Number(v).toLocaleString('en-US', Math.abs(v) >= 10 ? { minimumFractionDigits: 2, maximumFractionDigits: 2 } : { maximumFractionDigits: 4 });
 
 // 市场与交易状态
 const MKT = { 105: 'US', 106: 'US', 107: 'US', 116: 'HK', 128: 'HK', 0: 'CN', 1: 'CN', 176: 'JP', 177: 'KR', 178: 'TW' };
@@ -604,25 +802,36 @@ function usSession() {
   if (m >= 960 && m < 1200) return ['美股盘后', true];
   return ['待美股盘前', false];
 }
+const themeIco = t => ic(t.ico);
+// 板块分区视图：电脑默认热力图，手机默认卡片；用户切换后记住
+const viewMode = () => LS.get('mw-view', isPhone() ? 'cards' : 'heat');
 
 function renderBoard(key) {
-  const tab = TH.tabs.find(t => t.key === key);
+  const tab = TH.tabs.find(t => t.key === key), mode = viewMode();
   $('#view').innerHTML = `<div class="board">${tab.sections.map(sec => {
-    let st = '';
-    if (sec.session === 'us') { const [t, live] = usSession(); st = `<span class="st ${live ? 'live' : ''}"><i></i>${t}</span>`; }
-    const cards = sec.items.map(it => {
-      if (sec.kind === 'quote') {
-        const q = Q[it.id] || {};
-        return `<div class="qc" data-stock="${it.id}"><div class="n">${esc(it.name)}</div>
-          <div class="r"><b class="num">${fmtP(q.price)}</b>${pctHtml(q.pct)}</div></div>`;
-      }
-      const t = TH.themes[it];
-      const sub = t.quote ? qName(t.quote).replace('主连', '') : t.board ? 'A股板块' : `${t.stocks.length} 只`;
-      return `<div class="tc" data-th="${it}"><div class="n">${t.icon}<span>${esc(t.name)}</span><span class="sub">${esc(sub)}</span></div>${pctHtml(themePct(t))}</div>`;
-    }).join('');
-    return `<section class="sec"><div class="sec-h"><h2>${esc(sec.title)}</h2>${st}</div><div class="cards">${cards}</div></section>`;
+    let right = '';
+    if (sec.session === 'us') { const [t, live] = usSession(); right += `<span class="stt ${live ? 'live' : ''}"><i></i>${t}</span>`; }
+    if (sec.kind === 'theme') right += `<span class="vt"><button data-view="heat" class="${mode === 'heat' ? 'on' : ''}" title="热力图">${ic('heat')}</button><button data-view="cards" class="${mode === 'cards' ? 'on' : ''}" title="卡片">${ic('grid')}</button></span>`;
+    let body;
+    if (sec.kind === 'quote') {
+      body = `<div class="cards">${sec.items.map(it => {
+        const q = Q[it.id] || {}, m = D.markets.find(x => x.id === it.id);
+        return `<div class="qc" data-stock="${it.id}"><div class="n">${esc(it.name)}</div><b class="num">${fmtP(q.price)}</b>${pctHtml(q.pct)}
+          ${m ? `<svg class="sp" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline fill="none" stroke="${(q.pct ?? m.chg) >= 0 ? 'var(--up)' : 'var(--down)'}" stroke-width="1.6" points="${sparkPts(m.pts, m.pre, 100, 28)}"/></svg>` : ''}</div>`;
+      }).join('')}</div>`;
+    } else if (mode === 'heat') {
+      body = `<div class="pad"><div class="heat" data-heat="${sec.items.join(',')}"></div><div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11.5px;color:var(--text-3);gap:8px;flex-wrap:wrap"><span>点主题名看详情，点方块看个股 · 块大小 = 美元市值（汇率近似）</span>${legend()}</div></div>`;
+    } else {
+      body = `<div class="cards">${sec.items.map(k => {
+        const t = TH.themes[k];
+        const sub = t.quote ? qName(t.quote).replace('主连', '') : t.board ? 'A股板块' : `${t.stocks.length} 只成分股`;
+        return `<div class="tc" data-th="${k}"><span class="ico">${themeIco(t)}</span><div class="n"><b>${esc(t.name)}</b><span>${esc(sub)}</span></div>${pctHtml(themePct(t))}</div>`;
+      }).join('')}</div>`;
+    }
+    return `<section class="card"><div class="sec-h"><h2>${esc(sec.title)}</h2><div class="r">${right}</div></div>${body}</section>`;
   }).join('')}
-  <div style="text-align:center;color:var(--text-3);font-size:12px">点任意卡片查看详情 · 产业主题按成分股等权平均，有色金属用上期所主连 · 行情 30 秒刷新，仅供参考，不构成投资建议</div></div>`;
+  <div class="board-foot">产业主题按成分股等权平均，有色金属用上期所主连 · 行情 30 秒刷新 · 仅供参考，不构成投资建议</div></div>`;
+  drawHeats();
 }
 
 // ── 主题详情 ──
@@ -647,12 +856,7 @@ function newsFor(re, limit = 15) {
   }
   return out;
 }
-function newsListHtml(list) {
-  if (!list.length) return '<div class="empty">近 48 小时快讯里没有相关消息</div>';
-  return list.map(n => `<div class="fi ${n.imp >= 2 ? 'imp' : ''}"><span class="tm num">${hm(n.ts)}</span><div>
-    <a class="tt" href="#news/${n.id}" data-news="${n.id}">${esc(n.title)}</a>
-    <div class="ln">${srcBadge(n.src)}<span style="color:var(--text-3);font-size:12px">${dayLabel(n.ts)}</span>${n.factors.slice(0, 2).map(facTag).join('')}</div></div></div>`).join('');
-}
+const newsListHtml = list => list.length ? list.map(n => feedItem(n, false)).join('') : '<div class="empty">近 48 小时快讯里没有相关消息</div>';
 function parentTab(themeKey) { return TH.tabs.find(t => t.sections.some(s => s.items.includes(themeKey)))?.key || 'global'; }
 const DETAIL = { chart: null, period: 'trend', id: null, profile: {}, news: {}, expand: false };
 
@@ -662,23 +866,25 @@ function renderTheme(key, keep) {   // keep：30 秒刷新时只更新数字，�
   const v = themePct(t), main = t.quote || t.board;
   const rows = t.stocks.map(id => ({ id, q: Q[id] || {} })).sort((a, b) => (b.q.pct ?? -1e9) - (a.q.pct ?? -1e9));
   const mq = main ? Q[main] || {} : null;
-  const re = kwRe(t.kw);
+  const pk = parentTab(key);
   $('#view').innerHTML = `<div class="page">
-    <div><button class="back" data-back="${parentTab(key)}">← 返回${esc(TH.tabs.find(x => x.key === parentTab(key)).name)}</button></div>
+    <div><button class="back" data-back="${pk}">${ic('back')}返回${esc(TH.tabs.find(x => x.key === pk).name)}</button></div>
     <div class="card">
-      <div class="ph"><span class="ic">${t.icon}</span><div>
+      <div class="ph"><span class="big-ico">${themeIco(t)}</span><div>
         <h1>${esc(t.name)}<small>${t.quote ? esc(qName(t.quote)) + ' · 上期所' : t.board ? 'A股板块指数' : `${t.stocks.length} 只成分股等权平均`}</small></h1>
         <div class="px">${mq ? `<b class="num">${fmtP(mq.price)}</b>` : ''}${pctHtml(v)}</div></div>
-        ${t.note ? `<div class="note">ℹ️ ${esc(t.note)}</div>` : ''}</div>
+        ${t.note ? `<div class="note">${esc(t.note)}</div>` : ''}</div>
       ${main ? `<div class="chart" id="dchart"><div class="empty">分时加载中…</div></div>` : ''}
     </div>
-    <div class="card"><h2>相关股票 <small>点击查看个股详情 · 按今日涨跌排序</small></h2>
+    <div class="card"><h2>${ic('heat')}成分股热力图 <small>块大小 = 美元市值 · 点击看个股</small><span class="r">${legend()}</span></h2><div class="pad"><div class="heat" data-one="${key}"></div></div></div>
+    <div class="card"><h2>相关股票 <small>按今日涨跌排序</small></h2>
       <table class="st"><thead><tr><th>名称</th><th>最新价</th><th>涨跌幅</th><th class="hide-m">总市值</th></tr></thead><tbody>
       ${rows.map(({ id, q }) => `<tr data-stock="${id}"><td><div class="nm"><span class="mtag">${MKT_NAME[mktOf(id)] || ''}</span>${esc(qName(id))}<span class="cd">${esc(id.split('.')[1])}</span></div></td>
-        <td class="num">${fmtP(q.price)}</td><td>${pctHtml(q.pct)}</td><td class="num hide-m">${fmtCap(q.cap, id)}</td></tr>`).join('')}
+        <td class="num">${fmtP(q.price)}</td><td>${chgBlock(q.pct)}</td><td class="num hide-m" style="color:var(--text-2)">${fmtCap(q.cap, id)}</td></tr>`).join('')}
       </tbody></table></div>
-    <div class="card feed"><h2>相关快讯 <small>近 48 小时 · 按关键词匹配</small></h2>${newsListHtml(newsFor(re))}</div>
+    <div class="card"><h2>相关快讯 <small>近 48 小时 · 按关键词匹配</small></h2>${newsListHtml(newsFor(kwRe(t.kw)))}</div>
   </div>`;
+  drawHeats();
   if (keep) { if (keep.chart && $('#dchart')) $('#dchart').innerHTML = keep.chart; }
   else if (main) loadChart(main, 'trend', '#dchart');
 }
@@ -703,6 +909,7 @@ async function loadChart(id, period, sel) {
     if (DETAIL.chartKey === key && $(sel)) $(sel).innerHTML = data.kind === 'trend' ? trendSvg(data) : klineSvg(data.k);
   } catch { if (DETAIL.chartKey === key && $(sel)) $(sel).innerHTML = '<div class="empty">图表数据暂时取不到</div>'; }
 }
+const gridLines = (W, H, P) => [0, .25, .5, .75, 1].map(f => `<line x1="${P.l}" x2="${W - P.r}" y1="${P.t + f * (H - P.t - P.b)}" y2="${P.t + f * (H - P.t - P.b)}" stroke="var(--line)"/>`).join('');
 function trendSvg({ pre, pts }) {
   const W = 800, H = 240, P = { l: 8, r: 64, t: 12, b: 22 }, n = pts.length;
   const vs = pts.map(p => p[1]).concat(pre); let lo = Math.min(...vs), hi = Math.max(...vs); const pd = (hi - lo) * 0.08 || 1; lo -= pd; hi += pd;
@@ -710,12 +917,14 @@ function trendSvg({ pre, pts }) {
   const last = pts[n - 1][1], col = last >= pre ? 'var(--up)' : 'var(--down)';
   const line = pts.map((p, i) => `${X(i).toFixed(1)},${Y(p[1]).toFixed(1)}`).join(' ');
   const ticks = [0, .5, 1].map(f => Math.round(f * (n - 1)));
-  return `<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="gt" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".18"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+  return `<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="gt" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".2"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    ${gridLines(W, H, P)}
     <line x1="${P.l}" x2="${W - P.r}" y1="${Y(pre)}" y2="${Y(pre)}" stroke="var(--text-3)" stroke-dasharray="3 4"/>
     <text x="${W - P.r + 6}" y="${Y(pre) + 4}" font-size="11" fill="var(--text-3)">${fmtP(pre)}</text>
-    <text x="${W - P.r + 6}" y="${Y(last) + 4}" font-size="11" fill="${col}" font-weight="700">${fmtP(last)}</text>
     <polygon points="${X(0)},${H - P.b} ${line} ${X(n - 1)},${H - P.b}" fill="url(#gt)"/>
     <polyline fill="none" stroke="${col}" stroke-width="1.6" points="${line}"/>
+    <rect x="${W - P.r + 2}" y="${Y(last) - 9}" width="${P.r - 4}" height="18" rx="4" fill="${col}"/>
+    <text x="${W - P.r + P.r / 2}" y="${Y(last) + 4}" font-size="11" fill="#fff" font-weight="700" text-anchor="middle">${fmtP(last)}</text>
     ${ticks.map(i => `<text x="${X(i)}" y="${H - 5}" font-size="11" fill="var(--text-3)" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${pts[i][0]}</text>`).join('')}</svg>`;
 }
 function klineSvg(k) {
@@ -725,7 +934,7 @@ function klineSvg(k) {
   const bars = k.map((x, i) => { const c = x.c >= x.o ? 'var(--up)' : 'var(--down)', y1 = Y(Math.max(x.o, x.c)), y2 = Y(Math.min(x.o, x.c));
     return `<line x1="${X(i)}" x2="${X(i)}" y1="${Y(x.h)}" y2="${Y(x.l)}" stroke="${c}"/><rect x="${X(i) - cw * 0.35}" y="${y1}" width="${cw * 0.7}" height="${Math.max(1, y2 - y1)}" fill="${c}"/>`; }).join('');
   const ticks = [0, Math.floor(n / 2), n - 1];
-  return `<svg viewBox="0 0 ${W} ${H}">${bars}
+  return `<svg viewBox="0 0 ${W} ${H}">${gridLines(W, H, P)}${bars}
     ${[hi - pd, (hi + lo) / 2, lo + pd].map(v => `<text x="${W - P.r + 6}" y="${Y(v) + 4}" font-size="11" fill="var(--text-3)">${fmtP(v)}</text>`).join('')}
     ${ticks.map(i => `<text x="${X(i)}" y="${H - 5}" font-size="11" fill="var(--text-3)" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${k[i].t}</text>`).join('')}</svg>`;
 }
@@ -757,7 +966,7 @@ function renderStock(id, keep) {
   const kw = coreName(name), code = id.split('.')[1];
   const re = kw.length >= 2 ? new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + (mk === 'US' ? `|\\b${code}\\b` : ''), 'i') : null;
   $('#view').innerHTML = `<div class="page">
-    <div><button class="back" data-back="">← 返回</button></div>
+    <div><button class="back" data-back="">${ic('back')}返回</button></div>
     <div class="card">
       <div class="ph"><div>
         <h1>${esc(name)}<small>${mk ? `<span class="mtag">${MKT_NAME[mk]}</span> ` : ''}${esc(code)}${q.ind ? ' · ' + esc(q.ind) : ''}</small></h1>
@@ -768,10 +977,10 @@ function renderStock(id, keep) {
         <span style="font-size:12px;color:var(--text-3)">${DETAIL.period === 'trend' ? '当日分时' : '前复权 · 最近 120 根'}</span></div>
       <div class="chart" id="dchart"><div class="empty">图表加载中…</div></div>`}
     </div>
-    ${inThemes.length ? `<div class="card"><h2>所属主题</h2><div class="chips">${inThemes.map(([k, t]) => `<a href="#theme/${k}" data-th="${k}">${t.icon} ${esc(t.name)} ${pctHtml(themePct(t))}</a>`).join('')}</div></div>` : ''}
+    ${inThemes.length ? `<div class="card"><h2>所属主题</h2><div class="chips">${inThemes.map(([k, t]) => `<a href="#theme/${k}" data-th="${k}">${themeIco(t)}${esc(t.name)} ${chgBlock(themePct(t))}</a>`).join('')}</div></div>` : ''}
     ${company ? `<div class="card" id="profile"><h2>公司简介 <small>东方财富 F10</small></h2><div class="empty">加载中…</div></div>` : ''}
-    <div class="card feed"><h2>相关快讯 <small>本站快讯库 · 按「${esc(kw)}」匹配</small></h2>${re ? newsListHtml(newsFor(re, 12)) : '<div class="empty">暂无</div>'}
-      <a class="linkbtn" href="https://so.eastmoney.com/news/s?keyword=${encodeURIComponent(kw)}" target="_blank" rel="noopener" style="padding-top:12px">在东方财富搜更多「${esc(kw)}」资讯 →</a></div>
+    <div class="card"><h2>相关快讯 <small>本站快讯库 · 按「${esc(kw)}」匹配</small></h2>${re ? newsListHtml(newsFor(re, 12)) : '<div class="empty">暂无</div>'}
+      <a class="linkbtn" href="https://so.eastmoney.com/news/s?keyword=${encodeURIComponent(kw)}" target="_blank" rel="noopener" style="padding-top:12px">在东方财富搜更多「${esc(kw)}」资讯 ${ic('ext')}</a></div>
   </div>`;
   if (keep) {
     if (keep.chart && $('#dchart')) $('#dchart').innerHTML = keep.chart;
@@ -801,21 +1010,31 @@ async function paintProfile(id) {
 
 // 当前页面需要的行情 id
 function viewIds() {
-  if (['global', 'metals', 'ai'].includes(state.tab)) return tabIds(TH.tabs.find(t => t.key === state.tab));
+  if (BOARDS.includes(state.tab)) return tabIds(TH.tabs.find(t => t.key === state.tab));
   if (state.tab === 'theme' && TH.themes[state.theme]) return themeIds(TH.themes[state.theme]);
   if (state.tab === 'stock') return [state.stock];
+  if (state.tab === 'overview') {   // 总览的热力图和总结也用实时行情
+    const g = TH.tabs.find(t => t.key === 'global');
+    return [...tabIds(g)];
+  }
   return [];
 }
 async function refreshQuotes(force) {
   const ids = viewIds(); if (!ids.length) return;
   await fetchQuotes(ids, force);
-  // 详情页只更新数字区域，不重画图表
+  // 只更新数字和热力图，不重画详情页图表、不打断展开状态
   const y = scrollY, keep = { chart: $('#dchart')?.innerHTML, prof: $('#profile')?.innerHTML };
   if (state.tab === 'stock') renderStock(state.stock, keep);
   else if (state.tab === 'theme') renderTheme(state.theme, keep);
-  else if (['global', 'metals', 'ai'].includes(state.tab)) renderBoard(state.tab);
+  else if (BOARDS.includes(state.tab)) renderBoard(state.tab);
+  else if (state.tab === 'overview') {
+    const open = [...document.querySelectorAll('.ev')].map((e, i) => e.classList.contains('open') ? i : -1).filter(i => i >= 0);
+    renderOverview();
+    const evs = document.querySelectorAll('.ev'); open.forEach(i => evs[i]?.classList.add('open'));
+  }
   scrollTo(0, y);
 }
+
 // ── 新闻详情（站内）──
 // 这几家的文章页允许被内嵌，实测能正常显示；其余（新浪没有单条文章页，海外媒体禁止内嵌或要人机验证）只给原文按钮
 const EMBED = ['eastmoney', 'ths', 'wscn', 'gelonghui'];
@@ -835,7 +1054,7 @@ function reaction(n) {
 function renderNews(id) {
   const n = NEWS[id];
   if (!n) {
-    $('#view').innerHTML = `<div class="page"><div><button class="back" data-back="">← 返回</button></div>
+    $('#view').innerHTML = `<div class="page"><div><button class="back" data-back="">${ic('back')}返回</button></div>
       <div class="card"><div class="empty">这条消息已超过 48 小时，不在本站快讯库里了</div></div></div>`;
     return;
   }
@@ -846,30 +1065,26 @@ function renderNews(id) {
   D.markets.forEach(m => m.moves.forEach((mv, i) => { if (mv.news.some(x => x.id === id)) moves.push({ m, mv, i }); }));
   const ev = D.events.find(e => e.refs.includes(id));
   const others = ev ? ev.refs.filter(r => r !== id).map(r => NEWS[r]).filter(Boolean) : [];
-  const full = n.title + ' ' + n.summary;
-  const themes = Object.entries(TH.themes).filter(([, t]) => kwRe(t.kw).test(full)).slice(0, 8);
+  const themes = Object.entries(TH.themes).filter(([, t]) => kwRe(t.kw).test(n.title + ' ' + n.summary)).slice(0, 8);
   const embed = EMBED.includes(n.src) && /^https?:\/\//.test(n.url);
   $('#view').innerHTML = `<div class="page">
-    <div><button class="back" data-back="">← 返回</button></div>
-    <article class="card art">
+    <div><button class="back" data-back="">${ic('back')}返回</button></div>
+    <article class="card art"><div class="art-in">
       <div class="art-meta">${srcBadge(n.src)}<span>${esc(s.name || n.src)}</span><span class="num">${whenText(n.ts)}${n.est ? ' 前后' : ''}</span>${n.imp >= 2 ? '<span class="impt">重要</span>' : ''}${n.factors.map(facTag).join('')}</div>
       <h1 class="art-t">${esc(n.title)}</h1>
       ${text ? `<div class="art-body">${esc(text)}</div>` : ''}
-      ${n.lang === 'en' ? `<div class="art-note">海外媒体只提供标题${text ? '和摘要' : ''}，全文请到原站阅读${s.paywall ? '（🔒 收费）' : ''}</div>` : ''}
-      <div class="art-act"><a class="btn" href="${esc(n.url)}" target="_blank" rel="noopener">阅读原文 ↗</a></div>
-    </article>
-    ${rx.length ? `<div class="card"><h2>📈 发布后的行情 <small>发布时刻 → 30 分钟后 · 只是时间先后，不代表因果</small></h2>
+      ${n.lang === 'en' ? `<div class="art-note">${ic('info')}海外媒体只提供标题${text ? '和摘要' : ''}，全文请到原站阅读${s.paywall ? '（收费）' : ''}</div>` : ''}
+      <a class="btn" href="${esc(n.url)}" target="_blank" rel="noopener">阅读原文 ${ic('ext')}</a>
+    </div></article>
+    ${rx.length ? `<div class="card"><h2>${ic('chartline')}发布后的行情 <small>发布时刻 → 30 分钟后 · 只是时间先后，不代表因果</small></h2>
       <table class="st"><thead><tr><th>品种</th><th>发布时</th><th>30 分钟后</th><th>变化</th></tr></thead><tbody>
       ${rx.map(r => `<tr data-mk="${r.m.id}"><td><div class="nm">${esc(r.m.name)}</div></td><td class="num">${fmtPx(r.at[1], r.m.dec)} <span class="cd">${hm(r.at[0])}</span></td>
-        <td class="num">${fmtPx(r.later[1], r.m.dec)} <span class="cd">${hm(r.later[0])}</span></td><td><span class="pct num ${cls(r.c)}">${fmtChg(+r.c.toFixed(2), r.m.unit)}</span></td></tr>`).join('')}
+        <td class="num">${fmtPx(r.later[1], r.m.dec)} <span class="cd">${hm(r.later[0])}</span></td><td>${chgBlock(+r.c.toFixed(2), r.m.unit)}</td></tr>`).join('')}
       </tbody></table></div>` : ''}
-    ${moves.length ? `<div class="card"><h2>⚡ 被列为这些异动的可能原因</h2><div class="tl">${moves.map(({ m, mv, i }) => `
-      <div class="mv-card" data-mk="${m.id}" data-mv="${i}"><div class="when"><b class="num">${mv.kind === 'gap' ? '开盘 ' + hm(mv.end) : `${hm(mv.start)}–${hm(mv.end)}`}</b>${dayLabel(mv.end)}</div>
-        <div><div class="head"><span class="mk">${esc(m.name)}</span><span class="pill num ${cls(mv.chg)}">${mv.dir > 0 ? '▲' : '▼'} ${fmtChg(mv.chg, m.unit)}</span></div></div></div>`).join('')}</div></div>` : ''}
-    ${others.length ? `<div class="card feed"><h2>🗞 同一事件的其他报道</h2>${others.map(o => `<div class="fi"><span class="tm num">${hm(o.ts)}</span><div>
-      <a class="tt" href="#news/${o.id}" data-news="${o.id}">${esc(o.title)}</a><div class="ln">${srcBadge(o.src)}</div></div></div>`).join('')}</div>` : ''}
-    ${themes.length ? `<div class="card"><h2>🏷 相关主题</h2><div class="chips">${themes.map(([k, t]) => `<a href="#theme/${k}" data-th="${k}">${t.icon} ${esc(t.name)} ${pctHtml(themePct(t))}</a>`).join('')}</div></div>` : ''}
-    ${embed ? `<div class="card"><h2>📄 原文 <small>${esc(s.name)} 原站页面</small><span class="r"><a class="linkbtn" style="padding:0" href="${esc(n.url)}" target="_blank" rel="noopener">打不开？新窗口打开 ↗</a></span></h2>
+    ${moves.length ? `<div class="card"><h2>${ic('bolt')}被列为这些异动的可能原因</h2>${moves.map(moveRow).join('')}</div>` : ''}
+    ${others.length ? `<div class="card"><h2>${ic('news')}同一事件的其他报道</h2>${others.map(o => feedItem(o, false)).join('')}</div>` : ''}
+    ${themes.length ? `<div class="card"><h2>相关主题</h2><div class="chips">${themes.map(([k, t]) => `<a href="#theme/${k}" data-th="${k}">${themeIco(t)}${esc(t.name)} ${chgBlock(themePct(t))}</a>`).join('')}</div></div>` : ''}
+    ${embed ? `<div class="card"><h2>原文 <small>${esc(s.name)} 原站页面</small><a class="r more-link" href="${esc(n.url)}" target="_blank" rel="noopener">打不开？新窗口打开 ${ic('ext')}</a></h2>
       <iframe class="orig" src="${esc(n.url)}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></div>` : ''}
   </div>`;
 }
@@ -877,10 +1092,12 @@ function renderNews(id) {
 // ── 路由与交互 ──
 const BOARDS = ['global', 'metals', 'ai'];
 function render() {
-  if (['global', 'metals', 'ai'].includes(state.tab)) state.from = state.tab;
+  if (BOARDS.includes(state.tab)) state.from = state.tab;
   if (!['theme', 'stock', 'news'].includes(state.tab)) state.top = state.tab;    // 详情页高亮进入前所在的标签
   const hl = state.tab === 'theme' ? parentTab(state.theme) : ['stock', 'news'].includes(state.tab) ? state.top : state.tab;
-  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === hl));
+  document.querySelectorAll('nav.tabs [data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === hl));
+  // 底部标签栏没有「异动归因」，归到总览
+  document.querySelectorAll('nav.tabbar [data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === (hl === 'market' ? 'overview' : hl)));
   const showTicker = state.tab === 'overview' || state.tab === 'market';
   $('#ticker').style.display = showTicker ? '' : 'none';
   if (showTicker) renderTicker();
@@ -928,14 +1145,16 @@ document.addEventListener('click', e => {
   if (sk) return go({ tab: 'stock', stock: sk.dataset.stock });
   const bk = t.closest('[data-back]');
   if (bk) { if (state.depth > 0) { state.depth--; history.back(); } else go({ tab: bk.dataset.back || state.from || 'global' }); return; }
+  const vw = t.closest('[data-view]');
+  if (vw) { LS.set('mw-view', vw.dataset.view); return renderBoard(state.tab); }
   const pd = t.closest('[data-period]');
   if (pd) { DETAIL.period = pd.dataset.period; document.querySelectorAll('#periods button').forEach(b => b.classList.toggle('on', b === pd));
     $('#dchart').innerHTML = '<div class="empty">图表加载中…</div>'; return loadChart(state.stock, DETAIL.period, '#dchart'); }
   if (t.closest('[data-expand]')) { DETAIL.expand = !DETAIL.expand; return paintProfile(state.stock); }
-  const tab = t.closest('nav.tabs button');
-  if (tab) return go({ tab: tab.dataset.tab, ...(tab.dataset.tab === 'market' && !state.market ? { market: defaultMarket(), move: 0 } : {}) });
-  const card = t.closest('.mv-card');
-  if (card) return go({ tab: 'market', market: card.dataset.mk, move: +card.dataset.mv });
+  const tab = t.closest('[data-tab]');
+  if (tab) { e.preventDefault(); return go({ tab: tab.dataset.tab, ...(tab.dataset.tab === 'market' && !state.market ? { market: defaultMarket(), move: 0 } : {}) }); }
+  const mm = t.closest('[data-mkmv]');
+  if (mm) { const [mk, i] = mm.dataset.mkmv.split('|'); return go({ tab: 'market', market: mk, move: +i }); }
   const tk = t.closest('[data-mk]');
   if (tk) return go({ tab: 'market', market: tk.dataset.mk, move: 0 });
   const mvi = t.closest('[data-mvi]');
@@ -961,6 +1180,8 @@ document.addEventListener('keydown', e => {
   if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); if (state.tab !== 'feed') go({ tab: 'feed' }); $('#q')?.focus(); }
 });
 window.addEventListener('popstate', () => { readHash(); render(); if (viewIds().length) refreshQuotes(true); });
+let rsTimer;
+window.addEventListener('resize', () => { clearTimeout(rsTimer); rsTimer = setTimeout(() => { if (D) drawHeats(); }, 150); });
 
 // 异动归因默认打开上证指数；看过别的品种就打开上次看的那个
 function defaultMarket() {
@@ -969,16 +1190,19 @@ function defaultMarket() {
   return D.markets.some(m => m.id === '1.000001') ? '1.000001' : D.markets[0]?.id;
 }
 
-// 主题
-function applyTheme(t) { document.documentElement.dataset.theme = t; $('#btnTheme').textContent = t === 'dark' ? '☾' : '☀'; }
+// 深浅色
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  $('#btnTheme').innerHTML = ic(t === 'dark' ? 'moon' : 'sun');
+}
 applyTheme(LS.get('mw-theme', matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
-$('#btnTheme').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; LS.set('mw-theme', t); applyTheme(t); };
+$('#btnTheme').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; LS.set('mw-theme', t); applyTheme(t); if (D) drawHeats(); };
 
 // 来源状态
 $('#btnSrc').onclick = () => {
   const dlg = $('#dlgSrc');
-  dlg.innerHTML = `<h3>📡 来源状态</h3><p>更新于 ${esc(D.updated.replace('T', ' ').slice(0, 16))}（北京时间）。🔒 为收费媒体，只取标题与摘要。</p>
-    ${D.sources.map(s => `<div class="src-row"><span>${s.ok ? '✅' : '⚠️'}</span><span>${esc(s.name)}${s.paywall ? ' 🔒' : ''}</span><span class="num" style="color:var(--text-3)">${s.count}</span>${s.error ? `<span class="err">${esc(s.error)}</span>` : ''}</div>`).join('')}
+  dlg.innerHTML = `<h3>来源状态</h3><p>更新于 ${esc(D.updated.replace('T', ' ').slice(0, 16))}（北京时间）。带锁图标的是收费媒体，只取标题与摘要。</p>
+    ${D.sources.map(s => `<div class="src-row"><span class="dot" style="background:${s.ok ? 'var(--down)' : 'var(--up)'}"></span><span>${esc(s.name)}${s.paywall ? '（收费）' : ''}</span><span class="num" style="color:var(--text-3)">${s.count}</span>${s.error ? `<span class="err">${esc(s.error)}</span>` : ''}</div>`).join('')}
     <button class="close" onclick="this.closest('dialog').close()">关闭</button>`;
   dlg.showModal();
 };
@@ -999,7 +1223,7 @@ async function load() {
     if (state.tab === 'market' && !D.markets.some(m => m.id === state.market)) state.market = defaultMarket();
     render();
     if (viewIds().length) refreshQuotes(true);
-  } else if (state.tab === 'overview' || state.tab === 'market') render();   // 定时重读：快讯页、详情页不打断
+  } else if (state.tab === 'market') render();   // 定时重读：总览由行情刷新带动，快讯页、详情页不打断
 }
 let first = true;
 load();
