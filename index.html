@@ -234,6 +234,19 @@
     .chips a { font-size: 13px; padding: 5px 10px; border-radius: 8px; background: var(--panel-2); box-shadow: 0 0 0 1px var(--line); display: inline-flex; gap: 6px; }
     .chips a:hover { box-shadow: 0 0 0 1px var(--line-2); }
 
+    /* 新闻详情 */
+    .art { padding: 20px 22px; }
+    .art-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--text-3); font-size: 13px; }
+    .impt { font-size: 11px; font-weight: 700; color: #fff; background: var(--up); border-radius: 4px; padding: 0 6px; }
+    .art-t { font-size: 22px; line-height: 1.45; font-weight: 800; margin: 12px 0 14px; }
+    .art-body { font-size: 15.5px; line-height: 1.9; color: var(--text-1); white-space: pre-wrap; }
+    .art-note { margin-top: 12px; font-size: 13px; color: var(--text-3); background: var(--panel-2); border-radius: 8px; padding: 8px 12px; }
+    .art-act { margin-top: 16px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; font-weight: 600; font-size: 13.5px; padding: 8px 14px; border-radius: 8px; }
+    .btn:hover { filter: brightness(1.1); }
+    iframe.orig { display: block; width: 100%; height: 80vh; border: 0; border-top: 1px solid var(--line); border-radius: 0 0 14px 14px; background: #fff; }
+    .fi .sm, .ev .sum { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
     footer { color: var(--text-3); font-size: 12px; text-align: center; padding: 10px 16px 40px; }
     footer a { color: var(--text-2); text-decoration: underline; text-underline-offset: 2px; }
 
@@ -294,7 +307,7 @@
 
 <footer>
   异动按「30 分钟内涨跌超过阈值」检测，原因是同时段新闻按相关度匹配出来的<b>可能因素</b>，不构成因果判断或投资建议。<br>
-  数据：东方财富（行情）、新浪财经、华尔街见闻、东方财富、同花顺、格隆汇、Bloomberg、Reuters、WSJ、FT、CNBC 等。收费媒体只展示标题与摘要，点击跳转原文。
+  数据：东方财富（行情）、新浪财经、华尔街见闻、东方财富、同花顺、格隆汇、Bloomberg、Reuters、WSJ、FT、CNBC 等。点快讯进入站内详情；东财、同花顺、见闻、格隆汇在详情页内嵌原文，收费媒体只展示标题与摘要。
 </footer>
 
 <dialog id="dlgSrc"></dialog>
@@ -358,7 +371,7 @@ function allMoves() {
 function whyLines(mv, n = 2) {
   const items = (mv.news || []).slice(0, n).map(x => NEWS[x.id]).filter(Boolean);
   if (!items.length) return `<div class="nowhy">同时段没有匹配到明显相关的新闻</div>`;
-  return items.map(it => `<a href="${esc(it.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${srcBadge(it.src)}<span class="t">${esc(it.title)}</span></a>`).join('');
+  return items.map(it => `<a href="#news/${it.id}" data-news="${it.id}">${srcBadge(it.src)}<span class="t">${esc(it.title)}</span></a>`).join('');
 }
 function renderOverview() {
   // 异动：按幅度相对阈值的倍数排序，取最显著的 14 个
@@ -402,7 +415,7 @@ function eventHtml(e, i) {
     <div class="top"><span class="rk ${i < 3 ? 'hot' : ''}">${i + 1}</span><div class="tt">${esc(e.title)}</div></div>
     <div class="sub"><span class="tm">${whenText(e.ts)}</span>${e.factors.slice(0, 2).map(facTag).join('')}${[...new Set(refs.map(r => r.src))].map(srcBadge).join('')}</div>
     ${e.summary ? `<div class="sum">${esc(e.summary)}</div>` : ''}
-    <div class="refs">${refs.map(r => `<a href="${esc(r.url)}" target="_blank" rel="noopener">${srcBadge(r.src)}<span>${esc(r.title)}</span></a>`).join('')}</div>
+    <div class="refs">${refs.map(r => `<a href="#news/${r.id}" data-news="${r.id}">${srcBadge(r.src)}<span>${esc(r.title)}</span></a>`).join('')}</div>
   </div>`;
 }
 
@@ -444,7 +457,7 @@ function chartSvg(m) {
 function reasonHtml(x) {
   const n = NEWS[x.id]; if (!n) return '';
   return `<div class="reason"><span class="tm num">${whenText(n.ts)}</span><div>
-    <a class="tt" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a>
+    <a class="tt" href="#news/${n.id}" data-news="${n.id}">${esc(n.title)}</a>
     <div class="ln">${srcBadge(n.src)}${n.factors.slice(0, 3).map(facTag).join('')}</div>
     ${n.summary && n.summary !== n.title ? `<div class="sm">${esc(n.summary)}</div>` : ''}
   </div></div>`;
@@ -506,7 +519,7 @@ function renderFeed() {
     const d = dayLabel(n.ts);
     if (d !== lastDay) { html += `<div class="day">${d}</div>`; lastDay = d; }
     html += `<div class="fi ${n.imp >= 2 ? 'imp' : ''}"><span class="tm num">${hm(n.ts)}${n.est ? '<span title="来源未给出时间，为首次抓到的时间">~</span>' : ''}</span><div>
-      <a class="tt" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a>
+      <a class="tt" href="#news/${n.id}" data-news="${n.id}">${esc(n.title)}</a>
       ${n.summary && n.summary !== n.title ? `<div class="sm">${esc(n.summary)}</div>` : ''}
       <div class="ln">${srcBadge(n.src)}${n.factors.map(facTag).join('')}</div></div></div>`;
   });
@@ -637,7 +650,7 @@ function newsFor(re, limit = 15) {
 function newsListHtml(list) {
   if (!list.length) return '<div class="empty">近 48 小时快讯里没有相关消息</div>';
   return list.map(n => `<div class="fi ${n.imp >= 2 ? 'imp' : ''}"><span class="tm num">${hm(n.ts)}</span><div>
-    <a class="tt" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a>
+    <a class="tt" href="#news/${n.id}" data-news="${n.id}">${esc(n.title)}</a>
     <div class="ln">${srcBadge(n.src)}<span style="color:var(--text-3);font-size:12px">${dayLabel(n.ts)}</span>${n.factors.slice(0, 2).map(facTag).join('')}</div></div></div>`).join('');
 }
 function parentTab(themeKey) { return TH.tabs.find(t => t.sections.some(s => s.items.includes(themeKey)))?.key || 'global'; }
@@ -803,24 +816,84 @@ async function refreshQuotes(force) {
   else if (['global', 'metals', 'ai'].includes(state.tab)) renderBoard(state.tab);
   scrollTo(0, y);
 }
+// ── 新闻详情（站内）──
+// 这几家的文章页允许被内嵌，实测能正常显示；其余（新浪没有单条文章页，海外媒体禁止内嵌或要人机验证）只给原文按钮
+const EMBED = ['eastmoney', 'ths', 'wscn', 'gelonghui'];
+function reaction(n) {
+  const rows = [];
+  (n.mk || []).forEach(id => {
+    const m = D.markets.find(x => x.id === id); if (!m || m.pts.length < 2) return;
+    const p = m.pts, first = p[0][0], last = p[p.length - 1][0];
+    if (n.ts < first - 600 || n.ts > last) return;            // 发布时不在这个品种的交易时段内
+    const at = p.find(x => x[0] >= n.ts) || p[p.length - 1];
+    const later = p.filter(x => x[0] <= n.ts + 1800).pop() || at;
+    const c = m.unit === 'bp' ? (later[1] - at[1]) * 100 : (later[1] / at[1] - 1) * 100;
+    rows.push({ m, at, later, c });
+  });
+  return rows;
+}
+function renderNews(id) {
+  const n = NEWS[id];
+  if (!n) {
+    $('#view').innerHTML = `<div class="page"><div><button class="back" data-back="">← 返回</button></div>
+      <div class="card"><div class="empty">这条消息已超过 48 小时，不在本站快讯库里了</div></div></div>`;
+    return;
+  }
+  const s = SRC[n.src] || {};
+  const text = n.summary && n.summary !== n.title ? n.summary : '';
+  const rx = reaction(n);
+  const moves = [];
+  D.markets.forEach(m => m.moves.forEach((mv, i) => { if (mv.news.some(x => x.id === id)) moves.push({ m, mv, i }); }));
+  const ev = D.events.find(e => e.refs.includes(id));
+  const others = ev ? ev.refs.filter(r => r !== id).map(r => NEWS[r]).filter(Boolean) : [];
+  const full = n.title + ' ' + n.summary;
+  const themes = Object.entries(TH.themes).filter(([, t]) => kwRe(t.kw).test(full)).slice(0, 8);
+  const embed = EMBED.includes(n.src) && /^https?:\/\//.test(n.url);
+  $('#view').innerHTML = `<div class="page">
+    <div><button class="back" data-back="">← 返回</button></div>
+    <article class="card art">
+      <div class="art-meta">${srcBadge(n.src)}<span>${esc(s.name || n.src)}</span><span class="num">${whenText(n.ts)}${n.est ? ' 前后' : ''}</span>${n.imp >= 2 ? '<span class="impt">重要</span>' : ''}${n.factors.map(facTag).join('')}</div>
+      <h1 class="art-t">${esc(n.title)}</h1>
+      ${text ? `<div class="art-body">${esc(text)}</div>` : ''}
+      ${n.lang === 'en' ? `<div class="art-note">海外媒体只提供标题${text ? '和摘要' : ''}，全文请到原站阅读${s.paywall ? '（🔒 收费）' : ''}</div>` : ''}
+      <div class="art-act"><a class="btn" href="${esc(n.url)}" target="_blank" rel="noopener">阅读原文 ↗</a></div>
+    </article>
+    ${rx.length ? `<div class="card"><h2>📈 发布后的行情 <small>发布时刻 → 30 分钟后 · 只是时间先后，不代表因果</small></h2>
+      <table class="st"><thead><tr><th>品种</th><th>发布时</th><th>30 分钟后</th><th>变化</th></tr></thead><tbody>
+      ${rx.map(r => `<tr data-mk="${r.m.id}"><td><div class="nm">${esc(r.m.name)}</div></td><td class="num">${fmtPx(r.at[1], r.m.dec)} <span class="cd">${hm(r.at[0])}</span></td>
+        <td class="num">${fmtPx(r.later[1], r.m.dec)} <span class="cd">${hm(r.later[0])}</span></td><td><span class="pct num ${cls(r.c)}">${fmtChg(+r.c.toFixed(2), r.m.unit)}</span></td></tr>`).join('')}
+      </tbody></table></div>` : ''}
+    ${moves.length ? `<div class="card"><h2>⚡ 被列为这些异动的可能原因</h2><div class="tl">${moves.map(({ m, mv, i }) => `
+      <div class="mv-card" data-mk="${m.id}" data-mv="${i}"><div class="when"><b class="num">${mv.kind === 'gap' ? '开盘 ' + hm(mv.end) : `${hm(mv.start)}–${hm(mv.end)}`}</b>${dayLabel(mv.end)}</div>
+        <div><div class="head"><span class="mk">${esc(m.name)}</span><span class="pill num ${cls(mv.chg)}">${mv.dir > 0 ? '▲' : '▼'} ${fmtChg(mv.chg, m.unit)}</span></div></div></div>`).join('')}</div></div>` : ''}
+    ${others.length ? `<div class="card feed"><h2>🗞 同一事件的其他报道</h2>${others.map(o => `<div class="fi"><span class="tm num">${hm(o.ts)}</span><div>
+      <a class="tt" href="#news/${o.id}" data-news="${o.id}">${esc(o.title)}</a><div class="ln">${srcBadge(o.src)}</div></div></div>`).join('')}</div>` : ''}
+    ${themes.length ? `<div class="card"><h2>🏷 相关主题</h2><div class="chips">${themes.map(([k, t]) => `<a href="#theme/${k}" data-th="${k}">${t.icon} ${esc(t.name)} ${pctHtml(themePct(t))}</a>`).join('')}</div></div>` : ''}
+    ${embed ? `<div class="card"><h2>📄 原文 <small>${esc(s.name)} 原站页面</small><span class="r"><a class="linkbtn" style="padding:0" href="${esc(n.url)}" target="_blank" rel="noopener">打不开？新窗口打开 ↗</a></span></h2>
+      <iframe class="orig" src="${esc(n.url)}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></div>` : ''}
+  </div>`;
+}
+
 // ── 路由与交互 ──
 const BOARDS = ['global', 'metals', 'ai'];
 function render() {
   if (['global', 'metals', 'ai'].includes(state.tab)) state.from = state.tab;
-  const hl = state.tab === 'theme' ? parentTab(state.theme) : state.tab === 'stock' ? state.from : state.tab;
+  if (!['theme', 'stock', 'news'].includes(state.tab)) state.top = state.tab;    // 详情页高亮进入前所在的标签
+  const hl = state.tab === 'theme' ? parentTab(state.theme) : ['stock', 'news'].includes(state.tab) ? state.top : state.tab;
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === hl));
   const showTicker = state.tab === 'overview' || state.tab === 'market';
   $('#ticker').style.display = showTicker ? '' : 'none';
   if (showTicker) renderTicker();
   ({ overview: renderOverview, market: renderMarket, feed: renderFeed,
      global: () => renderBoard('global'), metals: () => renderBoard('metals'), ai: () => renderBoard('ai'),
-     theme: () => renderTheme(state.theme), stock: () => renderStock(state.stock) })[state.tab]();
+     theme: () => renderTheme(state.theme), stock: () => renderStock(state.stock), news: () => renderNews(state.news) })[state.tab]();
 }
 function hashOf() {
   if (state.tab === 'market') return `#market/${state.market}/${state.move}`;
   if (state.tab === 'feed') return `#feed${state.factor ? '/' + state.factor : ''}`;
   if (state.tab === 'theme') return `#theme/${state.theme}`;
   if (state.tab === 'stock') return `#stock/${state.stock}`;
+  if (state.tab === 'news') return `#news/${state.news}`;
   return '#' + state.tab;
 }
 function setHash(push) {
@@ -834,18 +907,21 @@ function readHash() {
   else if (tab === 'feed') { state.tab = 'feed'; state.factor = a || ''; }
   else if (tab === 'theme' && TH?.themes[a]) { state.tab = 'theme'; state.theme = a; }
   else if (tab === 'stock' && a) { state.tab = 'stock'; state.stock = decodeURIComponent(a); }
+  else if (tab === 'news' && a) { state.tab = 'news'; state.news = a; }
   else state.tab = BOARDS.includes(tab) ? tab : 'overview';
 }
-// 主题、个股是「进入」的下一层，写入浏览器历史，返回键能回来；其余标签切换替换当前记录
+// 主题、个股、新闻是「进入」的下一层，写入浏览器历史，返回键能回来；其余标签切换替换当前记录
 function go(patch) {
   Object.assign(state, patch);
-  setHash(state.tab === 'theme' || state.tab === 'stock');
+  setHash(['theme', 'stock', 'news'].includes(state.tab));
   render(); window.scrollTo({ top: 0 });
   if (viewIds().length) refreshQuotes(true);
 }
 
 document.addEventListener('click', e => {
   const t = e.target;
+  const nw = t.closest('[data-news]');
+  if (nw) { e.preventDefault(); e.stopPropagation(); return go({ tab: 'news', news: nw.dataset.news }); }
   const th = t.closest('[data-th]');   // 注意不能用 data-theme：<html> 上的深浅色属性也叫这个
   if (th) { e.preventDefault(); return go({ tab: 'theme', theme: th.dataset.th }); }
   const sk = t.closest('[data-stock]');

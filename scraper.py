@@ -117,6 +117,9 @@ def fetch_json(url, **kw):
     return json.loads(fetch(url, **kw))
 
 
+FULL = 20000          # 中文快讯本身就是全文，不截断（这个上限只防异常数据）
+
+
 def clean(text, n=300):
     text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", text or ""))).strip()
     return (text[:n] + "…") if len(text) > n else text
@@ -132,20 +135,20 @@ def fnv(s):
 
 def split_title(text):
     """快讯没有标题时：优先用开头的【…】，否则取第一句。"""
-    text = clean(text, 2000)
+    text = clean(text, FULL)
     m = re.match(r"^【([^】]{4,80})】\s*(.*)$", text)
     if m:
-        return m.group(1), clean(m.group(2))
+        return m.group(1), clean(m.group(2), FULL)
     text = re.sub(r"^(格隆汇|财联社|金十数据)\d+月\d+日[｜|丨]", "", text)
     m = re.match(r"^(.{8,70}?[。；！？])(.*)$", text)
     if m:
-        return m.group(1).rstrip("。；"), clean(m.group(2))
+        return m.group(1).rstrip("。；"), clean(m.group(2), FULL)
     return clean(text, 70), ""
 
 
 def news(src, title, url, ts, summary="", imp=0, lang="zh"):
     title = clean(title, 160)
-    return {"id": fnv(src + title), "src": src, "title": title, "summary": clean(summary),
+    return {"id": fnv(src + title), "src": src, "title": title, "summary": clean(summary, FULL if lang == "zh" else 300),
             "url": url, "ts": int(ts), "imp": imp, "lang": lang}
 
 
@@ -172,7 +175,7 @@ def wscn():
     d = fetch_json("https://api-one-wscn.awtmt.com/apiv1/content/lives?channel=global-channel&limit=100")
     out = []
     for x in d["data"]["items"]:
-        text = x.get("content_text") or clean(x.get("content"))
+        text = x.get("content_text") or clean(x.get("content"), FULL)
         title, summary = (x["title"], text) if x.get("title") else split_title(text)
         out.append(news("wscn", title, x.get("uri") or "https://wallstreetcn.com/live/global",
                         x["display_time"], summary, 2 if (x.get("score") or 1) >= 2 else 1))
@@ -284,6 +287,7 @@ def tag(n):
     text = n["title"] + " " + n["summary"][:120]
     n["factors"] = [k for k, _, _, r in FACTOR_RE if r.search(text)]
     n["result"] = bool(RESULT_RE.search(n["title"]))
+    n["mk"] = [m[0] for m in MARKETS if MARKET_RE[m[4]].search(text)][:6]   # 相关行情品种，详情页算发布后的行情反应
     if NOISE_RE.search(n["title"]):
         n["imp"] = 0
     return n
