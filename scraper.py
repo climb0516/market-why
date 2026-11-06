@@ -236,9 +236,22 @@ def rss(src, url, imp=1, limit=40, strip_suffix=False):
     return run
 
 
-def gnews(q):
+def fallback(primary, backup):
+    """主源失败或为空时用备用源（美联储官网会拦 GitHub Actions 的 IP，备用走 Google News）。"""
+    def run():
+        try:
+            items = primary()
+            if items:
+                return items
+        except Exception:
+            pass
+        return backup()
+    return run
+
+
+def gnews(q, days=1):
     return "https://news.google.com/rss/search?" + urllib.parse.urlencode(
-        {"q": f"when:1d {q}", "hl": "en-US", "gl": "US", "ceid": "US:en"})
+        {"q": f"when:{days}d {q}", "hl": "en-US", "gl": "US", "ceid": "US:en"})
 
 
 # id, 名称, 地区, 缩写, 主题色, 是否收费墙, 抓取函数
@@ -258,7 +271,9 @@ SOURCES = [
     ("nikkei",    "Nikkei Asia", "intl", "NKA",  "#c8102e", False, rss("nikkei", "https://asia.nikkei.com/rss/feed/nar")),
     ("scmp",      "SCMP 商业",   "intl", "SCMP", "#ffc20e", False, rss("scmp", "https://www.scmp.com/rss/92/feed")),
     ("bbc",       "BBC Business", "intl", "BBC", "#bb1919", False, rss("bbc", "https://feeds.bbci.co.uk/news/business/rss.xml")),
-    ("fed",       "美联储",      "intl", "FED",  "#3b82f6", False, rss("fed", "https://www.federalreserve.gov/feeds/press_all.xml", imp=2, limit=15)),
+    ("fed",       "美联储",      "intl", "FED",  "#3b82f6", False, fallback(
+        rss("fed", "https://www.federalreserve.gov/feeds/press_all.xml", imp=2, limit=15),
+        rss("fed", gnews("site:federalreserve.gov", days=7), imp=2, limit=15, strip_suffix=True))),
 ]
 
 

@@ -45,7 +45,7 @@
 | Financial Times 🔒 | 官方 RSS | |
 | CNBC / Investing.com / BBC Business / SCMP | 官方 RSS | |
 | Nikkei Asia | 官方 RSS（RDF） | 不带发布时间，用首次抓到的时间（页面上带 `~`），不参与异动归因 |
-| 美联储 | 官方 RSS | 只保留 FOMC、货币政策声明、纪要、讲话，执法公告等例行发布过滤掉 |
+| 美联储 | 官方 RSS，失败时用 Google News `site:federalreserve.gov` | 只保留 FOMC、货币政策声明、纪要、讲话，执法公告等例行发布过滤掉；官网会拦 GitHub Actions 的 IP |
 
 调研过但没用的：财联社（接口要签名）、金十数据（接口要专用请求头）、雅虎财经（RSS 已下线，行情接口限流）、Wind / 同花顺 iFinD（终端收费，没有公开接口）。
 
