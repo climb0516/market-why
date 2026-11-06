@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>样张 E · 总结 + 热力图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* 配色参考 TradingView 深色主题 */
+  :root { --bg: #0f1218; --p: #171b24; --p2: #1f2430; --bd: #2a2f3b; --t1: #e8eaf0; --t2: #9aa1b1; --t3: #646b7b; --blue: #2962ff; --up: #f23645; --down: #089981; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--t1); font: 14px/1.55 Inter, -apple-system, "PingFang SC", sans-serif; -webkit-font-smoothing: antialiased; }
+  .num { font-variant-numeric: tabular-nums; }
+  .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--t2); }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 16px 50px; }
+
+  header { display: flex; align-items: center; gap: 22px; height: 56px; border-bottom: 1px solid var(--bd); padding: 0 16px; position: sticky; top: 0; background: rgba(15,18,24,.92); backdrop-filter: blur(12px); z-index: 5; }
+  .brand { font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+  .brand i { width: 26px; height: 26px; border-radius: 7px; background: var(--blue); display: grid; place-items: center; font-style: normal; font-size: 14px; }
+  nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  nav span { padding: 6px 12px; border-radius: 8px; color: var(--t2); font-weight: 600; white-space: nowrap; }
+  nav span.on { color: var(--t1); background: var(--p2); }
+  .upd { margin-left: auto; color: var(--t3); font-size: 12px; white-space: nowrap; }
+  @media (max-width: 700px) { .upd { display: none; } header { gap: 12px; } }
+
+  .tickers { display: flex; gap: 10px; overflow-x: auto; padding: 16px 0 4px; scrollbar-width: none; }
+  .tk { flex: 0 0 168px; background: var(--p); border: 1px solid var(--bd); border-radius: 12px; padding: 10px 12px; }
+  .tk .n { font-size: 12.5px; color: var(--t2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tk .v { display: flex; justify-content: space-between; align-items: baseline; margin-top: 2px; }
+  .tk b { font-size: 15.5px; } .tk .c { font-size: 12.5px; font-weight: 600; }
+  .tk svg { width: 100%; height: 26px; margin-top: 4px; display: block; }
+
+  .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 14px; }
+  @media (min-width: 980px) { .row { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); } }
+  .card { background: var(--p); border: 1px solid var(--bd); border-radius: 14px; padding: 16px 18px; min-width: 0; }
+  .card h2 { font-size: 15.5px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .card h2 small { color: var(--t3); font-weight: 500; font-size: 12px; }
+  .card h2 .r { margin-left: auto; }
+
+  /* Perplexity 风格的总结 */
+  .sum h2 .spark { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #2962ff, #7b61ff); display: grid; place-items: center; font-size: 12px; }
+  .sum ul { list-style: none; display: grid; gap: 12px; }
+  .sum li { font-size: 15px; line-height: 1.75; padding-left: 16px; position: relative; }
+  .sum li::before { content: ''; position: absolute; left: 0; top: .72em; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+  .sum li b { font-weight: 700; }
+  .cite { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--p2); border: 1px solid var(--bd); color: var(--t2); font-size: 10.5px; font-weight: 700; vertical-align: 2px; margin-left: 2px; text-decoration: none; }
+  .cite:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .srcs { display: flex; gap: 8px; overflow-x: auto; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--bd); scrollbar-width: none; }
+  .src { flex: 0 0 210px; background: var(--p2); border-radius: 10px; padding: 9px 11px; font-size: 12.5px; color: var(--t2); text-decoration: none; }
+  .src b { color: var(--t1); font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 3px; }
+  .src span { font-size: 11px; color: var(--t3); }
+  .gen { color: var(--t3); font-size: 11.5px; margin-top: 10px; }
+
+  .mv { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--bd); }
+  .mv:first-of-type { border-top: 0; padding-top: 0; }
+  .mv .bx { flex: none; width: 64px; height: 40px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  .mv .bx.up { background: rgba(242,54,69,.14); } .mv .bx.down { background: rgba(8,153,129,.14); }
+  .mv .t { font-weight: 600; } .mv .t span { color: var(--t3); font-weight: 400; font-size: 12px; margin-left: 6px; }
+  .mv .w { color: var(--t2); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* Finviz 风格的主题热力图 */
+  .heat { position: relative; width: 100%; background: #0b0d12; border-radius: 8px; overflow: hidden; }
+  .grp { position: absolute; border: 2px solid #0b0d12; }
+  .grp .gl { position: absolute; left: 0; right: 0; top: 0; height: 20px; padding: 0 6px; font-size: 11.5px; font-weight: 700; color: #cfd3dc; background: #1a1e27; display: flex; justify-content: space-between; align-items: center; white-space: nowrap; overflow: hidden; }
+  .cell { position: absolute; border: 1px solid #0b0d12; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; color: #fff; line-height: 1.15; }
+  .cell b { font-weight: 700; } .cell span { opacity: .92; }
+  .legend { display: flex; align-items: center; gap: 2px; font-size: 11px; color: var(--t2); }
+  .legend i { width: 26px; height: 12px; display: inline-block; }
+
+  .ev { display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid var(--bd); }
+  .ev:first-of-type { border-top: 0; padding-top: 0; }
+  .ev .n { color: var(--blue); font-weight: 800; width: 18px; flex: none; }
+  .ev .t { font-weight: 600; } .ev .m { color: var(--t3); font-size: 12px; margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { color: var(--t3); font-weight: 500; font-size: 12px; text-align: right; padding: 6px 4px; border-bottom: 1px solid var(--bd); }
+  th:first-child, td:first-child { text-align: left; }
+  td { padding: 9px 4px; border-bottom: 1px solid var(--bd); text-align: right; white-space: nowrap; }
+  td .mk { font-size: 10.5px; color: var(--t2); background: var(--p2); border-radius: 4px; padding: 0 5px; margin-left: 6px; }
+  .chg { display: inline-block; min-width: 72px; padding: 2px 6px; border-radius: 6px; font-weight: 600; color: #fff; text-align: center; }
+</style>
+</head>
+<body>
+<header><div class="brand"><i>⚡</i>MarketWhy</div><nav><span class="on">总览</span><span>全球</span><span>有色</span><span>AI</span><span>异动</span><span>快讯</span></nav><span class="upd" id="upd"></span></header>
+<div class="wrap" id="app"></div>
+<script src="common.js"></script>
+<script>
+(async () => {
+  const { esc, hm, cls, pct, fmtP, spark, usSession, mktOf } = MW;
+  const d = await MW.load();
+  document.getElementById('upd').textContent = '更新于 ' + d.updated + ' 北京时间';
+  const col = v => v >= 0 ? 'var(--up)' : 'var(--down)';
+
+  // ── 今日市场总结：按规则从行情和新闻拼句子，不调用 AI ──
+  const cites = [];
+  const cite = n => { if (!n) return ''; let i = cites.findIndex(c => c.id === n.id); if (i < 0) { cites.push(n); i = cites.length - 1; } return `<a class="cite" href="${esc(n.url)}" target="_blank" rel="noopener" title="${esc(n.title)}">${i + 1}</a>`; };
+  const M = id => d.D.markets.find(m => m.id === id);
+  const moveNews = m => (m?.moves || []).slice().sort((a, b) => Math.abs(b.chg) - Math.abs(a.chg)).flatMap(mv => mv.news.map(x => d.D.news.find(n => n.id === x.id))).filter(Boolean);
+  const say = (m) => m ? `${esc(m.name)} <b class="${cls(m.chg)}">${m.chg > 0 ? '涨' : '跌'} ${Math.abs(m.chg).toFixed(2)}%</b>` : '';
+  const verb = v => v <= -3 ? '重挫' : v <= -1 ? '走低' : v < 1 ? '窄幅震荡' : v < 3 ? '走高' : '大涨';
+  const groups = [
+    ['美股', ['100.NDX', '100.SPX']], ['亚太', ['100.N225', '100.KS11']], ['A股港股', ['1.000001', '100.HSI']],
+  ].map(([g, ids]) => ({ g, ms: ids.map(M).filter(Boolean) })).filter(x => x.ms.length);
+  const lines = groups.map(({ g, ms }) => {
+    const avg = ms.reduce((a, m) => a + m.chg, 0) / ms.length;
+    const news = moveNews(ms.slice().sort((a, b) => Math.abs(b.chg) - Math.abs(a.chg))[0]);
+    return `<b>${g}${verb(avg)}</b>：${ms.map(say).join('，')}${news[0] ? `。可能原因：${esc(news[0].title)}${cite(news[0])}${cite(news[1])}` : ''}`;
+  });
+  const ind = d.industry.filter(t => t.pct != null).sort((a, b) => a.pct - b.pct);
+  if (ind.length) lines.push(`<b>产业主题</b>：${esc(ind[0].name)} <b class="${cls(ind[0].pct)}">${pct(ind[0].pct)}</b> 表现最弱，${esc(ind[ind.length - 1].name)} <b class="${cls(ind[ind.length - 1].pct)}">${pct(ind[ind.length - 1].pct)}</b> 相对最强`);
+  const q = id => d.macro.find(m => m.id === id)?.q || {};
+  lines.push(`<b>大宗与避险</b>：布伦特原油 <b class="${cls(q('112.B00Y').pct)}">${pct(q('112.B00Y').pct)}</b>，黄金 <b class="${cls(q('122.XAU').pct)}">${pct(q('122.XAU').pct)}</b>，恐慌指数 VIX ${fmtP(q('cboe.VIX').price)}（<span class="${cls(q('cboe.VIX').pct)}">${pct(q('cboe.VIX').pct)}</span>）`);
+  const top = d.events[0];
+  if (top) lines.push(`<b>最受关注</b>：${esc(top.title)}（${top.refs.length} 家报道）${top.refs.slice(0, 3).map(cite).join('')}`);
+
+  // ── 热力图数据：12 个产业主题，块内股票按美元市值定大小（汇率为近似值）──
+  const usdcnh = d.Q['133.USDCNH']?.price || 7.1;
+  const FX = { US: 1, HK: 7.8, CN: usdcnh, JP: 150, KR: 1400, TW: 32 };
+  const usd = (cap, id) => cap ? cap / (FX[mktOf(id)] || 1) : 0;
+  const groupsH = d.industry.map(t => {
+    const stocks = t.stocks.map(id => ({ id, name: d.Q[id]?.name || d.TH.names[id], q: d.Q[id] || {} }))
+      .map(s => ({ ...s, v: usd(s.q.cap, s.id) })).filter(s => s.v > 0).sort((a, b) => b.v - a.v);
+    return { ...t, stocks, v: stocks.reduce((a, s) => a + Math.sqrt(s.v), 0) };   // 主题块面积用开方市值，避免巨头主题把小主题挤没
+  }).filter(g => g.v > 0).sort((a, b) => b.v - a.v);
+
+  const short = n => String(n || '').replace(/(Inc|Corp|Holdings|plc|ADR|Technologies|Group|Ltd)\.?[\s\S]*$/i, '').replace(/-[A-Z]+$/, '').trim().slice(0, 12);
+  const heatCol = v => {
+    if (v == null) return '#2a2f3b';
+    const k = Math.min(1, Math.abs(v) / 6);
+    const [r, g, b] = v >= 0 ? [Math.round(60 + 182 * k), Math.round(40 + 14 * (1 - k)), Math.round(48 + 21 * (1 - k))] : [Math.round(40 - 32 * k), Math.round(60 + 93 * k), Math.round(66 + 63 * k)];
+    return `rgb(${r},${g},${b})`;
+  };
+
+  // squarified treemap
+  function squarify(items, x, y, w, h) {
+    const total = items.reduce((a, i) => a + i.v, 0); if (!total || w <= 0 || h <= 0) return [];
+    const nodes = items.map(i => ({ item: i, a: i.v / total * w * h }));
+    const out = []; let row = [];
+    const worst = (r, s) => { const sum = r.reduce((a, n) => a + n.a, 0), mx = Math.max(...r.map(n => n.a)), mn = Math.min(...r.map(n => n.a)); return Math.max(s * s * mx / (sum * sum), sum * sum / (s * s * mn)); };
+    const place = r => {
+      const sum = r.reduce((a, n) => a + n.a, 0);
+      if (w >= h) { const cw = sum / h; let cy = y; r.forEach(n => { const rh = n.a / cw; out.push({ item: n.item, x, y: cy, w: cw, h: rh }); cy += rh; }); x += cw; w -= cw; }
+      else { const rh = sum / w; let cx = x; r.forEach(n => { const rw = n.a / rh; out.push({ item: n.item, x: cx, y, w: rw, h: rh }); cx += rw; }); y += rh; h -= rh; }
+    };
+    while (nodes.length) {
+      const side = Math.min(w, h), n = nodes[0];
+      if (!row.length || worst([...row, n], side) <= worst(row, side)) row.push(nodes.shift());
+      else { place(row); row = []; }
+    }
+    if (row.length) place(row);
+    return out;
+  }
+  function drawHeat() {
+    const box = document.getElementById('heat'); if (!box) return;
+    const W = box.clientWidth, H = W < 600 ? 640 : Math.round(W * 0.48);
+    box.style.height = H + 'px';
+    let html = '';
+    squarify(groupsH, 0, 0, W, H).forEach(({ item: g, x, y, w, h }) => {
+      html += `<div class="grp" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"><div class="gl"><span>${esc(g.name)}</span><span style="color:${g.pct >= 0 ? '#ff8a94' : '#4fd1b6'}">${pct(g.pct)}</span></div>`;
+      squarify(g.stocks, 0, 20, w - 4, h - 24).forEach(({ item: s, x: sx, y: sy, w: sw, h: sh }) => {
+        const fs = Math.max(9, Math.min(18, Math.sqrt(sw * sh) / 5.5));
+        const label = sw > 34 && sh > 22;
+        html += `<div class="cell" style="left:${sx}px;top:${sy}px;width:${sw}px;height:${sh}px;background:${heatCol(s.q.pct)}" title="${esc(s.name)} ${pct(s.q.pct)}">
+          ${label ? `<b style="font-size:${fs}px">${esc(short(s.name))}</b>${sh > 36 ? `<span style="font-size:${fs * 0.8}px">${pct(s.q.pct)}</span>` : ''}` : ''}</div>`;
+      });
+      html += '</div>';
+    });
+    box.innerHTML = html;
+  }
+
+  const tick = [...d.indices, ...d.macro.filter(m => ['112.B00Y', '122.XAU', '100.UDI', 'cboe.VIX'].includes(m.id)).map(m => ({ name: m.name, last: m.q.price, chg: m.q.pct, pts: m.pts, unit: '%' }))];
+  document.getElementById('app').innerHTML = `
+    <div class="tickers">${tick.map(m => `<div class="tk"><div class="n">${esc(m.name)}</div><div class="v"><b class="num">${fmtP(m.last)}</b><span class="c num ${cls(m.chg)}">${pct(m.chg)}</span></div>
+      ${m.pts ? `<svg viewBox="0 0 100 28" preserveAspectRatio="none"><polyline fill="none" stroke="${col(m.chg)}" stroke-width="1.6" points="${spark(m.pts)}"/></svg>` : '<svg></svg>'}</div>`).join('')}</div>
+    <div class="row">
+      <section class="card sum"><h2><span class="spark">✦</span>今日市场总结 <small>${d.updated}</small></h2>
+        <ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>
+        <div class="srcs">${cites.map((n, i) => `<a class="src" href="${esc(n.url)}" target="_blank" rel="noopener"><span>${i + 1} · ${esc(d.SRC[n.src]?.name || n.src)} · ${hm(n.ts)}</span><b>${esc(n.title)}</b></a>`).join('')}</div>
+        <div class="gen">根据行情异动和同时段新闻自动生成，不是 AI 撰写；只表示相关，不代表因果</div></section>
+      <section class="card"><h2>今日异动 <small>最显著的 5 段</small></h2>
+        ${d.topMoves.map(({ m, mv, news }) => `<div class="mv"><span class="bx num ${cls(mv.chg)}">${mv.chg > 0 ? '+' : ''}${mv.chg}${m.unit === 'bp' ? 'bp' : '%'}</span><div style="min-width:0">
+          <div class="t">${esc(m.name)}<span>${mv.kind === 'gap' ? '开盘跳空' : hm(mv.start) + '–' + hm(mv.end)}</span></div><div class="w">${news[0] ? esc(news[0].title) : '同时段没有匹配到相关新闻'}</div></div></div>`).join('')}</section>
+    </div>
+    <section class="card" style="margin-top:14px"><h2>全球产业热力图 <small>块大小 = 美元市值（汇率近似）· 颜色 = 今日涨跌 · ${usSession()}</small>
+      <span class="r legend">-6%&nbsp;<i style="background:${heatCol(-6)}"></i><i style="background:${heatCol(-3)}"></i><i style="background:${heatCol(-1)}"></i><i style="background:${heatCol(0)}"></i><i style="background:${heatCol(1)}"></i><i style="background:${heatCol(3)}"></i><i style="background:${heatCol(6)}"></i>&nbsp;+6%</span></h2>
+      <div class="heat" id="heat"></div></section>
+    <div class="row">
+      <section class="card"><h2>影响市场的大事 <small>近 24 小时 · 多家报道</small></h2>
+        ${d.events.map((e, i) => `<div class="ev"><span class="n">${i + 1}</span><div><div class="t">${esc(e.title)}</div><div class="m">${hm(e.ts)} · ${e.refs.length} 家报道${e.factors[0] ? ' · ' + esc(d.FAC[e.factors[0]]) : ''}</div></div></div>`).join('')}</section>
+      <section class="card"><h2>${esc(d.aiTheme.icon)} ${esc(d.aiTheme.name)} <span class="r chg num" style="background:${heatCol(d.aiTheme.pct)}">${pct(d.aiTheme.pct)}</span></h2>
+        <table class="num"><thead><tr><th>名称</th><th>最新</th><th>涨跌</th></tr></thead><tbody>
+        ${d.aiTheme.rows.map(r => `<tr><td>${esc(short(r.name) || r.name)}<span class="mk">${r.mkt}</span></td><td>${fmtP(r.q.price)}</td><td><span class="chg" style="background:${heatCol(r.q.pct)}">${pct(r.q.pct)}</span></td></tr>`).join('')}
+        </tbody></table></section>
+    </div>`;
+  drawHeat();
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawHeat, 150); });
+})();
+</script>
+</body>
+</html>
