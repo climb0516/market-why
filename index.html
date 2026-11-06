@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <meta name="referrer" content="no-referrer">
+  <title>MarketWhy · 行情为什么动</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0b0d; --panel: #13151a; --panel-2: #191c22; --hover: rgba(255,255,255,0.04);
+      --line: rgba(255,255,255,0.07); --line-2: rgba(255,255,255,0.13);
+      --text-1: #eceef2; --text-2: #a3a9b4; --text-3: #6b717c;
+      --accent: #4f8cff; --up: #f0444f; --down: #14b37d; --flat: #8a909a;
+      --up-bg: rgba(240,68,79,0.12); --down-bg: rgba(20,179,125,0.12);
+      --f-monetary: #f59e0b; --f-macro: #3b82f6; --f-geo: #ef4444; --f-policy: #a855f7;
+      --f-tech: #06b6d4; --f-earnings: #10b981; --f-commodity: #d97706; --f-fx: #94a3b8;
+      --shadow: 0 0 0 1px var(--line), 0 10px 30px rgba(0,0,0,0.35);
+    }
+    :root[data-theme="light"] {
+      --bg: #f6f7f9; --panel: #ffffff; --panel-2: #f2f4f7; --hover: rgba(10,20,40,0.035);
+      --line: rgba(10,20,40,0.08); --line-2: rgba(10,20,40,0.15);
+      --text-1: #14171c; --text-2: #4f5663; --text-3: #8a919c;
+      --accent: #2563eb; --up: #e0323e; --down: #0e9a69; --flat: #7b818b;
+      --up-bg: rgba(224,50,62,0.08); --down-bg: rgba(14,154,105,0.09);
+      --f-monetary: #d97706; --f-macro: #2563eb; --f-geo: #dc2626; --f-policy: #9333ea;
+      --f-tech: #0891b2; --f-earnings: #059669; --f-commodity: #b45309; --f-fx: #64748b;
+      --shadow: 0 0 0 1px var(--line), 0 8px 24px rgba(20,30,60,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-1); font: 14px/1.55 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    .num { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+    .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--flat); }
+    .wrap { max-width: 1320px; margin: 0 auto; padding: 0 20px; }
+
+    /* 顶栏 */
+    header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .bar { display: flex; align-items: center; gap: 18px; height: 58px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
+    .brand .logo { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: linear-gradient(135deg, #4f8cff, #a855f7); color: #fff; font-size: 15px; }
+    .brand small { font-weight: 500; color: var(--text-3); font-size: 12px; }
+    nav.tabs { display: flex; gap: 4px; }
+    nav.tabs button { padding: 7px 14px; border-radius: 8px; color: var(--text-2); font-weight: 600; font-size: 13.5px; }
+    nav.tabs button:hover { background: var(--hover); color: var(--text-1); }
+    nav.tabs button.on { background: var(--panel-2); color: var(--text-1); box-shadow: 0 0 0 1px var(--line-2); }
+    .spacer { flex: 1; }
+    .meta { color: var(--text-3); font-size: 12px; white-space: nowrap; }
+    .icon-btn { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; color: var(--text-2); }
+    .icon-btn:hover { background: var(--hover); color: var(--text-1); }
+    .links { display: flex; gap: 2px; }
+
+    /* 行情条 */
+    .ticker { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 18px 0 6px; }
+    .tk { background: var(--panel); border-radius: 10px; padding: 9px 12px; box-shadow: 0 0 0 1px var(--line); cursor: pointer; position: relative; overflow: hidden; transition: box-shadow .15s; }
+    .tk:hover { box-shadow: 0 0 0 1px var(--line-2); }
+    .tk.on { box-shadow: 0 0 0 1.5px var(--accent); }
+    .tk .n { font-size: 12px; color: var(--text-2); display: flex; justify-content: space-between; gap: 6px; }
+    .tk .n .mv { font-size: 10.5px; font-weight: 700; padding: 0 5px; border-radius: 4px; background: var(--panel-2); color: var(--text-2); }
+    .tk .p { display: flex; justify-content: space-between; align-items: baseline; margin-top: 2px; }
+    .tk .p b { font-size: 14.5px; font-weight: 600; }
+    .tk .p span { font-size: 12.5px; font-weight: 600; }
+    .tk svg { position: absolute; inset: auto 0 0 0; width: 100%; height: 26px; opacity: .35; pointer-events: none; }
+
+    /* 卡片 */
+    .grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; margin: 18px 0 40px; align-items: start; }
+    .card { background: var(--panel); border-radius: 14px; box-shadow: var(--shadow); }
+    .card > h2 { font-size: 15px; font-weight: 700; padding: 15px 18px 10px; display: flex; align-items: center; gap: 8px; }
+    .card > h2 small { font-weight: 500; color: var(--text-3); font-size: 12px; }
+    .card > h2 .r { margin-left: auto; }
+    .hint { color: var(--text-3); font-size: 12px; padding: 0 18px 12px; }
+    .empty { color: var(--text-3); padding: 28px 18px; text-align: center; font-size: 13px; }
+
+    /* 异动时间线 */
+    .tl { padding: 0 10px 10px; }
+    .mv-card { display: grid; grid-template-columns: 74px 1fr; gap: 12px; padding: 12px 8px; border-top: 1px solid var(--line); cursor: pointer; border-radius: 8px; }
+    .mv-card:hover { background: var(--hover); }
+    .mv-card .when { font-size: 12px; color: var(--text-3); }
+    .mv-card .when b { display: block; font-size: 13.5px; color: var(--text-1); font-weight: 600; }
+    .mv-card .head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .mv-card .head .mk { font-weight: 700; }
+    .pill { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; padding: 1px 7px; border-radius: 5px; }
+    .pill.up { background: var(--up-bg); } .pill.down { background: var(--down-bg); }
+    .kind { font-size: 11px; color: var(--text-3); border: 1px solid var(--line-2); border-radius: 4px; padding: 0 5px; }
+    .why { margin-top: 6px; display: grid; gap: 4px; }
+    .why a { display: flex; gap: 8px; font-size: 13px; color: var(--text-2); align-items: baseline; }
+    .why a:hover { color: var(--text-1); }
+    .why a .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .why .nowhy { font-size: 12.5px; color: var(--text-3); }
+
+    .src { flex: none; font-size: 10.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; color: #fff; letter-spacing: .02em; line-height: 1.5; }
+    .ftag { font-size: 11px; font-weight: 600; padding: 0 6px; border-radius: 4px; line-height: 18px; white-space: nowrap; }
+    .lock { font-size: 10px; opacity: .7; }
+
+    /* 大事 */
+    .ev { padding: 12px 18px; border-top: 1px solid var(--line); }
+    .ev .top { display: flex; gap: 10px; align-items: flex-start; }
+    .ev .rk { font-weight: 800; font-size: 14px; color: var(--text-3); width: 18px; flex: none; }
+    .ev .rk.hot { color: var(--up); }
+    .ev .tt { font-weight: 600; font-size: 14px; line-height: 1.45; flex: 1; }
+    .ev .sub { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 6px 0 0 28px; }
+    .ev .sub .tm { color: var(--text-3); font-size: 12px; margin-right: 2px; }
+    .ev .sum { margin: 6px 0 0 28px; color: var(--text-2); font-size: 12.5px; display: none; }
+    .ev.open .sum { display: block; }
+    .ev .refs { margin: 6px 0 0 28px; display: none; gap: 3px; flex-direction: column; }
+    .ev.open .refs { display: flex; }
+    .ev .refs a { font-size: 12.5px; color: var(--text-2); display: flex; gap: 6px; }
+    .ev .refs a:hover { color: var(--accent); }
+
+    /* 因素热度 */
+    .fac { padding: 4px 18px 16px; display: grid; gap: 9px; }
+    .fac-row { display: grid; grid-template-columns: 70px 1fr 34px; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; }
+    .fac-row:hover .bar-in { filter: brightness(1.15); }
+    .fac-row .bar { height: 8px; border-radius: 4px; background: var(--panel-2); overflow: hidden; }
+    .fac-row .bar-in { height: 100%; border-radius: 4px; }
+    .fac-row .c { text-align: right; color: var(--text-2); font-size: 12px; }
+
+    /* 行情归因 */
+    .mk-head { display: flex; align-items: baseline; gap: 14px; padding: 16px 18px 4px; flex-wrap: wrap; }
+    .mk-head h3 { font-size: 20px; font-weight: 800; }
+    .mk-head .big { font-size: 22px; font-weight: 600; }
+    .mk-head .chg { font-size: 15px; font-weight: 600; }
+    .mk-head .th { color: var(--text-3); font-size: 12px; margin-left: auto; }
+    .chart { padding: 6px 10px 4px; position: relative; }
+    .chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .chart .tip { position: absolute; pointer-events: none; background: var(--panel-2); box-shadow: 0 0 0 1px var(--line-2); border-radius: 6px; padding: 4px 8px; font-size: 12px; white-space: nowrap; display: none; }
+    .mv-list { padding: 4px 10px 12px; }
+    .mv-item { border-top: 1px solid var(--line); padding: 12px 8px; border-radius: 8px; }
+    .mv-item.on { background: var(--hover); }
+    .mv-item .head { display: flex; gap: 10px; align-items: center; cursor: pointer; flex-wrap: wrap; }
+    .mv-item .no { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; flex: none; }
+    .mv-item .rng { font-weight: 600; }
+    .reasons { margin: 10px 0 0 32px; display: grid; gap: 8px; }
+    .reason { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: start; }
+    .reason .tm { font-size: 12px; color: var(--text-3); padding-top: 1px; }
+    .reason .tt { font-size: 13.5px; font-weight: 500; }
+    .reason .tt:hover { color: var(--accent); }
+    .reason .ln { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 3px; }
+    .reason .sm { font-size: 12.5px; color: var(--text-2); margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .disclaimer { font-size: 12px; color: var(--text-3); padding: 0 18px 14px; }
+    .mk-pick { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 18px 14px; }
+    .mk-pick button { font-size: 12.5px; padding: 4px 10px; border-radius: 7px; background: var(--panel-2); color: var(--text-2); }
+    .mk-pick button.on { background: var(--accent); color: #fff; }
+
+    /* 快讯 */
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 0 18px 12px; }
+    .seg { display: inline-flex; background: var(--panel-2); border-radius: 8px; padding: 2px; }
+    .seg button { padding: 4px 11px; border-radius: 6px; font-size: 12.5px; color: var(--text-2); font-weight: 600; }
+    .seg button.on { background: var(--panel); color: var(--text-1); box-shadow: 0 0 0 1px var(--line-2); }
+    .chip { font-size: 12.5px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--text-2); }
+    .chip.on { color: #fff; border-color: transparent; }
+    .search { flex: 1; min-width: 160px; background: var(--panel-2); border: 1px solid transparent; border-radius: 8px; padding: 6px 10px; color: var(--text-1); font: inherit; font-size: 13px; outline: none; }
+    .search:focus { border-color: var(--accent); }
+    .feed .day { padding: 10px 18px 6px; font-size: 12px; font-weight: 700; color: var(--text-3); position: sticky; top: 58px; background: var(--panel); z-index: 2; border-top: 1px solid var(--line); }
+    .fi { display: grid; grid-template-columns: 46px 1fr; gap: 10px; padding: 10px 18px; border-top: 1px solid var(--line); }
+    .fi .tm { color: var(--text-3); font-size: 12.5px; padding-top: 1px; }
+    .fi .tt { font-size: 14px; line-height: 1.5; }
+    .fi.imp .tt { font-weight: 650; }
+    .fi.imp .tt::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--up); margin: 0 6px 2px 0; }
+    .fi .sm { font-size: 12.5px; color: var(--text-2); margin-top: 3px; }
+    .fi .ln { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 5px; }
+    .fi a.tt:hover { color: var(--accent); }
+    .more { display: block; width: 100%; padding: 12px; color: var(--accent); font-weight: 600; border-top: 1px solid var(--line); }
+
+    /* 来源状态 */
+    dialog { margin: auto; border: 0; border-radius: 14px; background: var(--panel); color: var(--text-1); box-shadow: var(--shadow); width: min(560px, calc(100vw - 32px)); padding: 0; }
+    dialog::backdrop { background: rgba(0,0,0,.45); }
+    dialog h3 { padding: 16px 18px 6px; font-size: 15px; }
+    dialog p { padding: 0 18px 10px; color: var(--text-3); font-size: 12.5px; }
+    .src-row { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; padding: 8px 18px; border-top: 1px solid var(--line); font-size: 13px; }
+    .src-row .err { color: var(--up); font-size: 12px; grid-column: 2 / 4; }
+    dialog .close { display: block; width: 100%; padding: 12px; border-top: 1px solid var(--line); color: var(--accent); font-weight: 600; }
+
+    footer { color: var(--text-3); font-size: 12px; text-align: center; padding: 10px 16px 40px; }
+    footer a { color: var(--text-2); text-decoration: underline; text-underline-offset: 2px; }
+
+    @media (max-width: 960px) {
+      .grid { grid-template-columns: 1fr; }
+      .brand small, .meta { display: none; }
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 0 16px; }
+      .bar { gap: 8px; height: auto; padding: 10px 0; flex-wrap: wrap; }
+      nav.tabs { order: 3; width: 100%; }
+      nav.tabs button { flex: 1; }
+      .ticker { grid-template-columns: repeat(2, 1fr); }
+      .feed .day { top: 104px; }
+      .mv-card { grid-template-columns: 1fr; gap: 4px; }
+      .mv-card .when b { display: inline; margin-right: 6px; }
+      .reasons { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <div class="brand"><span class="logo">⚡</span>MarketWhy <small>行情为什么动</small></div>
+    <nav class="tabs">
+      <button data-tab="overview">总览</button>
+      <button data-tab="market">异动归因</button>
+      <button data-tab="feed">快讯</button>
+    </nav>
+    <div class="spacer"></div>
+    <span class="meta" id="updated">加载中…</span>
+    <div class="links">
+      <button class="icon-btn" id="btnSrc" title="来源状态">📡</button>
+      <a class="icon-btn" href="https://climb0516.github.io/market-board/" target="_blank" title="Market Board 行情看板">📊</a>
+      <a class="icon-btn" href="https://climb0516.github.io/earnings-calendar/" target="_blank" title="财报与宏观日历">📅</a>
+      <button class="icon-btn" id="btnTheme" title="切换深浅色">☾</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="ticker" id="ticker"></div>
+  <section id="view"></section>
+</main>
+
+<footer>
+  异动按「30 分钟内涨跌超过阈值」检测，原因是同时段新闻按相关度匹配出来的<b>可能因素</b>，不构成因果判断或投资建议。<br>
+  数据：东方财富（行情）、新浪财经、华尔街见闻、东方财富、同花顺、格隆汇、Bloomberg、Reuters、WSJ、FT、CNBC 等。收费媒体只展示标题与摘要，点击跳转原文。
+</footer>
+
+<dialog id="dlgSrc"></dialog>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const LS = { get(k, d) { try { return localStorage.getItem(k) ?? d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+
+let D = null, NEWS = {}, SRC = {}, FAC = {};
+const state = { tab: 'overview', market: null, move: 0, lang: 'all', factor: '', imp: false, q: '', limit: 80 };
+
+// ── 工具 ──
+const pad = n => String(n).padStart(2, '0');
+const toCST = ts => new Date((ts + 8 * 3600) * 1000);   // 统一按北京时间显示
+const hm = ts => { const d = toCST(ts); return `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`; };
+const ymd = ts => { const d = toCST(ts); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`; };
+const md = ts => { const d = toCST(ts); return `${d.getUTCMonth() + 1}月${d.getUTCDate()}日`; };
+const nowTs = () => Math.floor(Date.now() / 1000);
+const whenText = ts => ymd(ts) === ymd(nowTs()) ? hm(ts) : `${md(ts)} ${hm(ts)}`;
+const dayLabel = ts => { const t = ymd(nowTs()), y = ymd(nowTs() - 86400), d = ymd(ts); return d === t ? '今天' : d === y ? '昨天' : md(ts); };
+const cls = v => v > 0 ? 'up' : v < 0 ? 'down' : 'flat';
+const sign = v => (v > 0 ? '+' : '') + v;
+const fmtChg = (v, unit) => unit === 'bp' ? `${sign(v.toFixed(1))}bp` : `${sign(v.toFixed(2))}%`;
+const fmtPx = (v, dec) => Number(v).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+
+function srcBadge(id) {
+  const s = SRC[id] || { abbr: id, color: '#888' };
+  return `<span class="src" style="background:${s.color}" title="${esc(s.name)}">${esc(s.abbr)}${s.paywall ? ' <span class="lock">🔒</span>' : ''}</span>`;
+}
+function facTag(k) {
+  const f = FAC[k]; if (!f) return '';
+  return `<span class="ftag" style="color:var(--f-${k});background:color-mix(in srgb, var(--f-${k}) 14%, transparent)">${esc(f.name)}</span>`;
+}
+
+// ── 迷你分时 ──
+function spark(m, h = 26, w = 150) {
+  const p = m.pts; if (!p || p.length < 2) return '';
+  const vs = p.map(x => x[1]).concat(m.pre);
+  const lo = Math.min(...vs), hi = Math.max(...vs), r = hi - lo || 1;
+  const xy = p.map((x, i) => `${(i / (p.length - 1) * w).toFixed(1)},${(h - (x[1] - lo) / r * (h - 2) - 1).toFixed(1)}`);
+  const col = m.chg >= 0 ? 'var(--up)' : 'var(--down)';
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline fill="none" stroke="${col}" stroke-width="1.4" points="${xy.join(' ')}"/></svg>`;
+}
+
+function renderTicker() {
+  $('#ticker').innerHTML = D.markets.map(m => `
+    <div class="tk ${state.tab === 'market' && state.market === m.id ? 'on' : ''}" data-mk="${m.id}">
+      <div class="n"><span>${esc(m.name)}</span>${m.moves.length ? `<span class="mv" title="今日异动次数">⚡${m.moves.length}</span>` : ''}</div>
+      <div class="p"><b class="num">${fmtPx(m.last, m.dec)}</b><span class="num ${cls(m.chg)}">${fmtChg(m.chg, m.unit)}</span></div>
+      ${spark(m)}
+    </div>`).join('');
+}
+
+// ── 总览 ──
+function allMoves() {
+  const out = [];
+  D.markets.forEach(m => m.moves.forEach((mv, i) => out.push({ m, mv, i })));
+  return out;
+}
+function whyLines(mv, n = 2) {
+  const items = (mv.news || []).slice(0, n).map(x => NEWS[x.id]).filter(Boolean);
+  if (!items.length) return `<div class="nowhy">同时段没有匹配到明显相关的新闻</div>`;
+  return items.map(it => `<a href="${esc(it.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${srcBadge(it.src)}<span class="t">${esc(it.title)}</span></a>`).join('');
+}
+function renderOverview() {
+  // 异动：按幅度相对阈值的倍数排序，取最显著的 14 个
+  const mv = allMoves().sort((a, b) => Math.abs(b.mv.chg) / b.m.th - Math.abs(a.mv.chg) / a.m.th).slice(0, 14)
+    .sort((a, b) => b.mv.end - a.mv.end);
+  const timeline = mv.length ? mv.map(({ m, mv, i }) => `
+    <div class="mv-card" data-mk="${m.id}" data-mv="${i}">
+      <div class="when"><b class="num">${mv.kind === 'gap' ? '开盘 ' + hm(mv.end) : `${hm(mv.start)}–${hm(mv.end)}`}</b>${dayLabel(mv.end)}</div>
+      <div>
+        <div class="head"><span class="mk">${esc(m.name)}</span><span class="pill num ${cls(mv.chg)}">${mv.dir > 0 ? '▲' : '▼'} ${fmtChg(mv.chg, m.unit)}</span>${mv.kind === 'gap' ? '<span class="kind">开盘跳空</span>' : ''}</div>
+        <div class="why">${whyLines(mv)}</div>
+      </div>
+    </div>`).join('') : '<div class="empty">今天各市场暂无明显异动</div>';
+
+  const events = D.events.slice(0, 12).map((e, i) => eventHtml(e, i)).join('') || '<div class="empty">暂无</div>';
+
+  // 因素热度：近 24 小时重要新闻按因素计数（重要度加权）
+  const since = nowTs() - 86400, cnt = {};
+  D.news.forEach(n => { if (n.ts >= since && n.imp >= 1) n.factors.forEach(f => cnt[f] = (cnt[f] || 0) + n.imp); });
+  const max = Math.max(1, ...Object.values(cnt));
+  const fac = D.factors.slice().sort((a, b) => (cnt[b.key] || 0) - (cnt[a.key] || 0)).map(f => `
+    <div class="fac-row" data-fac="${f.key}"><span>${esc(f.name)}</span>
+      <div class="bar"><div class="bar-in" style="width:${(cnt[f.key] || 0) / max * 100}%;background:var(--f-${f.key})"></div></div>
+      <span class="c num">${cnt[f.key] || 0}</span></div>`).join('');
+
+  $('#view').innerHTML = `
+    <div class="grid">
+      <div class="card">
+        <h2>⚡ 今日异动 <small>哪里动了 · 当时发生了什么</small></h2>
+        <div class="tl">${timeline}</div>
+      </div>
+      <div style="display:grid;gap:18px">
+        <div class="card"><h2>🌐 影响市场的大事 <small>近 24 小时 · 多家来源报道</small></h2>${events}</div>
+        <div class="card"><h2>🧭 因素热度 <small>近 24 小时，点击看相关快讯</small></h2><div class="fac">${fac}</div></div>
+      </div>
+    </div>`;
+}
+function eventHtml(e, i) {
+  const refs = e.refs.map(id => NEWS[id]).filter(Boolean);
+  return `<div class="ev" data-ev>
+    <div class="top"><span class="rk ${i < 3 ? 'hot' : ''}">${i + 1}</span><div class="tt">${esc(e.title)}</div></div>
+    <div class="sub"><span class="tm">${whenText(e.ts)}</span>${e.factors.slice(0, 2).map(facTag).join('')}${[...new Set(refs.map(r => r.src))].map(srcBadge).join('')}</div>
+    ${e.summary ? `<div class="sum">${esc(e.summary)}</div>` : ''}
+    <div class="refs">${refs.map(r => `<a href="${esc(r.url)}" target="_blank" rel="noopener">${srcBadge(r.src)}<span>${esc(r.title)}</span></a>`).join('')}</div>
+  </div>`;
+}
+
+// ── 异动归因 ──
+const MV_COLORS = ['#4f8cff', '#a855f7', '#f59e0b', '#06b6d4', '#ec4899', '#84cc16'];
+function chartSvg(m) {
+  const W = 800, H = 260, P = { l: 8, r: 64, t: 14, b: 24 };
+  const p = m.pts, n = p.length;
+  if (n < 2) return '<div class="empty">暂无分时数据</div>';
+  const vs = p.map(x => x[1]).concat(m.pre);
+  let lo = Math.min(...vs), hi = Math.max(...vs); const pd = (hi - lo) * 0.08 || 1; lo -= pd; hi += pd;
+  const X = i => P.l + i / (n - 1) * (W - P.l - P.r), Y = v => P.t + (hi - v) / (hi - lo) * (H - P.t - P.b);
+  const idxOf = ts => { let b = 0, bd = Infinity; p.forEach((x, i) => { const d = Math.abs(x[0] - ts); if (d < bd) { bd = d; b = i; } }); return b; };
+  const line = p.map((x, i) => `${X(i).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ');
+  const col = m.chg >= 0 ? 'var(--up)' : 'var(--down)';
+  const area = `${X(0)},${H - P.b} ${line} ${X(n - 1)},${H - P.b}`;
+  let segs = '';
+  m.moves.forEach((mv, k) => {
+    if (mv.kind === 'gap') return;
+    const a = idxOf(mv.start), b = idxOf(mv.end), c = MV_COLORS[k % MV_COLORS.length], on = k === state.move;
+    segs += `<rect x="${X(a)}" y="${P.t}" width="${Math.max(2, X(b) - X(a))}" height="${H - P.t - P.b}" fill="${c}" opacity="${on ? .16 : .07}" data-mvi="${k}" style="cursor:pointer"/>`;
+    segs += `<polyline fill="none" stroke="${c}" stroke-width="${on ? 3 : 2}" points="${p.slice(a, b + 1).map((x, j) => `${X(a + j).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ')}"/>`;
+    segs += `<g data-mvi="${k}" style="cursor:pointer"><circle cx="${X(b)}" cy="${Y(p[b][1])}" r="9" fill="${c}"/><text x="${X(b)}" y="${Y(p[b][1]) + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">${k + 1}</text></g>`;
+  });
+  // 时间刻度：首尾 + 中间三个
+  const ticks = [0, .25, .5, .75, 1].map(f => Math.round(f * (n - 1)));
+  const tickTxt = ticks.map(i => `<text x="${X(i)}" y="${H - 6}" font-size="11" fill="var(--text-3)" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${hm(p[i][0])}</text>`).join('');
+  const yTicks = [hi - pd, (hi + lo) / 2, lo + pd].filter(v => Math.abs(Y(v) - Y(m.pre)) > 14).map(v => `<text x="${W - P.r + 6}" y="${Y(v) + 4}" font-size="11" fill="var(--text-3)" class="num">${fmtPx(v, m.dec)}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" id="mkChart">
+    <defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".18"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    <line x1="${P.l}" x2="${W - P.r}" y1="${Y(m.pre)}" y2="${Y(m.pre)}" stroke="var(--text-3)" stroke-dasharray="3 4" stroke-width="1"/>
+    <text x="${W - P.r + 6}" y="${Y(m.pre) + 4}" font-size="10.5" fill="var(--text-3)">昨收</text>
+    <polygon points="${area}" fill="url(#ga)"/>
+    <polyline fill="none" stroke="${col}" stroke-width="1.6" points="${line}"/>
+    ${segs}${tickTxt}${yTicks}
+    <line id="cross" x1="0" x2="0" y1="${P.t}" y2="${H - P.b}" stroke="var(--text-3)" stroke-width="1" style="display:none"/>
+  </svg><div class="tip" id="tip"></div>`;
+}
+function reasonHtml(x) {
+  const n = NEWS[x.id]; if (!n) return '';
+  return `<div class="reason"><span class="tm num">${whenText(n.ts)}</span><div>
+    <a class="tt" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a>
+    <div class="ln">${srcBadge(n.src)}${n.factors.slice(0, 3).map(facTag).join('')}</div>
+    ${n.summary && n.summary !== n.title ? `<div class="sm">${esc(n.summary)}</div>` : ''}
+  </div></div>`;
+}
+function renderMarket() {
+  const m = D.markets.find(x => x.id === state.market) || D.markets[0];
+  state.market = m.id;
+  const list = m.moves.length ? m.moves.map((mv, k) => `
+    <div class="mv-item ${k === state.move ? 'on' : ''}" data-mvi="${k}">
+      <div class="head">
+        <span class="no" style="background:${mv.kind === 'gap' ? 'var(--text-3)' : MV_COLORS[k % MV_COLORS.length]}">${k + 1}</span>
+        <span class="rng num">${mv.kind === 'gap' ? '开盘 ' + whenText(mv.end) : `${whenText(mv.start)} – ${hm(mv.end)}`}</span>
+        <span class="pill num ${cls(mv.chg)}">${mv.dir > 0 ? '▲' : '▼'} ${fmtChg(mv.chg, m.unit)}</span>
+        <span class="num" style="color:var(--text-3);font-size:12px">${fmtPx(mv.from, m.dec)} → ${fmtPx(mv.to, m.dec)}</span>
+        ${mv.kind === 'gap' ? '<span class="kind">开盘跳空 · 看休市期间消息</span>' : ''}
+      </div>
+      ${k === state.move ? `<div class="reasons">${mv.news.length ? mv.news.map(reasonHtml).join('') : '<div class="nowhy" style="color:var(--text-3);font-size:13px">同时段没有匹配到明显相关的新闻，可能是资金面、技术面或尚未被报道的因素</div>'}</div>` : ''}
+    </div>`).join('') : '<div class="empty">今日没有超过阈值的异动</div>';
+  $('#view').innerHTML = `
+    <div class="card" style="margin:18px 0 40px">
+      <div class="mk-head"><h3>${esc(m.name)}</h3><span class="big num">${fmtPx(m.last, m.dec)}</span><span class="chg num ${cls(m.chg)}">${fmtChg(m.chg, m.unit)}</span>
+        <span class="th">异动阈值：30 分钟内 ±${m.th}${m.unit === 'bp' ? 'bp' : '%'}</span></div>
+      <div class="chart">${chartSvg(m)}</div>
+      <h2 style="font-size:15px;font-weight:700;padding:10px 18px 4px">异动段与可能原因 <small style="font-weight:500;color:var(--text-3);font-size:12px">点击展开，按相关度排序</small></h2>
+      <div class="mv-list">${list}</div>
+      <div class="disclaimer">原因来自异动前 25 分钟到后 10 分钟内的新闻（跳空看休市期间 12 小时），按市场相关词、因素类型和重要度打分，是相关性提示而不是因果判断。</div>
+    </div>`;
+  bindChart(m);
+}
+function bindChart(m) {
+  const svg = $('#mkChart'), tip = $('#tip'), cross = $('#cross'); if (!svg) return;
+  const n = m.pts.length;
+  svg.addEventListener('mousemove', e => {
+    const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 800;
+    const i = Math.max(0, Math.min(n - 1, Math.round((x - 8) / (800 - 72) * (n - 1))));
+    const [t, v] = m.pts[i], X = 8 + i / (n - 1) * (800 - 72);
+    cross.setAttribute('x1', X); cross.setAttribute('x2', X); cross.style.display = '';
+    const c = m.unit === 'bp' ? (v - m.pre) * 100 : (v / m.pre - 1) * 100;
+    tip.innerHTML = `<span class="num">${hm(t)}</span>　<b class="num">${fmtPx(v, m.dec)}</b>　<span class="num ${cls(c)}">${fmtChg(c, m.unit)}</span>`;
+    tip.style.display = 'block';
+    const px = X / 800 * r.width;
+    tip.style.left = Math.min(r.width - tip.offsetWidth, Math.max(0, px - tip.offsetWidth / 2)) + 10 + 'px'; tip.style.top = '0px';
+  });
+  svg.addEventListener('mouseleave', () => { tip.style.display = 'none'; cross.style.display = 'none'; });
+}
+
+// ── 快讯 ──
+function renderFeed() {
+  const q = state.q.trim().toLowerCase();
+  const list = D.news.filter(n =>
+    (state.lang === 'all' || (state.lang === 'zh') === (n.lang === 'zh')) &&
+    (!state.factor || n.factors.includes(state.factor)) &&
+    (!state.imp || n.imp >= 2) &&
+    (!q || (n.title + n.summary).toLowerCase().includes(q)));
+  const chips = D.factors.map(f => `<button class="chip ${state.factor === f.key ? 'on' : ''}" data-f="${f.key}" style="${state.factor === f.key ? `background:var(--f-${f.key})` : ''}">${esc(f.name)}</button>`).join('');
+  let html = '', lastDay = '';
+  list.slice(0, state.limit).forEach(n => {
+    const d = dayLabel(n.ts);
+    if (d !== lastDay) { html += `<div class="day">${d}</div>`; lastDay = d; }
+    html += `<div class="fi ${n.imp >= 2 ? 'imp' : ''}"><span class="tm num">${hm(n.ts)}${n.est ? '<span title="来源未给出时间，为首次抓到的时间">~</span>' : ''}</span><div>
+      <a class="tt" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a>
+      ${n.summary && n.summary !== n.title ? `<div class="sm">${esc(n.summary)}</div>` : ''}
+      <div class="ln">${srcBadge(n.src)}${n.factors.map(facTag).join('')}</div></div></div>`;
+  });
+  $('#view').innerHTML = `
+    <div class="card feed" style="margin:18px 0 40px">
+      <h2>📰 快讯流 <small>${list.length} 条 · 近 48 小时</small></h2>
+      <div class="filters">
+        <div class="seg" id="segLang">${[['all', '全部'], ['zh', '中文'], ['en', '海外']].map(([k, t]) => `<button data-l="${k}" class="${state.lang === k ? 'on' : ''}">${t}</button>`).join('')}</div>
+        <button class="chip ${state.imp ? 'on' : ''}" id="chipImp" style="${state.imp ? 'background:var(--up)' : ''}">只看重要</button>
+        <input class="search" id="q" placeholder="搜索快讯（按 / 聚焦）" value="${esc(state.q)}">
+      </div>
+      <div class="filters">${chips}</div>
+      ${html || '<div class="empty">没有符合条件的快讯</div>'}
+      ${list.length > state.limit ? `<button class="more" id="more">加载更多（还有 ${list.length - state.limit} 条）</button>` : ''}
+    </div>`;
+}
+
+// ── 路由与交互 ──
+function render() {
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === state.tab));
+  renderTicker();
+  ({ overview: renderOverview, market: renderMarket, feed: renderFeed })[state.tab]();
+}
+function setHash() {
+  const h = state.tab === 'market' ? `#market/${state.market}/${state.move}` : state.tab === 'feed' ? `#feed${state.factor ? '/' + state.factor : ''}` : '#overview';
+  if (location.hash !== h) history.replaceState(null, '', h);
+}
+function readHash() {
+  const [tab, a, b] = location.hash.slice(1).split('/');
+  if (tab === 'market') { state.tab = 'market'; state.market = a || null; state.move = +b || 0; }
+  else if (tab === 'feed') { state.tab = 'feed'; state.factor = a || ''; }
+  else state.tab = 'overview';
+}
+function go(patch) { Object.assign(state, patch); setHash(); render(); window.scrollTo({ top: 0 }); }
+
+document.addEventListener('click', e => {
+  const t = e.target;
+  const tab = t.closest('nav.tabs button');
+  if (tab) return go({ tab: tab.dataset.tab, ...(tab.dataset.tab === 'market' && !state.market ? { market: topMarket(), move: 0 } : {}) });
+  const card = t.closest('.mv-card');
+  if (card) return go({ tab: 'market', market: card.dataset.mk, move: +card.dataset.mv });
+  const tk = t.closest('[data-mk]');
+  if (tk) return go({ tab: 'market', market: tk.dataset.mk, move: 0 });
+  const mvi = t.closest('[data-mvi]');
+  if (mvi && !t.closest('a')) { state.move = +mvi.dataset.mvi; setHash(); renderMarket(); return; }
+  const fac = t.closest('[data-fac]');
+  if (fac) return go({ tab: 'feed', factor: fac.dataset.fac, lang: 'all', imp: false, q: '', limit: 80 });
+  const ev = t.closest('[data-ev]');
+  if (ev && !t.closest('a')) return ev.classList.toggle('open');
+  const l = t.closest('#segLang button');
+  if (l) { state.lang = l.dataset.l; state.limit = 80; return renderFeed(); }
+  const f = t.closest('[data-f]');
+  if (f) { state.factor = state.factor === f.dataset.f ? '' : f.dataset.f; state.limit = 80; setHash(); return renderFeed(); }
+  if (t.closest('#chipImp')) { state.imp = !state.imp; state.limit = 80; return renderFeed(); }
+  if (t.closest('#more')) { state.limit += 120; return renderFeed(); }
+});
+let qTimer;
+document.addEventListener('input', e => {
+  if (e.target.id !== 'q') return;
+  clearTimeout(qTimer);
+  qTimer = setTimeout(() => { state.q = e.target.value; state.limit = 80; const pos = e.target.selectionStart; renderFeed(); const q = $('#q'); q.focus(); q.setSelectionRange(pos, pos); }, 200);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); if (state.tab !== 'feed') go({ tab: 'feed' }); $('#q')?.focus(); }
+});
+window.addEventListener('hashchange', () => { readHash(); render(); });
+
+// 默认打开今天异动最显著的品种
+function topMarket() {
+  let best = D.markets[0], bv = -1;
+  D.markets.forEach(m => m.moves.forEach(mv => { const v = Math.abs(mv.chg) / m.th; if (v > bv) { bv = v; best = m; } }));
+  return best?.id;
+}
+
+// 主题
+function applyTheme(t) { document.documentElement.dataset.theme = t; $('#btnTheme').textContent = t === 'dark' ? '☾' : '☀'; }
+applyTheme(LS.get('mw-theme', matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+$('#btnTheme').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; LS.set('mw-theme', t); applyTheme(t); };
+
+// 来源状态
+$('#btnSrc').onclick = () => {
+  const dlg = $('#dlgSrc');
+  dlg.innerHTML = `<h3>📡 来源状态</h3><p>更新于 ${esc(D.updated.replace('T', ' ').slice(0, 16))}（北京时间）。🔒 为收费媒体，只取标题与摘要。</p>
+    ${D.sources.map(s => `<div class="src-row"><span>${s.ok ? '✅' : '⚠️'}</span><span>${esc(s.name)}${s.paywall ? ' 🔒' : ''}</span><span class="num" style="color:var(--text-3)">${s.count}</span>${s.error ? `<span class="err">${esc(s.error)}</span>` : ''}</div>`).join('')}
+    <button class="close" onclick="this.closest('dialog').close()">关闭</button>`;
+  dlg.showModal();
+};
+
+async function load() {
+  try {
+    const r = await fetch('data.json?t=' + Date.now());
+    D = await r.json();
+  } catch (e) { $('#view').innerHTML = `<div class="empty">数据加载失败：${esc(e.message)}</div>`; return; }
+  NEWS = Object.fromEntries(D.news.map(n => [n.id, n]));
+  SRC = Object.fromEntries(D.sources.map(s => [s.id, s]));
+  FAC = Object.fromEntries(D.factors.map(f => [f.key, f]));
+  const bad = D.sources.filter(s => !s.ok).length;
+  $('#updated').textContent = `更新于 ${D.updated.slice(5, 16).replace('T', ' ')}${bad ? ` · ${bad} 个来源异常` : ''}`;
+  readHash();
+  if (state.tab === 'market' && !D.markets.some(m => m.id === state.market)) state.market = topMarket();
+  render();
+}
+load();
+setInterval(load, 5 * 60 * 1000);   // 每 5 分钟重新读一次 data.json
+</script>
+</body>
+</html>
