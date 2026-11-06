@@ -155,24 +155,21 @@
   .stt { font-size: 12px; color: var(--text-2); border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 10px; display: inline-flex; align-items: center; gap: 6px; }
   .stt i { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
   .stt.live i { background: var(--down); box-shadow: 0 0 6px var(--down); }
-  .vt { display: inline-flex; background: var(--panel-2); border-radius: 8px; padding: 2px; }
-  .vt button { width: 30px; height: 26px; border-radius: 6px; display: grid; place-items: center; color: var(--text-3); }
-  .vt button.on { background: var(--panel); color: var(--text-1); box-shadow: 0 0 0 1px var(--line-2); }
-  .vt svg.ic { width: 15px; height: 15px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; padding: 0 18px 18px; }
+  /* 数据格子：和参考截图一致——行情是「名称 / 大号价格 + ▲▼涨跌」，行业是「图标 名称 …… ▲▼涨跌」 */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 0 18px 18px; }
   .cards > * { min-width: 0; }
-  .qc { background: var(--panel-2); border-radius: 12px; padding: 12px 14px; cursor: pointer; position: relative; overflow: hidden; border: 1px solid transparent; }
+  .qc { background: var(--panel-2); border-radius: 12px; padding: 12px 14px; cursor: pointer; border: 1px solid transparent; }
   .qc:hover, .tc:hover { border-color: var(--line-2); }
-  .qc .n { font-size: 13.5px; color: var(--text-2); }
-  .qc b { display: block; font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin-top: 2px; }
-  .qc .pct { font-size: 14px; }
-  .qc svg.sp { position: absolute; right: 12px; bottom: 12px; width: 84px; height: 30px; }
-  .tc { background: var(--panel-2); border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; min-height: 58px; border: 1px solid transparent; }
-  .tc .ico { width: 32px; height: 32px; border-radius: 9px; background: var(--panel); display: grid; place-items: center; color: var(--text-2); flex: none; }
-  .tc .n { flex: 1; min-width: 0; }
-  .tc .n b { display: block; font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tc .n span { font-size: 11.5px; color: var(--text-3); }
-  .tc .pct { font-size: 15px; }
+  .qc .n { font-size: 14px; color: var(--text-2); }
+  .qc .r { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+  .qc b { font-size: 25px; font-weight: 800; letter-spacing: -.01em; }
+  .qc .pct { font-size: 15px; }
+  .tc { background: var(--panel-2); border-radius: 12px; padding: 0 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 54px; border: 1px solid transparent; }
+  .tc .n { display: flex; align-items: center; gap: 7px; min-width: 0; font-size: 16px; font-weight: 700; }
+  .tc .n span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tc .emo { font-size: 19px; line-height: 1; flex: none; }
+  .tc .pct { font-size: 15px; flex: none; }
+  .emo { font-style: normal; }
   .board-foot { text-align: center; color: var(--text-3); font-size: 12px; }
 
   /* 详情页公共 */
@@ -181,6 +178,7 @@
   .ph { padding: 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
   .ph .big-ico { width: 48px; height: 48px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
   .ph .big-ico svg.ic { width: 26px; height: 26px; }
+  .ph .big-ico .emo { font-size: 28px; line-height: 1; }
   .ph h1 { font-size: 22px; font-weight: 800; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
   .ph h1 small { font-size: 13px; color: var(--text-3); font-weight: 500; }
   .ph .px { display: flex; gap: 12px; align-items: baseline; margin-top: 3px; flex-wrap: wrap; }
@@ -299,10 +297,9 @@
     /* 手机：App 式两列大数字卡片 */
     .cards { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 0 12px 14px; }
     .sec-h { padding: 14px 12px 10px; }
-    .qc { padding: 11px 12px; } .qc b { font-size: 22px; } .qc svg.sp { display: none; }
-    /* 主题卡片：图标在左，名字和涨跌上下排，避免名字被挤掉 */
-    .tc { padding: 10px; display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 9px; row-gap: 1px; align-items: center; min-height: 0; }
-    .tc .ico { width: 30px; height: 30px; grid-row: 1 / 3; } .tc .n b { font-size: 15px; } .tc .n span { display: none; } .tc .pct { font-size: 14px; grid-column: 2; }
+    /* 手机：价格和涨跌保持同一行（和参考截图一致），行业名完整显示 */
+    .qc { padding: 11px 10px; } .qc .r { flex-wrap: nowrap; gap: 4px; } .qc b { font-size: 18.5px; letter-spacing: -.02em; } .qc .pct { font-size: 12px; letter-spacing: -.02em; }
+    .tc { padding: 0 8px; height: 48px; gap: 3px; } .tc .n { font-size: 13px; gap: 3px; } .tc .emo { font-size: 14px; } .tc .pct { font-size: 12px; letter-spacing: -.03em; }
     .stats { grid-template-columns: repeat(2, 1fr); }
     .stats div:nth-child(4n) { border-right: 1px solid var(--line); } .stats div:nth-child(2n) { border-right: 0; }
     table.st th, table.st td { padding: 9px 10px; }
@@ -802,35 +799,25 @@ function usSession() {
   if (m >= 960 && m < 1200) return ['美股盘后', true];
   return ['待美股盘前', false];
 }
-const themeIco = t => ic(t.ico);
-// 板块分区视图：电脑默认热力图，手机默认卡片；用户切换后记住
-const viewMode = () => LS.get('mw-view', isPhone() ? 'cards' : 'heat');
+const themeIco = t => `<i class="emo">${t.icon}</i>`;   // 按参考截图用 emoji，一眼认出是哪个行业
 
 function renderBoard(key) {
-  const tab = TH.tabs.find(t => t.key === key), mode = viewMode();
+  const tab = TH.tabs.find(t => t.key === key);
+  const themeKeys = tab.sections.filter(s => s.kind === 'theme').flatMap(s => s.items);
   $('#view').innerHTML = `<div class="board">${tab.sections.map(sec => {
     let right = '';
-    if (sec.session === 'us') { const [t, live] = usSession(); right += `<span class="stt ${live ? 'live' : ''}"><i></i>${t}</span>`; }
-    if (sec.kind === 'theme') right += `<span class="vt"><button data-view="heat" class="${mode === 'heat' ? 'on' : ''}" title="热力图">${ic('heat')}</button><button data-view="cards" class="${mode === 'cards' ? 'on' : ''}" title="卡片">${ic('grid')}</button></span>`;
-    let body;
-    if (sec.kind === 'quote') {
-      body = `<div class="cards">${sec.items.map(it => {
-        const q = Q[it.id] || {}, m = D.markets.find(x => x.id === it.id);
-        return `<div class="qc" data-stock="${it.id}"><div class="n">${esc(it.name)}</div><b class="num">${fmtP(q.price)}</b>${pctHtml(q.pct)}
-          ${m ? `<svg class="sp" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline fill="none" stroke="${(q.pct ?? m.chg) >= 0 ? 'var(--up)' : 'var(--down)'}" stroke-width="1.6" points="${sparkPts(m.pts, m.pre, 100, 28)}"/></svg>` : ''}</div>`;
-      }).join('')}</div>`;
-    } else if (mode === 'heat') {
-      body = `<div class="pad"><div class="heat" data-heat="${sec.items.join(',')}"></div><div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11.5px;color:var(--text-3);gap:8px;flex-wrap:wrap"><span>点主题名看详情，点方块看个股 · 块大小 = 美元市值（汇率近似）</span>${legend()}</div></div>`;
-    } else {
-      body = `<div class="cards">${sec.items.map(k => {
-        const t = TH.themes[k];
-        const sub = t.quote ? qName(t.quote).replace('主连', '') : t.board ? 'A股板块' : `${t.stocks.length} 只成分股`;
-        return `<div class="tc" data-th="${k}"><span class="ico">${themeIco(t)}</span><div class="n"><b>${esc(t.name)}</b><span>${esc(sub)}</span></div>${pctHtml(themePct(t))}</div>`;
-      }).join('')}</div>`;
-    }
-    return `<section class="card"><div class="sec-h"><h2>${esc(sec.title)}</h2><div class="r">${right}</div></div>${body}</section>`;
+    if (sec.session === 'us') { const [t, live] = usSession(); right = `<span class="stt ${live ? 'live' : ''}"><i></i>${t}</span>`; }
+    const body = sec.kind === 'quote'
+      ? sec.items.map(it => { const q = Q[it.id] || {};
+          return `<div class="qc" data-stock="${it.id}"><div class="n">${esc(it.name)}</div><div class="r"><b class="num">${fmtP(q.price)}</b>${pctHtml(q.pct)}</div></div>`; }).join('')
+      : sec.items.map(k => { const t = TH.themes[k];
+          return `<div class="tc" data-th="${k}"><div class="n">${themeIco(t)}<span>${esc(t.name)}</span></div>${pctHtml(themePct(t))}</div>`; }).join('');
+    return `<section class="card"><div class="sec-h"><h2>${esc(sec.title)}</h2><div class="r">${right}</div></div><div class="cards">${body}</div></section>`;
   }).join('')}
-  <div class="board-foot">产业主题按成分股等权平均，有色金属用上期所主连 · 行情 30 秒刷新 · 仅供参考，不构成投资建议</div></div>`;
+  ${themeKeys.length ? `<section class="card"><div class="sec-h"><h2>${esc(tab.name)}产业热力图</h2><div class="r">${legend()}</div></div>
+    <div class="pad"><div class="heat" data-heat="${themeKeys.join(',')}"></div>
+    <div style="margin-top:8px;font-size:11.5px;color:var(--text-3)">看每个行业里具体哪只股票在涨跌 · 块大小 = 美元市值（汇率近似）· 点行业名进行业详情，点方块看个股</div></div></section>` : ''}
+  <div class="board-foot">行业涨跌按成分股等权平均，有色金属用上期所主连 · 点格子看该行业的股票 · 行情 30 秒刷新 · 仅供参考，不构成投资建议</div></div>`;
   drawHeats();
 }
 
@@ -1145,8 +1132,6 @@ document.addEventListener('click', e => {
   if (sk) return go({ tab: 'stock', stock: sk.dataset.stock });
   const bk = t.closest('[data-back]');
   if (bk) { if (state.depth > 0) { state.depth--; history.back(); } else go({ tab: bk.dataset.back || state.from || 'global' }); return; }
-  const vw = t.closest('[data-view]');
-  if (vw) { LS.set('mw-view', vw.dataset.view); return renderBoard(state.tab); }
   const pd = t.closest('[data-period]');
   if (pd) { DETAIL.period = pd.dataset.period; document.querySelectorAll('#periods button').forEach(b => b.classList.toggle('on', b === pd));
     $('#dchart').innerHTML = '<div class="empty">图表加载中…</div>'; return loadChart(state.stock, DETAIL.period, '#dchart'); }
@@ -1226,6 +1211,7 @@ async function load() {
   } else if (state.tab === 'market') render();   // 定时重读：总览由行情刷新带动，快讯页、详情页不打断
 }
 let first = true;
+try { localStorage.removeItem('mw-view'); } catch {}   // 旧版「热力图 / 卡片」切换的记忆，已不用
 load();
 setInterval(load, 5 * 60 * 1000);   // 每 5 分钟重新读一次 data.json
 setInterval(() => { if (document.visibilityState === 'visible') refreshQuotes(); }, 30 * 1000);   // 行情 30 秒刷新
