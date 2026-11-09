@@ -239,6 +239,12 @@
   .reason .ln { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
   .reason .sm { font-size: 12.5px; color: var(--text-2); margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
+  .linked { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; font-size: 12.5px; color: var(--text-2); padding: 4px 0 8px; }
+  .linked svg.ic { width: 14px; height: 14px; color: var(--accent); }
+  .linked a { background: var(--panel-2); border-radius: 6px; padding: 1px 8px; cursor: pointer; font-weight: 600; }
+  .linked a:hover { box-shadow: 0 0 0 1px var(--line-2); }
+  .linked .hint2 { color: var(--text-3); font-size: 11.5px; width: 100%; }
+
   /* 快讯：紧凑时间线 */
   .filters { display: flex; gap: 8px; align-items: center; padding: 0 18px 10px; overflow-x: auto; scrollbar-width: none; }
   .filters::-webkit-scrollbar { display: none; }
@@ -651,11 +657,14 @@ function buildSummary() {
   if (top) lines.push(`<b>最受关注</b>：${esc(top.title)}（${top.refs.length} 家报道）${top.refs.slice(0, 3).map(id => cite(NEWS[id])).join('')}`);
   return { lines, cites };
 }
+// 同一时段朝同一方向异动的其他品种（爬虫算好的联动提示）
+const linkedTxt = mv => (mv.linked || []).map(x => `${x.name} ${fmtChg(x.chg, x.unit)}`).join('、');
 function moveRow({ m, mv, i }) {
   const n = (mv.news || []).map(x => NEWS[x.id]).find(Boolean);
+  const lk = linkedTxt(mv);
   return `<div class="li" data-mkmv="${m.id}|${i}">${bxHtml(mv.chg, m.unit)}<div class="body">
     <div class="t">${esc(m.name)}<span>${mv.kind === 'gap' ? '开盘跳空 ' + hm(mv.end) : `${hm(mv.start)}–${hm(mv.end)}`} · ${dayLabel(mv.end)}</span></div>
-    <div class="s">${n ? esc(n.title) : '同时段没有匹配到明显相关的新闻'}</div></div></div>`;
+    <div class="s">${n ? esc(n.title) : lk ? `与 ${esc(lk)} 同步${mv.dir > 0 ? '上涨' : '下跌'}` : '同时段没有匹配到明显相关的新闻'}</div></div></div>`;
 }
 function eventHtml(e, i) {
   const refs = e.refs.map(id => NEWS[id]).filter(Boolean);
@@ -751,7 +760,8 @@ function renderMarket() {
           <div class="sub num">${fmtPx(mv.from, m.dec)} → ${fmtPx(mv.to, m.dec)}${mv.kind === 'gap' ? ' · 开盘跳空，看休市期间的消息' : ''} · ${mv.news.length} 条可能原因</div>
         </div>
       </div>
-      ${k === state.move ? `<div class="reasons">${mv.news.length ? mv.news.map(reasonHtml).join('') : '<div style="color:var(--text-3);font-size:13px;padding:6px 0">同时段没有匹配到明显相关的新闻，可能是资金面、技术面或尚未被报道的因素</div>'}</div>` : ''}
+      ${k === state.move ? `<div class="reasons">${(mv.linked || []).length ? `<div class="linked">${ic('bolt')}同时段同步${mv.dir > 0 ? '上涨' : '下跌'}：${mv.linked.map(x => `<a data-mk="${x.id}">${esc(x.name)} <span class="${cls(x.chg)}">${fmtChg(x.chg, x.unit)}</span></a>`).join('')}<span class="hint2">多个市场一起动，通常是同一个外部因素</span></div>` : ''}
+        ${mv.news.length ? mv.news.map(reasonHtml).join('') : '<div style="color:var(--text-3);font-size:13px;padding:6px 0">同时段没有匹配到明显相关的新闻，可能是资金面、技术面或尚未被报道的因素</div>'}</div>` : ''}
     </div>`).join('') : '<div class="empty">今日没有超过阈值的异动</div>';
   baseView().innerHTML = `
     <div class="page"><div class="card">

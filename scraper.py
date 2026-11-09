@@ -47,22 +47,37 @@ MARKETS = [
 ]
 BP_MARKETS = {"171.US10Y"}
 
-# 每个市场的相关词：命中越多，越可能是这段异动的原因
-MARKET_KW = {
-    "cn":   r"A股|沪指|上证|深成指|创业板|两市|沪深|科创|北向|证监会|国务院|央行|人民银行|降准|LPR|中国|国内|稳增长|汇金|国家队|互换便利|中美",
-    "hk":   r"港股|恒指|恒生|恒科|南向|港交所|香港|中概|腾讯|阿里|美团|小米|中美",
-    "us":   r"美股|纳指|纳斯达克|标普|道指|华尔街|美联储|鲍威尔|英伟达|特斯拉|苹果|微软|科技股|芯片股|AI|美国|中期选举|特朗普|"
-            r"Wall Street|Nasdaq|S&P 500|Dow|Fed|Powell|Nvidia|Tesla|Apple|Microsoft|tech|AI|Treasury|Trump|midterm|stock futures",
-    "jp":   r"日经|日本|日股|日元|日本央行|东京|软银|Nikkei|Japan|yen|BOJ|Tokyo|SoftBank|AI|芯片|半导体|chip",
-    "kr":   r"韩国|KOSPI|韩股|三星|SK海力士|首尔|韩元|Korea|Samsung|SK Hynix|Seoul|won|AI|芯片|半导体|存储|chip",
-    "eu":   r"欧股|欧洲|德国|DAX|欧央行|欧元|斯托克|Europe|German|ECB|euro|DAX|STOXX",
-    "gold": r"黄金|金价|贵金属|避险|美元|美联储|降息|gold|bullion|safe-haven|safe haven|Fed|rate",
-    "oil":  r"原油|油价|石油|OPEC|欧佩克|炼油|中东|伊朗|俄罗斯|沙特|库存|oil|crude|OPEC|Brent|refinery|Iran|Saudi|Russia",
-    "fx":   r"美元|美元指数|汇率|美联储|非农|CPI|欧元|日元|dollar|currency|Fed|yen|euro|payroll",
-    "cnh":  r"人民币|离岸|在岸|汇率|中间价|央行|中美|yuan|renminbi|CNH|PBOC",
-    "bond": r"美债|国债|收益率|美联储|通胀|降息|财政部|Treasury|yield|bond|Fed|inflation|rate",
+# 每个市场的关键词分两级：
+# 核心词 = 能确定说的就是这个市场（日经 / 日本 / 日元…），每个 +3 分；相关词 = 相关主题（AI、芯片、美元…），每个 +1 分
+MARKET_CORE = {
+    "cn":   r"A股|沪指|上证|深成指|深证成指|创业板|科创|两市|沪深|北向|汇金|国家队|互换便利|证监会|人民银行|中国央行|国家统计局",
+    "hk":   r"港股|恒指|恒生|恒科|南向|港交所|香港|中概",
+    "us":   r"美股|纳指|纳斯达克|标普|道指|华尔街|美股期货|Wall Street|Nasdaq|S&P 500|Dow|stock futures|US stocks|U.S. stocks",
+    "jp":   r"日经|日本|日股|日元|日本央行|东京|亚太股市|亚洲股市|亚太市场|Nikkei|Japan|Japanese|yen|BOJ|Tokyo|Topix|Asian stocks|Asian markets|Asian shares|Asia stocks",
+    "kr":   r"韩国|KOSPI|韩股|首尔|韩元|亚太股市|亚洲股市|亚太市场|Korea|Korean|Seoul|Asian stocks|Asian markets|Asian shares|Asia stocks",
+    "eu":   r"欧股|欧洲|德国|DAX|欧央行|斯托克|Europe|European|German|ECB|STOXX",
+    "gold": r"黄金|金价|贵金属|gold|bullion",
+    "oil":  r"原油|油价|石油|OPEC|欧佩克|oil|crude|Brent|WTI",
+    "fx":   r"美元指数|美元|dollar|DXY",
+    "cnh":  r"人民币|离岸|在岸|中间价|yuan|renminbi|CNH",
+    "bond": r"美债|国债收益率|Treasury|Treasuries|yield|yields|bond|bonds",
 }
-
+MARKET_REL = {
+    "cn":   r"国务院|央行|降准|LPR|中国|国内|稳增长|中美|CPI|PPI|社融",
+    "hk":   r"腾讯|阿里|美团|小米|中美|中国|内地",
+    "us":   r"美联储|鲍威尔|英伟达|特斯拉|苹果|微软|科技股|芯片股|AI|美国|中期选举|特朗普|"
+            r"Fed|Powell|Nvidia|Tesla|Apple|Microsoft|tech|AI|Treasury|Trump|midterm",
+    "jp":   r"软银|SoftBank|AI|芯片|半导体|chip|亚洲|亚太|Asian|Asia",
+    "kr":   r"三星|SK海力士|Samsung|SK Hynix|AI|芯片|半导体|存储|chip|亚洲|亚太|Asian|Asia",
+    "eu":   r"欧元|euro",
+    "gold": r"避险|美元|美联储|降息|safe-haven|safe haven|Fed|rate",
+    "oil":  r"炼油|中东|伊朗|俄罗斯|沙特|库存|霍尔木兹|refinery|Iran|Saudi|Russia|Hormuz",
+    "fx":   r"汇率|美联储|非农|CPI|欧元|日元|currency|Fed|yen|euro|payroll",
+    "cnh":  r"汇率|央行|中美|PBOC",
+    "bond": r"美联储|通胀|降息|财政部|Fed|inflation|rate",
+}
+MARKET_KW = {k: MARKET_CORE[k] + "|" + MARKET_REL[k] for k in MARKET_CORE}   # 合在一起：详情页「发布后的行情」、大事打分用
+EQUITY = ("cn", "hk", "us", "jp", "kr", "eu")      # 股市：提到别的股市却没提本市场的新闻要降权
 
 def kw_re(pattern):
     """英文词加词边界（AI 不能命中 Airbus，Fed 不能命中 Federal）；全大写的短缩写区分大小写。"""
@@ -80,6 +95,8 @@ def kw_re(pattern):
 
 
 MARKET_RE = {k: kw_re(v) for k, v in MARKET_KW.items()}
+CORE_RE = {k: kw_re(v) for k, v in MARKET_CORE.items()}
+REL_RE = {k: kw_re(v) for k, v in MARKET_REL.items()}
 GLOBAL_RE = kw_re(MARKET_KW["us"] + r"|全球|外盘|隔夜|抛售|避险|selloff|sell-off|global|markets")
 ALL_MKT_RE = kw_re("|".join(MARKET_KW.values()))
 
@@ -90,7 +107,7 @@ FACTORS = [
                                  r"Fed|FOMC|Powell|rate cut|rate hike|interest rate|central bank|ECB|BOJ|Bank of England"),
     ("macro",     "宏观数据", 3, r"CPI|PPI|PMI|GDP|非农|就业|失业率|零售销售|社融|M2|通胀|通缩|工业增加值|进出口|贸易顺差|初请|"
                                  r"inflation|payrolls?|jobs report|unemployment|retail sales|jobless|consumer prices|economic data"),
-    ("geo",       "地缘冲突", 3, r"俄罗斯|乌克兰|以色列|伊朗|哈马斯|中东|冲突|战争|袭击|导弹|空袭|停火|制裁|朝鲜|台海|红海|"
+    ("geo",       "地缘冲突", 3, r"俄罗斯|乌克兰|以色列|伊朗|美伊|伊核|俄乌|哈马斯|中东|冲突|战争|袭击|导弹|空袭|停火|斡旋|和谈|制裁|朝鲜|台海|红海|霍尔木兹|"
                                  r"war|Iran|Israel|Ukraine|Russia|missile|strike|ceasefire|sanction|attack|Gaza|Middle East"),
     ("policy",    "政策政治", 2, r"国务院|证监会|发改委|财政部|商务部|关税|特朗普|白宫|选举|中期选举|国会|刺激政策|稳增长|专项债|降费|"
                                  r"tariff|Trump|White House|election|midterm|Congress|Senate|stimulus|Treasury Secretary|Bessent"),
@@ -104,9 +121,25 @@ FACTORS = [
 ]
 FACTOR_RE = [(k, n, w, kw_re(p)) for k, n, w, p in FACTORS]
 FACTOR_W = {k: w for k, _, w, _ in FACTORS}
-# 行情播报（「恒指收跌 1%」这类）是结果不是原因，归因时降权
-RESULT_RE = re.compile(r"(指数?|股|期货|价|ETF)[^，,。]{0,6}(涨|跌)\d|午盘|早盘|尾盘|收市|报收|走弱|走强|震荡|收盘|收评|午评|开盘|收跌|收涨|收报|跌幅扩大|涨幅扩大|拉升|跳水|直线|走高|走低|翻红|翻绿|失守|跌破|突破|日内|涨超|跌超|涨逾|跌逾|大涨|大跌|暴跌|暴涨|重挫|熊市|"
-                       r"\bclose[sd]?\b|\bopen(s|ed)?\b|\brall(y|ies)\b|\bslides?\b|\btumbles?\b|\bsurges?\b|\bplunges?\b")
+# 行情播报（「恒指收跌 1%」「创业板指高开 1.19%」这类）是结果不是原因
+RESULT_RE = re.compile(r"(指数?|股|期货|价|ETF|板块|概念)[^，,。]{0,6}(涨|跌)\d|高开|低开|平开|报\d+(\.\d+)?点|午盘|早盘|尾盘|盘中|盘前|收市|报收|走弱|走强|震荡|收盘|收评|午评|开盘|"
+                       r"收跌|收涨|收报|跌幅扩大|涨幅扩大|拉升|跳水|直线|走高|走低|翻红|翻绿|失守|跌破|站上|突破|日内|涨超|跌超|涨逾|跌逾|大涨|大跌|暴跌|暴涨|重挫|熊市|"
+                       r"(多数|普遍|集体|全线|齐)(上涨|下跌|走高|走低|收涨|收跌|高开|低开)|涨停|跌停|异动|转涨|转跌|翻涨|翻跌|"
+                       r"(上涨|下跌|涨|跌|升|降)(近|超|逾|约|了)?\d+(\.\d+)?%|至\d+(\.\d+)?点|"
+                       r"\bclose[sd]?\b|\bopen(s|ed)?\b|\brall(y|ies)\b|\bslides?\b|\btumbles?\b|\bsurges?\b|\bplunges?\b|"
+                       r"\bbounces?\b|\brebounds?\b|\bclimbs?\b|\bslips?\b|\bdips?\b|\bsinks?\b|\bjumps?\b|\bsoars?\b|\bedges? (higher|lower)\b|\b(rise|rises|fall|falls|gain|gains|drop|drops)\b", re.I)
+# 带了原因的行情播报（「受伊朗局势影响，油价…」「Asian stocks bounce as AI jitters recede」）能解释异动，不排除
+CAUSAL_RE = re.compile(r"受.{0,14}(影响|提振|拖累|推动)|因为?|由于|带动|拖累|提振|推动|获益于|在.{0,12}(之际|背景下)|"
+                       r"\bas\b|\bafter\b|\bamid\b|\bfollowing\b|\bon (fears?|hopes?|worries|concerns?|bets?|optimism|news)\b", re.I)
+# 例行操作（每天的逆回购、中间价公布等）：不是催化剂，降权
+ROUTINE_RE = re.compile(r"逆回购操作|开展.{0,12}逆回购|中间价(报|调)|公开市场.{0,6}操作|MLF操作|国库现金")
+# 早报、汇总类：一篇里什么都有，不是具体原因，直接排除
+DIGEST_RE = re.compile(r"早餐|晚报|早报|午报|晚间要闻|要闻汇总|盘前必读|一文|速览|汇总|周报|月报|周前瞻|"
+                       r"\bBriefing\b|What to watch|Things to Know|\bLive\b|Live updates|Latest .* News and Analysis|\bnewsletter\b", re.I)
+# 观点、研报、点评、特稿：不是触发行情的事件，降权
+OPINION_RE = re.compile(r"证券[:：]|研报|策略|展望|观点|点评|解读|分析师|首席|经济学家|专家称|复盘|前瞻|"
+                        r"\bAnalysis\b|\bOpinion\b|\bCommentary\b|\bExplainer\b|\bInsight\b|\bcolumn\b|\bpodcast\b|Odd Lots|"
+                        r"\bcould\b|\bmight\b|\bmay\b|^(How|Why|What|Inside|Here's|Here is)\b", re.I)
 NOISE_RE = re.compile(r"辞职|减持计划|股东大会|回购进展|担保|董事会决议|获得.*专利|中标|签订.*合同|募集资金")
 
 
@@ -294,7 +327,14 @@ SOURCES = [
 def tag(n):
     text = n["title"] + " " + n["summary"][:120]
     n["factors"] = [k for k, _, _, r in FACTOR_RE if r.search(text)]
-    n["result"] = bool(RESULT_RE.search(n["title"]))
+    is_result = bool(RESULT_RE.search(n["title"]))
+    # 带原因的行情播报：有「受…影响 / as / amid」这类连接词，或者同时带有地缘、货币、宏观、政策因素（「美伊斡旋再起、黄金重回 4100」）
+    n["explain"] = is_result and (bool(CAUSAL_RE.search(n["title"])) or any(f in n["factors"] for f in ("geo", "monetary", "macro", "policy")))
+    data_release = any(f in n["factors"] for f in ("macro", "monetary"))   # 「CPI 同比上涨」「Inflation rises」是数据发布，本身就是原因
+    n["result"] = is_result and not n["explain"] and not data_release   # 纯行情播报
+    n["opinion"] = bool(OPINION_RE.search(n["title"]))
+    n["digest"] = bool(DIGEST_RE.search(n["title"]))
+    n["routine"] = bool(ROUTINE_RE.search(n["title"]))
     n["mk"] = [m[0] for m in MARKETS if MARKET_RE[m[4]].search(text)][:6]   # 相关行情品种，详情页算发布后的行情反应
     if NOISE_RE.search(n["title"]):
         n["imp"] = 0
@@ -376,43 +416,79 @@ def detect_moves(secid, pre, pts, th):
     return kept[:6]
 
 
-def rank_news(m, move, pool, group_kw):
-    """给异动段挑出可能的原因：时间窗口内的新闻，按相关度打分。"""
-    lo, hi = move["start"] - NEWS_BEFORE * 60, move["end"] + NEWS_AFTER * 60
-    if move["kind"] == "gap":                      # 跳空看的是休市期间发生了什么，窗口放宽到前 12 小时
-        lo = move["start"] - 12 * 3600
+def rank_news(secid, move, pool, kw):
+    """给异动段挑出可能的原因。
+
+    时间：异动开始前 25 分钟到开始后 15 分钟（长异动放宽到 40 分钟）的新闻算「催化剂」，开始前 20 分钟到开始后 5 分钟最可能；
+          带原因的行情播报（解释类）可以晚到异动结束后 10 分钟。跳空看休市期间 12 小时。
+    打分：本市场核心词 ×3 + 相关词 ×1 + 因素权重 + 重要度 ×1.5 + 时间加分
+          − 观点 / 研报 / 特稿 4 − 例行操作（逆回购、中间价）4 − 只提别的股市 4 − 带原因的行情播报 1；纯行情播报、早报汇总直接排除。
+    入选：至少命中一个本市场核心词，或者是命中本市场相关词的高权重因素（货币 / 宏观 / 地缘）重要快讯；分数 ≥ 5。
+    """
+    start, end, gap = move["start"], move["end"], move["kind"] == "gap"
+    lo = start - (12 * 3600 if gap else NEWS_BEFORE * 60)
+    hi_cat = start if gap else start + max(15 * 60, min(end - start, 40 * 60))   # 催化剂：开始后 15 分钟，长异动放宽到 40 分钟
+    hi_exp = end + NEWS_AFTER * 60
     scored = []
     for n in pool:
-        if n.get("est") or not (lo <= n["ts"] <= hi):
+        ts = n["ts"]
+        if n.get("est") or n.get("result") or n.get("digest") or not (lo <= ts <= max(hi_cat, hi_exp)):
+            continue
+        if ts > hi_cat and not n.get("explain"):          # 异动开始 15 分钟后才出来的，只收解释类
             continue
         text = n["title"] + " " + n["summary"][:120]
-        kw = len(set(x.lower() for x in group_kw.findall(text)))
-        if move["kind"] == "gap" and kw == 0:     # 开盘跳空常常是外盘带的：隔夜美股 / 全球风险事件按一半权重算
-            kw = 0.5 * len(set(x.lower() for x in GLOBAL_RE.findall(text)))
+        core = len(set(x.lower() for x in CORE_RE[kw].findall(text)))
+        rel = len(set(x.lower() for x in REL_RE[kw].findall(text)))
+        if gap and core == 0:                             # 开盘跳空常常是外盘带的：隔夜美股 / 全球风险事件算相关词
+            rel += len(set(x.lower() for x in GLOBAL_RE.findall(text)))
         fw = max([FACTOR_W[f] for f in n["factors"]], default=0)
-        if kw == 0 and n["imp"] < 2:
+        if core == 0 and not (fw >= 3 and n["imp"] >= 2 and rel >= 1) and not (gap and rel >= 2):
             continue
-        score = kw * 2 + fw + n["imp"] * 1.5 - (2.5 if n["result"] else 0)
-        if move["kind"] != "gap":
-            mid = (move["start"] + move["end"]) / 2
-            score += max(0, 1.5 - abs(n["ts"] - mid) / 1200)   # 离异动中点越近加分
-        if score >= 3:
+        score = core * 3 + min(rel, 3) + fw + n["imp"] * 1.5
+        if n.get("opinion"):
+            score -= 4
+        if n.get("routine"):
+            score -= 4
+        if n.get("explain"):
+            score -= 1
+        if kw in EQUITY and core == 0 and not gap:        # 只提了别的股市（如评估日经时出现「创业板指…」）
+            if any(CORE_RE[o].search(text) for o in EQUITY if o != kw):
+                score -= 4
+        if not gap:                                       # 时间加分：催化剂通常在异动开始前后
+            dt = ts - start
+            score += 2 if -1200 <= dt <= 300 else 1 if -1500 <= dt < -1200 else 0.5 if 300 < dt <= 900 else 0
+        if score >= 5:
             scored.append((score, n))
-    scored.sort(key=lambda x: -x[0])
+    scored.sort(key=lambda x: (-x[0], -x[1]["ts"]))
     picked, seen = [], []
-    for s, n in scored:
+    for sc, n in scored:
         k = norm(n["title"])
         if any(similar(k, o) for o in seen):
             continue
         seen.append(k)
-        picked.append({"id": n["id"], "score": round(s, 1)})
+        picked.append({"id": n["id"], "score": round(sc, 1)})
         if len(picked) >= 6:
             break
     return picked
 
 
-def market_data(pool):
+def link_moves(markets):
+    """同一时段别的品种也朝同一方向异动：多半是同一个原因，作为联动提示。"""
+    allm = [(m, mv) for m in markets for mv in m["moves"]]
+    for m, mv in allm:
+        linked = []
+        for m2, mv2 in allm:
+            if m2["id"] == m["id"] or mv2["dir"] != mv["dir"] or mv2["kind"] != mv["kind"]:
+                continue
+            ov = min(mv["end"], mv2["end"]) - max(mv["start"], mv2["start"])
+            if ov > 0.5 * max(60, min(mv["end"] - mv["start"], mv2["end"] - mv2["start"])):
+                if not any(x["id"] == m2["id"] for x in linked):
+                    linked.append({"id": m2["id"], "name": m2["name"], "chg": mv2["chg"], "unit": m2["unit"]})
+        mv["linked"] = sorted(linked, key=lambda x: -abs(x["chg"]))[:4]
+
+def market_data(pool, prev_markets=()):
     out, errs = [], []
+    prev_by = {m["id"]: m for m in prev_markets}
 
     def one(spec):
         secid, name, group, th, kw = spec
@@ -420,10 +496,16 @@ def market_data(pool):
             pre, dec, pts = trends(secid)
         except Exception as e:
             errs.append(f"{name}：{str(e)[:60]}")
-            return None
+            old = prev_by.get(secid)
+            if not old:
+                return None
+            # 分时取不到：沿用上一次的分时和异动段，但用最新的新闻库重新归因
+            for mv in old["moves"]:
+                mv["news"] = rank_news(secid, mv, pool, kw)
+            return old
         moves = detect_moves(secid, pre, pts, th)
         for mv in moves:
-            mv["news"] = rank_news(secid, mv, pool, MARKET_RE[kw])
+            mv["news"] = rank_news(secid, mv, pool, kw)
         last = pts[-1][1]
         step = max(1, len(pts) // 240)              # 前端画图最多 240 个点，异动段起止点保留
         keep = {0, len(pts) - 1} | set(range(0, len(pts), step))
@@ -436,6 +518,7 @@ def market_data(pool):
 
     with ThreadPoolExecutor(8) as ex:
         out = [r for r in ex.map(one, MARKETS) if r]
+    link_moves(out)
     return out, errs
 
 
@@ -799,11 +882,14 @@ def main():
         results = list(ex.map(run_source, SOURCES))
     sources = [r[0] for r in results]
 
-    pool = {n["id"]: n for n in prev.get("news", []) if n["ts"] >= now - KEEP_HOURS * 3600}
+    # 保留 48 小时；分时数据还停在更早的交易日时（周末、节假日），保留到那段行情开始前 12 小时，异动原因才找得到
+    pts_from = [m["pts"][0][0] for m in prev.get("markets", []) if m.get("pts")]
+    keep_from = min([now - KEEP_HOURS * 3600] + [t - 12 * 3600 for t in pts_from])
+    pool = {n["id"]: n for n in prev.get("news", []) if n["ts"] >= keep_from}
     fresh = 0
     for _, items in results:
         for n in items:
-            if n["ts"] < now - KEEP_HOURS * 3600 or n["ts"] > now + 600 or not n["title"]:
+            if n["ts"] < keep_from or n["ts"] > now + 600 or not n["title"]:
                 continue
             old = pool.get(n["id"])
             if old is None:
@@ -815,7 +901,7 @@ def main():
         tag(n)
     news_list = sorted(pool.values(), key=lambda n: -n["ts"])
 
-    markets, merrs = market_data(news_list)
+    markets, merrs = market_data(news_list, prev.get("markets", []))
     sources.append({"id": "quotes", "name": "东方财富分时", "region": "data", "abbr": "行情", "color": "#888",
                     "paywall": False, "ok": not merrs and bool(markets), "count": len(markets), "error": "；".join(merrs)})
     if not markets and prev.get("markets"):
