@@ -563,7 +563,7 @@ UTZ = "7eea3edcaed734bea9cbfc24409ed989"     # 东方财富涨停池接口的公
 EM_REF = {"Referer": "https://quote.eastmoney.com/"}
 THS_REF = {"Referer": "https://data.10jqka.com.cn/"}
 A_FS = "m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048"    # 沪深京 A 股
-CONCEPT_SKIP = re.compile(r"昨日|融资融券|沪股通|深股通|MSCI|标普|富时|预盈|预增|转债|破净|AH股|中特估|央企|国企|基金重仓|机构重仓|社保|QFII|HS300|上证|深证|创业板综|东方财富")
+CONCEPT_SKIP = re.compile(r"昨日|融资融券|沪股通|深股通|MSCI|标普|富时|预盈|预增|转债|破净|AH股|中特估|央企|国企|基金重仓|机构重仓|社保|QFII|HS300|上证|深证|创业板综|东方财富|题材股|次新股|昨日连板|含可转债")
 
 
 def last_trade_days():
