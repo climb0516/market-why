@@ -245,6 +245,32 @@
   .linked a:hover { box-shadow: 0 0 0 1px var(--line-2); }
   .linked .hint2 { color: var(--text-3); font-size: 11.5px; width: 100%; }
 
+  /* 待处理警示条：红 = 网站本身的问题，橙 = 行情异常 */
+  #alertbar { margin-top: 12px; }
+  #alertbar .ab { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 10px; text-align: left; font-size: 13px; min-width: 0; }
+  .alertbar.site .ab { background: var(--up-bg); color: var(--up); border: 1px solid color-mix(in srgb, var(--up) 35%, transparent); }
+  .alertbar.market .ab { background: rgba(245,158,11,.12); color: #f5a623; border: 1px solid rgba(245,158,11,.35); }
+  #alertbar .ab b { flex: none; font-weight: 700; }
+  #alertbar .ab span { color: var(--text-1); opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
+  #alertbar .ab em { flex: none; font-style: normal; font-weight: 600; }
+  #dlgAlerts { width: min(720px, calc(100vw - 24px)); max-height: 86vh; }
+  .al { padding: 12px 18px; border-top: 1px solid var(--line); display: grid; gap: 4px; }
+  .al .h { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .al .lv { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; color: #fff; }
+  .al .lv.site { background: var(--up); } .al .lv.market { background: #f59e0b; }
+  .al .h b { font-size: 14px; }
+  .al .d { font-size: 12.5px; color: var(--text-2); }
+  .al .m { font-size: 11.5px; color: var(--text-3); }
+  .al .acts { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .al .acts button { font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line-2); }
+  .al .acts button.pri { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .al .acts button:hover { filter: brightness(1.1); }
+  /* 人工解读（在 Claude Code 里分析后写进 notes.json） */
+  .mnote { background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 10px; padding: 10px 12px; margin: 2px 0 10px; }
+  .mnote .h { font-size: 12px; font-weight: 700; color: var(--accent); display: flex; gap: 8px; }
+  .mnote .h small { color: var(--text-3); font-weight: 500; }
+  .mnote .t { font-size: 14px; line-height: 1.7; margin-top: 4px; white-space: pre-wrap; }
+
   /* 快讯：紧凑时间线 */
   .filters { display: flex; gap: 8px; align-items: center; padding: 0 18px 10px; overflow-x: auto; scrollbar-width: none; }
   .filters::-webkit-scrollbar { display: none; }
@@ -413,6 +439,7 @@
 </header>
 
 <main class="wrap">
+  <div id="alertbar" hidden></div>
   <div class="ticker" id="ticker"></div>
   <section id="view"></section>
 </main>
@@ -432,6 +459,7 @@
 </nav>
 
 <dialog id="dlgSrc"></dialog>
+<dialog id="dlgAlerts"></dialog>
 <div id="dim"></div>
 <div id="stack"></div>
 
@@ -661,10 +689,10 @@ function buildSummary() {
 const linkedTxt = mv => (mv.linked || []).map(x => `${x.name} ${fmtChg(x.chg, x.unit)}`).join('、');
 function moveRow({ m, mv, i }) {
   const n = (mv.news || []).map(x => NEWS[x.id]).find(Boolean);
-  const lk = linkedTxt(mv);
+  const lk = linkedTxt(mv), note = NOTES_M[`${m.id}|${mv.start}`];
   return `<div class="li" data-mkmv="${m.id}|${i}">${bxHtml(mv.chg, m.unit)}<div class="body">
     <div class="t">${esc(m.name)}<span>${mv.kind === 'gap' ? '开盘跳空 ' + hm(mv.end) : `${hm(mv.start)}–${hm(mv.end)}`} · ${dayLabel(mv.end)}</span></div>
-    <div class="s">${n ? esc(n.title) : lk ? `与 ${esc(lk)} 同步${mv.dir > 0 ? '上涨' : '下跌'}` : '同时段没有匹配到明显相关的新闻'}</div></div></div>`;
+    <div class="s">${note ? '人工解读：' + esc(note.text) : n ? esc(n.title) : lk ? `与 ${esc(lk)} 同步${mv.dir > 0 ? '上涨' : '下跌'}` : '同时段没有匹配到明显相关的新闻'}</div></div></div>`;
 }
 function eventHtml(e, i) {
   const refs = e.refs.map(id => NEWS[id]).filter(Boolean);
@@ -760,7 +788,7 @@ function renderMarket() {
           <div class="sub num">${fmtPx(mv.from, m.dec)} → ${fmtPx(mv.to, m.dec)}${mv.kind === 'gap' ? ' · 开盘跳空，看休市期间的消息' : ''} · ${mv.news.length} 条可能原因</div>
         </div>
       </div>
-      ${k === state.move ? `<div class="reasons">${(mv.linked || []).length ? `<div class="linked">${ic('bolt')}同时段同步${mv.dir > 0 ? '上涨' : '下跌'}：${mv.linked.map(x => `<a data-mk="${x.id}">${esc(x.name)} <span class="${cls(x.chg)}">${fmtChg(x.chg, x.unit)}</span></a>`).join('')}<span class="hint2">多个市场一起动，通常是同一个外部因素</span></div>` : ''}
+      ${k === state.move ? `<div class="reasons">${noteHtml(NOTES_M[`${m.id}|${mv.start}`])}${(mv.linked || []).length ? `<div class="linked">${ic('bolt')}同时段同步${mv.dir > 0 ? '上涨' : '下跌'}：${mv.linked.map(x => `<a data-mk="${x.id}">${esc(x.name)} <span class="${cls(x.chg)}">${fmtChg(x.chg, x.unit)}</span></a>`).join('')}<span class="hint2">多个市场一起动，通常是同一个外部因素</span></div>` : ''}
         ${mv.news.length ? mv.news.map(reasonHtml).join('') : '<div style="color:var(--text-3);font-size:13px;padding:6px 0">同时段没有匹配到明显相关的新闻，可能是资金面、技术面或尚未被报道的因素</div>'}</div>` : ''}
     </div>`).join('') : '<div class="empty">今日没有超过阈值的异动</div>';
   baseView().innerHTML = `
@@ -1326,6 +1354,60 @@ function renderWatch() {
   </div>`;
 }
 
+// ── 待处理事项：警示条 + 清单（数据来自爬虫的 alerts；「数据停止更新」由网页自己判断）──
+let NOTES_M = {};                                    // notes.json：人工解读
+const noteHtml = n => n ? `<div class="mnote"><div class="h">人工解读<small>${esc(n.by || 'Claude')} · ${esc(n.updated || '')}</small></div><div class="t">${esc(n.text)}</div></div>` : '';
+const dismissedSet = () => { try { return new Set(JSON.parse(LS.get('mw-dismiss', '[]'))); } catch { return new Set(); } };
+function activeAlerts() {
+  if (!D) return [];
+  const list = (D.alerts || []).filter(a => !(a.level === 'market' && NOTES_M[a.id.slice(4)]));   // 已写人工解读的不再提示
+  const age = (Date.now() - new Date(D.updated)) / 60000, wd = new Date(Date.now() + 8 * 3600e3).getUTCDay();
+  if (age > 60 && wd >= 1 && wd <= 5) list.unshift({ id: 'stale', level: 'site', title: `数据已 ${Math.round(age)} 分钟没有更新`,
+    detail: `最后更新 ${D.updated.slice(5, 16).replace('T', ' ')}，定时抓取可能停了或一直失败`, link: '', since: null,
+    prompt: `帮我处理 MarketWhy 的问题：data.json 已 ${Math.round(age)} 分钟没有更新（最后更新 ${D.updated}）。请检查 market-why 仓库的 GitHub Actions 定时任务是否在运行、最近几次是否报错。` });
+  const dm = dismissedSet();
+  return list.filter(a => !dm.has(a.id));
+}
+function renderAlertBar() {
+  const el = $('#alertbar'), list = activeAlerts();
+  if (!list.length) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.className = list.some(a => a.level === 'site') ? 'alertbar site' : 'alertbar market';
+  el.innerHTML = `<button class="ab" data-alerts>${ic('info')}<b>${list.length} 项待处理</b><span>${list.slice(0, 3).map(a => esc(a.title)).join(' · ')}${list.length > 3 ? ' …' : ''}</span><em>查看 ›</em></button>`;
+}
+function openAlerts() {
+  const list = activeAlerts(), dm = dismissedSet(), hidden = (D.alerts || []).filter(a => dm.has(a.id)).length;
+  const dlg = $('#dlgAlerts');
+  dlg.innerHTML = `<h3>待处理事项</h3><p>点「复制给 Claude」，粘贴到 Claude Code 里处理。红色是网站本身的问题，橙色是行情异常；问题解决或写了人工解读后会自动消失。</p>
+    ${list.map((a, i) => `<div class="al"><div class="h"><span class="lv ${a.level}">${a.level === 'site' ? '网站问题' : '行情异常'}</span><b>${esc(a.title)}</b></div>
+      <div class="d">${esc(a.detail || '')}</div>
+      <div class="m">${a.since ? '从 ' + whenText(a.since) + ' 开始' : ''}${a.count ? ` · 已连续 ${a.count} 次` : ''}</div>
+      <div class="acts"><button class="pri" data-copy="${i}">复制给 Claude</button>${a.link ? `<button data-golink="${esc(a.link)}">查看</button>` : ''}<button data-dismiss="${esc(a.id)}">先忽略</button></div></div>`).join('') || '<div class="empty">没有待处理事项</div>'}
+    ${hidden ? `<div class="al"><button class="linkbtn" style="padding:0" data-undismiss>恢复 ${hidden} 项已忽略的事项</button></div>` : ''}
+    <button class="close" onclick="this.closest('dialog').close()">关闭</button>`;
+  dlg._list = list;
+  if (!dlg.open) dlg.showModal();
+}
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; }
+  catch {                                             // 不支持剪贴板接口时退回老办法
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy'); ta.remove(); return ok;
+  }
+}
+document.addEventListener('click', async e => {
+  const t = e.target;
+  if (t.closest('[data-alerts]')) return openAlerts();
+  const dlg = $('#dlgAlerts');
+  const cp = t.closest('[data-copy]');
+  if (cp) { const ok = await copyText(dlg._list[+cp.dataset.copy].prompt); cp.textContent = ok ? '已复制 ✓' : '复制失败，请手动选择'; return; }
+  const gl = t.closest('[data-golink]');
+  if (gl) { dlg.close(); location.hash = gl.dataset.golink; return; }
+  const ds = t.closest('[data-dismiss]');
+  if (ds) { const dm = dismissedSet(); dm.add(ds.dataset.dismiss); LS.set('mw-dismiss', JSON.stringify([...dm])); renderAlertBar(); return openAlerts(); }
+  if (t.closest('[data-undismiss]')) { LS.set('mw-dismiss', '[]'); renderAlertBar(); return openAlerts(); }
+});
+
 // ── 路由与交互 ──
 const BOARDS = ['global', 'metals', 'ai'];
 const LEVEL = t => t === 'theme' ? 1 : (t === 'stock' || t === 'news') ? 2 : 0;
@@ -1582,13 +1664,15 @@ $('#btnSrc').onclick = () => {
 async function load() {
   try {
     [D, TH] = await Promise.all(['data.json', 'themes.json'].map(f => fetch(f + '?t=' + Date.now()).then(r => r.json())));
-    A = await fetch('analysis.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null);   // 看盘数据，没有也不影响其他页面
+    A = await fetch('analysis.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null);
+    NOTES_M = await fetch('notes.json?t=' + Date.now()).then(r => r.ok ? r.json() : {}).catch(() => ({}));   // 人工解读   // 看盘数据，没有也不影响其他页面
   } catch (e) { $('#view').innerHTML = `<div class="empty">数据加载失败：${esc(e.message)}</div>`; return; }
   Object.entries(D.quotes || {}).forEach(([id, q]) => { if (!qLive[id]) Q[id] = q; });   // 快照兜底，实时数据优先
   NEWS = Object.fromEntries(D.news.map(n => [n.id, n]));
   SRC = Object.fromEntries(D.sources.map(s => [s.id, s]));
   FAC = Object.fromEntries(D.factors.map(f => [f.key, f]));
   const bad = D.sources.filter(s => !s.ok).length;
+  renderAlertBar();
   $('#updated').textContent = `更新于 ${D.updated.slice(5, 16).replace('T', ' ')}${bad ? ` · ${bad} 个来源异常` : ''}`;
   if (first) {
     first = false;

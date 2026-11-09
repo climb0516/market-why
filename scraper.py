@@ -17,6 +17,14 @@ from pathlib import Path
 
 OUT = Path(__file__).with_name("data.json")
 OUT_A = Path(__file__).with_name("analysis.json")
+NOTES = Path(__file__).with_name("notes.json")      # 人工解读：在 Claude Code 里分析异动后写进来，key 为「品种id|异动开始时间戳」
+
+# ── 待处理事项（网站上的警示条）──────────────────────────────────────────────────
+ALERT_STREAK = 3          # 同一个问题连续出现几次才报（避免偶发抖动）
+BIG_X = 3                 # 大幅异动：涨跌幅达到该品种异动阈值的几倍
+UNEXPLAINED_X = 2         # 原因不明：达到阈值几倍却没找到任何新闻原因
+COVERAGE_MIN, COVERAGE_MIN_MOVES = 0.4, 5   # 归因覆盖率：异动 ≥ 5 段时，有原因的占比低于 40% 就报
+SITE_URL = "https://climb0516.github.io/market-why/"
 THEMES = Path(__file__).with_name("themes.json")
 CST = timezone(timedelta(hours=8))
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -851,6 +859,86 @@ def analysis():
     return A
 
 
+# ── 待处理事项 ─────────────────────────────────────────────────────────────────
+
+def cst_text(ts):
+    return datetime.fromtimestamp(ts, CST).strftime("%m-%d %H:%M")
+
+
+def build_alerts(prev, sources, merrs, A, markets, notes, now):
+    """检测两类待处理事项：网站本身的问题（连续出现才报）和行情异常（大幅异动、原因不明）。
+    返回 (alerts, streak)。同一项保留第一次出现的时间。"""
+    old_streak = (prev.get("health") or {}).get("streak") or {}
+    first_seen = {a["id"]: a.get("since") for a in prev.get("alerts") or []}
+    streak, alerts = {}, []
+
+    def bump(key, bad):
+        streak[key] = old_streak.get(key, 0) + 1 if bad else 0
+        return streak[key]
+
+    def add(aid, level, title, detail, link, prompt, count=None):
+        alerts.append({"id": aid, "level": level, "title": title, "detail": detail, "link": link, "prompt": prompt,
+                       "count": count, "since": first_seen.get(aid) or now})
+
+    fix = "（先按调试规范加诊断日志确认根因，再修复）"
+    # 1. 数据源连续失败
+    for src in sources:
+        if src["id"] == "quotes":
+            continue                                     # 行情分时按品种单独统计，见下
+        n = bump("src:" + src["id"], not src["ok"])
+        if n >= ALERT_STREAK:
+            add("src:" + src["id"], "site", f"{src['name']} 连续 {n} 次抓取失败", src["error"] or "返回为空", "",
+                f"帮我处理 MarketWhy 的问题：数据源「{src['name']}」（id={src['id']}）连续 {n} 次抓取失败，最近一次报错：{src['error'] or '返回为空'}。"
+                f"代码在 market-why/scraper.py。{fix}", n)
+    # 2. 行情分时连续失败（按品种）
+    failed = {e.split("：")[0]: e for e in merrs}
+    for _, name, *_ in MARKETS:
+        n = bump("mkt:" + name, name in failed)
+        if n >= ALERT_STREAK:
+            add("mkt:" + name, "site", f"{name} 分时连续 {n} 次取不到", failed[name], "",
+                f"帮我处理 MarketWhy 的问题：{name} 的东方财富分时连续 {n} 次取不到，报错：{failed[name]}。"
+                f"代码在 market-why/scraper.py 的 trends()。{fix}", n)
+    # 3. 看盘数据缺块
+    if A is not None:
+        errs = {e.split("：")[0]: e for e in A.get("errors") or []}
+        for part in ["涨停池", "跌停池", "炸板池", "昨日涨停", "同花顺涨停原因", "涨跌分布", "成交额", "上一交易日成交额",
+                     "同花顺涨停板块", "行业板块", "概念板块", "涨幅榜", "主力净流入榜", "换手率榜"]:
+            n = bump("ana:" + part, part in errs)
+            if n >= ALERT_STREAK:
+                add("ana:" + part, "site", f"看盘「{part}」连续 {n} 次没取到", errs[part], "#watch",
+                    f"帮我处理 MarketWhy 的问题：看盘页的「{part}」连续 {n} 次没取到，报错：{errs[part]}。"
+                    f"代码在 market-why/scraper.py 的 analysis()。{fix}", n)
+    # 4. 归因覆盖率
+    allmv = [(m, mv) for m in markets for mv in m["moves"]]
+    covered = sum(1 for _, mv in allmv if mv.get("news"))
+    low = len(allmv) >= COVERAGE_MIN_MOVES and covered / len(allmv) < COVERAGE_MIN
+    n = bump("coverage", low)
+    if n >= ALERT_STREAK:
+        add("coverage", "site", f"归因覆盖率偏低：{covered}/{len(allmv)} 段异动找到原因", f"低于 {int(COVERAGE_MIN * 100)}%，连续 {n} 次", "#market",
+            f"帮我处理 MarketWhy 的问题：异动归因覆盖率偏低，{len(allmv)} 段异动只有 {covered} 段找到原因（连续 {n} 次）。"
+            f"请检查 scraper.py 的 rank_news() 规则和新闻源是否正常。{fix}", n)
+    # 5. 行情异常：大幅异动 / 原因不明（已有人工解读的不再提示）
+    for m, mv in allmv:
+        key = f"{m['id']}|{mv['start']}"
+        if key in notes:
+            continue
+        x = abs(mv["chg"]) / m["th"]
+        when = "开盘跳空" if mv["kind"] == "gap" else f"{cst_text(mv['start'])}–{cst_text(mv['end'])[-5:]}"
+        chg = f"{mv['chg']:+}{'bp' if m['unit'] == 'bp' else '%'}"
+        idx = m["moves"].index(mv)
+        reason = "目前没有自动匹配到新闻原因" if not mv.get("news") else f"自动匹配到 {len(mv['news'])} 条可能原因"
+        linked = "、".join(f"{x2['name']} {x2['chg']:+}" for x2 in mv.get("linked") or [])
+        ask = (f"帮我分析 MarketWhy 的行情异动：{m['name']} {when} {chg}（阈值 {m['th']}{'bp' if m['unit'] == 'bp' else '%'}）。"
+               f"{reason}{'；同时段同步：' + linked if linked else ''}。页面：{SITE_URL}#market/{m['id']}/{idx}。"
+               f"分析后把结论写进 market-why/notes.json，key 为 \"{key}\"。")
+        if x >= BIG_X:
+            add("big:" + key, "market", f"{m['name']} {when} {chg}", f"达到异动阈值的 {x:.1f} 倍；{reason}", f"#market/{m['id']}/{idx}", ask)
+        elif x >= UNEXPLAINED_X and not mv.get("news"):
+            add("why:" + key, "market", f"{m['name']} {when} {chg} 原因不明", f"达到异动阈值的 {x:.1f} 倍，没有匹配到新闻", f"#market/{m['id']}/{idx}", ask)
+    alerts.sort(key=lambda a: (a["level"] != "site", -(a.get("count") or 0)))
+    return alerts, streak
+
+
 # ── 主流程 ────────────────────────────────────────────────────────────────────
 
 def run_source(spec):
@@ -926,8 +1014,21 @@ def main():
         sources.append({"id": "vix", "name": "CBOE 恐慌指数", "region": "data", "abbr": "VIX", "color": "#888",
                         "paywall": False, "ok": False, "count": 0, "error": str(e)[:160]})
 
+    try:
+        A = analysis()
+    except Exception as e:
+        A = None
+        print("✗ analysis.json 生成失败，沿用上一份：", str(e)[:160])
+    try:
+        notes = json.loads(NOTES.read_text("utf-8")) if NOTES.exists() else {}
+    except Exception:
+        notes = {}
+    alerts, streak = build_alerts(prev, sources, merrs, A, markets, notes, now)
+
     data = {
         "updated": datetime.now(CST).isoformat(timespec="seconds"),
+        "alerts": alerts,
+        "health": {"streak": streak},
         "factors": [{"key": k, "name": n, "weight": w} for k, n, w, _ in FACTORS],
         "sources": sources,
         "markets": markets,
@@ -937,13 +1038,11 @@ def main():
     }
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), "utf-8")
 
-    try:
-        A = analysis()
+    if A is not None:
         OUT_A.write_text(json.dumps(A, ensure_ascii=False, separators=(",", ":")), "utf-8")
         print(f"→ analysis.json：{A['date']} 涨停 {A['breadth']['zt']} 跌停 {A['breadth']['dt']} 炸板 {A['breadth']['zb']}，"
               f"热度 {A['heat']}，标注 {len(A['labels'])}，失败：{A['errors'] or '无'}")
-    except Exception as e:
-        print("✗ analysis.json 生成失败，沿用上一份：", str(e)[:160])
+    print(f"→ 待处理事项 {len(alerts)}：" + ("；".join(a["title"] for a in alerts) or "无"))
     nmoves = sum(len(m["moves"]) for m in markets)
     print(f"→ data.json：新闻 {len(news_list)}（新增 {fresh}），行情 {len(markets)}/{len(MARKETS)}，异动 {nmoves}，"
           f"大事 {len(events)}，用时 {time.time() - t0:.1f}s")
