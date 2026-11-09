@@ -139,7 +139,7 @@ DIGEST_RE = re.compile(r"早餐|晚报|早报|午报|晚间要闻|要闻汇总|�
 # 观点、研报、点评、特稿：不是触发行情的事件，降权
 OPINION_RE = re.compile(r"证券[:：]|研报|策略|展望|观点|点评|解读|分析师|首席|经济学家|专家称|复盘|前瞻|"
                         r"\bAnalysis\b|\bOpinion\b|\bCommentary\b|\bExplainer\b|\bInsight\b|\bcolumn\b|\bpodcast\b|Odd Lots|"
-                        r"\bcould\b|\bmight\b|\bmay\b|^(How|Why|What|Inside|Here's|Here is)\b", re.I)
+                        r"\bcould\b|\bmight\b|\bmay\b|^(How|Why|What|Inside|Here's|Here is)\b|\bThe (Argument|Case) for\b|\bLessons\b|\bShould you\b", re.I)
 NOISE_RE = re.compile(r"辞职|减持计划|股东大会|回购进展|担保|董事会决议|获得.*专利|中标|签订.*合同|募集资金")
 
 
