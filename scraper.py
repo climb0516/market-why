@@ -16,6 +16,7 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 OUT = Path(__file__).with_name("data.json")
+OUT_A = Path(__file__).with_name("analysis.json")
 THEMES = Path(__file__).with_name("themes.json")
 CST = timezone(timedelta(hours=8))
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -109,8 +110,15 @@ RESULT_RE = re.compile(r"(指数?|股|期货|价|ETF)[^，,。]{0,6}(涨|跌)\d|
 NOISE_RE = re.compile(r"辞职|减持计划|股东大会|回购进展|担保|董事会决议|获得.*专利|中标|签订.*合同|募集资金")
 
 
-def fetch(url, timeout=15):
-    return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout).read()
+def fetch(url, timeout=15, headers=None, retries=3):
+    """失败自动重试（东方财富偶尔会拒绝 GitHub Actions 的连接），每次间隔递增。"""
+    for i in range(retries):
+        try:
+            return urllib.request.urlopen(urllib.request.Request(url, headers={**UA, **(headers or {})}), timeout=timeout).read()
+        except Exception:
+            if i == retries - 1:
+                raise
+            time.sleep(1.5 * (i + 1))
 
 
 def fetch_json(url, **kw):
@@ -547,6 +555,219 @@ def vix():
             if d.get("last_trade_time") else None}
 
 
+# ── 看盘（A 股，参考财联社看盘页）────────────────────────────────────────────────
+# 东方财富：涨停 / 跌停 / 炸板池、昨日涨停今日表现、涨跌分布、成交额、板块、个股排行
+# 同花顺：涨停原因、连板天数、涨停板块统计
+
+UTZ = "7eea3edcaed734bea9cbfc24409ed989"     # 东方财富涨停池接口的公开 ut 参数
+EM_REF = {"Referer": "https://quote.eastmoney.com/"}
+THS_REF = {"Referer": "https://data.10jqka.com.cn/"}
+A_FS = "m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048"    # 沪深京 A 股
+CONCEPT_SKIP = re.compile(r"昨日|融资融券|沪股通|深股通|MSCI|标普|富时|预盈|预增|转债|破净|AH股|中特估|央企|国企|基金重仓|机构重仓|社保|QFII|HS300|上证|深证|创业板综|东方财富")
+
+
+def last_trade_days():
+    """最近几个交易日的日期和两市成交额（上证 + 深证）。"""
+    amt = {}
+    for sid in ("1.000001", "0.399001"):
+        d = fetch_json(f"https://push2his.eastmoney.com/api/qt/stock/kline/get?secid={sid}&ut={EM_UT}&fields1=f1"
+                       "&fields2=f51,f57&klt=101&fqt=0&lmt=3&end=20500101", headers=EM_REF)
+        for k in d["data"]["klines"]:
+            day, a = k.split(",")
+            amt[day] = amt.get(day, 0) + float(a)
+    days = sorted(amt)
+    return days, amt
+
+
+def em_pool(kind, date, sort, with_date=False):
+    path = kind if kind.startswith("get") else "getTopic" + kind      # 昨日涨停的接口名是 getYesterdayZTPool，不带 Topic
+    d = fetch_json(f"https://push2ex.eastmoney.com/{path}?ut={UTZ}&dpt=wz.ztzt&Pageindex=0&pagesize=300"
+                   f"&sort={urllib.parse.quote(sort)}&date={date}", headers=EM_REF)
+    data = d.get("data") or {}
+    return (data.get("pool") or [], str(data.get("qdate") or date)) if with_date else data.get("pool") or []
+
+
+def ths_reasons(date):
+    """同花顺涨停池：代码 → (涨停原因, 连板描述)。"""
+    out, page = {}, 1
+    while page <= 5:
+        d = fetch_json(f"https://data.10jqka.com.cn/dataapi/limit_up/limit_up_pool?page={page}&limit=100"
+                       "&field=199112,10,9001,330323,330324,330325,9002,330329,133971,133970,1968584,3475914,9003,9004"
+                       f"&filter=HS,GEM2STAR&order_field=330324&order_type=0&date={date}", headers=THS_REF)
+        info = (d.get("data") or {}).get("info") or []
+        for x in info:
+            out[x["code"]] = (x.get("reason_type") or "", x.get("high_days") or "")
+        if len(info) < 100:
+            break
+        page += 1
+    return out
+
+
+def ths_blocks(date):
+    d = fetch_json(f"https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date={date}", headers=THS_REF)
+    out = []
+    for b in (d.get("data") or [])[:12]:
+        stocks = sorted(b.get("stock_list") or [], key=lambda x: -(x.get("change_rate") or 0))
+        out.append({"name": b.get("name"), "zt": b.get("limit_up_num") or 0, "pct": round((b.get("change") or 0), 2),
+                    "high": b.get("high") or "",
+                    "stocks": [{"id": ("1." if str(x.get("code", "")).startswith(("6", "9")) else "0.") + x.get("code", ""),
+                                "name": x.get("name"), "pct": round(x.get("change_rate") or 0, 2)} for x in stocks[:4]]})
+    return out
+
+
+def em_clist(fs, fid, n, fields, po=1):
+    d = fetch_json(f"https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz={n}&po={po}&np=1&fltt=2&invt=2&ut={EM_UT}"
+                   f"&fid={fid}&fs={fs}&fields={fields}", headers=EM_REF)
+    return [x for x in ((d.get("data") or {}).get("diff") or []) if isinstance(x.get("f3"), (int, float))]
+
+
+def hhmm(t):
+    t = int(t or 0)
+    return f"{t // 10000:02d}:{t // 100 % 100:02d}"
+
+
+def analysis():
+    """返回看盘数据；各部分单独 try，某个接口失败不影响其余部分。"""
+    # 交易日：涨停池接口按传入日期返回，非交易日会给出最近交易日的 qdate
+    zt, date = em_pool("ZTPool", datetime.now(CST).strftime("%Y%m%d"), "fbt:asc", with_date=True)
+    day = f"{date[:4]}-{date[4:6]}-{date[6:]}"
+    if date != datetime.now(CST).strftime("%Y%m%d"):
+        zt = em_pool("ZTPool", date, "fbt:asc")
+    A = {"date": day, "updated": datetime.now(CST).isoformat(timespec="seconds"), "errors": []}
+
+    def part(name, fn):
+        try:
+            return fn()
+        except Exception as e:
+            A["errors"].append(f"{name}：{str(e)[:80]}")
+            return None
+
+    dt = part("跌停池", lambda: em_pool("DTPool", date, "fund:asc")) or []
+    zb = part("炸板池", lambda: em_pool("ZBPool", date, "fbt:asc")) or []
+    yzt = part("昨日涨停", lambda: em_pool("getYesterdayZTPool", date, "zs:desc")) or []
+    rs = part("同花顺涨停原因", lambda: ths_reasons(date)) or {}
+
+    def stock(x, extra=None):
+        code = x["c"]
+        r = rs.get(code, ("", ""))
+        o = {"id": f"{x.get('m', 0)}.{code}", "name": x["n"], "price": round((x.get("p") or 0) / 1000, 2),
+             "pct": round(x.get("zdp") or 0, 2), "ind": x.get("hybk") or "", "reason": r[0], "high": r[1]}
+        o.update(extra or {})
+        return o
+
+    A["pools"] = {
+        "zt": [stock(x, {"lbc": x.get("lbc") or 1, "fbt": hhmm(x.get("fbt")), "lbt": hhmm(x.get("lbt")),
+                         "zbc": x.get("zbc") or 0, "fund": x.get("fund") or 0}) for x in zt],
+        "zb": [stock(x, {"fbt": hhmm(x.get("fbt")), "zbc": x.get("zbc") or 0}) for x in zb],
+        "dt": [stock(x) for x in dt],
+        "yzt": [stock(x, {"ylbc": x.get("ylbc") or 1}) for x in yzt],
+    }
+    A["pools"]["lb"] = sorted([s for s in A["pools"]["zt"] if s["lbc"] >= 2], key=lambda s: -s["lbc"])
+
+    # 涨跌分布：东方财富按涨跌幅取整分档，这里合并成财联社那样的 12 档
+    fb = part("涨跌分布", lambda: fetch_json(f"https://push2ex.eastmoney.com/getTopicZDFenBu?ut={UTZ}&dpt=wz.ztzt", headers=EM_REF))
+    counts = {}
+    for it in ((fb or {}).get("data") or {}).get("fenbu") or []:
+        for k, v in it.items():
+            counts[int(k)] = counts.get(int(k), 0) + v
+    nzt, ndt = len(zt), len(dt)
+    bins = [("涨停", None), ("+10%", (9, 99)), ("+8%", (7, 8)), ("+6%", (5, 6)), ("+4%", (3, 4)), ("+2%", (1, 2)), ("0%", (0, 0)),
+            ("-2%", (-2, -1)), ("-4%", (-4, -3)), ("-6%", (-6, -5)), ("-8%", (-8, -7)), ("-10%", (-99, -9)), ("跌停", None)]
+    dist = []
+    for label, rg in bins:
+        if rg is None:
+            dist.append({"label": label, "n": nzt if label == "涨停" else ndt})
+        else:
+            n = sum(v for k, v in counts.items() if rg[0] <= k <= rg[1])
+            if label == "+10%":
+                n = max(0, n - nzt)          # 分布里的 +10% 以上含涨停股，扣掉单列
+            if label == "-10%":
+                n = max(0, n - ndt)
+            dist.append({"label": label, "n": n})
+    up = sum(v for k, v in counts.items() if k > 0)
+    down = sum(v for k, v in counts.items() if k < 0)
+    flat = counts.get(0, 0)
+    A["dist"] = dist
+    A["breadth"] = {"up": up, "down": down, "flat": flat, "zt": nzt, "dt": ndt, "zb": len(zb)}
+
+    # 成交额：今日从实时行情取（沪 + 深）；上一交易日要用 K 线接口，取不到就不显示「较上日」
+    def today_amt():
+        d = fetch_json(f"https://push2.eastmoney.com/api/qt/ulist.np/get?fltt=2&ut={EM_UT}&fields=f6&secids=1.000001,0.399001", headers=EM_REF)
+        return sum(x["f6"] for x in d["data"]["diff"] if isinstance(x.get("f6"), (int, float)))
+    cur = part("成交额", today_amt)
+    kl = part("上一交易日成交额", last_trade_days)
+    prev = None
+    if kl:
+        days, amt = kl
+        before = [d for d in days if d < day]
+        prev = amt.get(before[-1]) if before else None
+        cur = amt.get(day, cur)
+    A["turnover"] = {"amt": cur, "prev": prev, "diff": (cur - prev) if (cur and prev) else None}
+
+    # 封板率、昨日涨停今日表现
+    seal = nzt / (nzt + len(zb)) if (nzt + len(zb)) else None
+    ypct = [s["pct"] for s in A["pools"]["yzt"]]
+    y_avg = sum(ypct) / len(ypct) if ypct else None
+    y_win = sum(1 for p in ypct if p > 0) / len(ypct) if ypct else None
+    A["seal"] = seal
+    A["yzt"] = {"avg": y_avg, "win": y_win, "n": len(ypct)}
+
+    # 市场热度（自定义，0～100）：上涨家数占比 40%、涨停 / (涨停 + 跌停) 20%、封板率 20%、昨日涨停今日平均涨幅 20%（-5%～+5% 映射到 0～1）
+    parts = []
+    if up + down:
+        parts.append((0.4, up / (up + down)))
+    if nzt + ndt:
+        parts.append((0.2, nzt / (nzt + ndt)))
+    if seal is not None:
+        parts.append((0.2, seal))
+    if y_avg is not None:
+        parts.append((0.2, min(1, max(0, (y_avg + 5) / 10))))
+    w = sum(p[0] for p in parts)
+    A["heat"] = round(sum(p[0] * p[1] for p in parts) / w * 100, 1) if w else None
+
+    # 分时图标注：涨停股按首次封板时间分到半小时一段，每段里涨停最多的题材（同花顺原因的第一个词，没有就用所属行业）
+    buckets = {}
+    for s in A["pools"]["zt"]:
+        if s["fbt"] == "00:00":
+            continue
+        tag = (s["reason"].split("+")[0].strip(" “”\"'") if s["reason"] else "") or s["ind"]
+        h, m = map(int, s["fbt"].split(":"))
+        key = h * 60 + m // 30 * 30
+        b = buckets.setdefault(key, {})
+        b.setdefault(tag, []).append(s["fbt"])
+    labels = []
+    for key, tags in buckets.items():
+        for tag, ts in sorted(tags.items(), key=lambda kv: -len(kv[1])):
+            if len(ts) >= 2 or len(labels) < 4:
+                labels.append({"t": min(ts), "tag": tag, "n": len(ts)})
+            break
+    merged = []                                   # 相邻时段是同一题材的合并成一个标注（如集合竞价和开盘都是「东方」）
+    for l in sorted(labels, key=lambda x: x["t"]):
+        if merged and merged[-1]["tag"] == l["tag"]:
+            merged[-1]["n"] += l["n"]
+        else:
+            merged.append(dict(l, t=max(l["t"], "09:30")))   # 竞价阶段的涨停标在开盘处
+    A["labels"] = merged[:10]
+
+    A["blocks"] = part("同花顺涨停板块", lambda: ths_blocks(date)) or []
+
+    def sectors(fs):
+        rows = em_clist(fs, "f3", 60, "f12,f14,f3,f62,f128,f136,f140,f141")
+        rows = [r for r in rows if not CONCEPT_SKIP.search(r["f14"]) and not r["f14"].endswith(("Ⅲ", "Ⅱ"))][:8]
+        return [{"name": r["f14"], "pct": r["f3"], "flow": r.get("f62"), "lead": r.get("f128"),
+                 "leadId": f"{r.get('f141', 0)}.{r.get('f140')}" if r.get("f140") else None, "leadPct": r.get("f136")} for r in rows]
+    A["industry"] = part("行业板块", lambda: sectors("m:90+t:2")) or []
+    A["concept"] = part("概念板块", lambda: sectors("m:90+t:3")) or []
+
+    def rank(fid):
+        rows = em_clist(A_FS, fid, 12, "f2,f3,f8,f12,f13,f14,f62")
+        return [{"id": f"{r['f13']}.{r['f12']}", "name": r["f14"], "price": r.get("f2"), "pct": r["f3"],
+                 "turn": r.get("f8"), "flow": r.get("f62")} for r in rows]
+    A["rank"] = {"gain": part("涨幅榜", lambda: rank("f3")) or [], "flow": part("主力净流入榜", lambda: rank("f62")) or [],
+                 "turn": part("换手率榜", lambda: rank("f8")) or []}
+    return A
+
+
 # ── 主流程 ────────────────────────────────────────────────────────────────────
 
 def run_source(spec):
@@ -629,6 +850,14 @@ def main():
         "news": news_list,
     }
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), "utf-8")
+
+    try:
+        A = analysis()
+        OUT_A.write_text(json.dumps(A, ensure_ascii=False, separators=(",", ":")), "utf-8")
+        print(f"→ analysis.json：{A['date']} 涨停 {A['breadth']['zt']} 跌停 {A['breadth']['dt']} 炸板 {A['breadth']['zb']}，"
+              f"热度 {A['heat']}，标注 {len(A['labels'])}，失败：{A['errors'] or '无'}")
+    except Exception as e:
+        print("✗ analysis.json 生成失败，沿用上一份：", str(e)[:160])
     nmoves = sum(len(m["moves"]) for m in markets)
     print(f"→ data.json：新闻 {len(news_list)}（新增 {fresh}），行情 {len(markets)}/{len(MARKETS)}，异动 {nmoves}，"
           f"大事 {len(events)}，用时 {time.time() - t0:.1f}s")

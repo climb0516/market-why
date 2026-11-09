@@ -57,7 +57,7 @@
 
   /* 手机底部标签栏 */
   nav.tabbar { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: color-mix(in srgb, var(--panel) 92%, transparent); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--line); padding: 6px 0 calc(6px + env(safe-area-inset-bottom)); justify-content: space-around; }
-  nav.tabbar button { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-3); font-size: 11px; font-weight: 600; min-width: 58px; padding: 2px 0; }
+  nav.tabbar button { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-3); font-size: 11px; font-weight: 600; min-width: 50px; padding: 2px 0; }
   nav.tabbar button svg.ic { width: 24px; height: 24px; stroke-width: 1.6; }
   nav.tabbar button.on { color: var(--accent); }
 
@@ -279,6 +279,44 @@
   .src-row .err { color: var(--up); font-size: 12px; grid-column: 2 / 4; }
   dialog .close { display: block; width: 100%; padding: 12px; border-top: 1px solid var(--line); color: var(--accent); font-weight: 600; }
 
+  /* 看盘 */
+  .kpis { display: grid; grid-template-columns: 1.1fr repeat(4, 1fr); gap: 10px; padding: 0 18px 12px; }
+  .kpi { background: var(--panel-2); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .kpi > span { font-size: 12.5px; color: var(--text-2); }
+  .kpi > b { font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
+  .kpi .sub2 { font-size: 12px; color: var(--text-3); }
+  .kpi .sub2 b { font-weight: 700; }
+  .kpi.heat { align-items: center; text-align: center; }
+  .gauge { width: 128px; height: 74px; }
+  svg.dist { width: 100%; height: auto; display: block; }
+  .blk { padding: 9px 18px; border-top: 1px solid var(--line); }
+  .blk .h { display: flex; gap: 10px; align-items: baseline; }
+  .blk .h b { font-size: 14.5px; } .blk .zt { color: var(--up); font-weight: 700; font-size: 13px; } .blk .cd { color: var(--text-3); font-size: 12px; margin-left: auto; }
+  .blk .ss { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+  .blk .ss a, .sect .lead { font-size: 12px; background: var(--panel-2); border-radius: 6px; padding: 2px 8px; cursor: pointer; }
+  .blk .ss a:hover, .sect .lead:hover { box-shadow: 0 0 0 1px var(--line-2); }
+  .lbc { font-size: 12px; font-weight: 700; color: var(--text-2); white-space: nowrap; }
+  .lbc.hot { color: #fff; background: var(--up); border-radius: 4px; padding: 1px 6px; }
+  table.pool td.rsn { white-space: normal; text-align: left; color: var(--text-2); font-size: 12.5px; max-width: 380px; min-width: 200px; }
+  table.pool th.rsn-h { text-align: left; }
+  .rsn-m { display: none; }
+  .row3 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr); gap: 14px; }
+  .sect { display: grid; grid-template-columns: 1fr 1fr; }
+  .sect > div { padding: 9px 18px; border-top: 1px solid var(--line); min-width: 0; }
+  .sect > div:nth-child(odd) { border-right: 1px solid var(--line); }
+  .sect .h { display: flex; justify-content: space-between; gap: 6px; font-size: 14px; }
+  .sect .h b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sect .lead { display: inline-block; margin-top: 4px; }
+  @media (max-width: 1100px) { .row3 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .row3 > :last-child { grid-column: 1 / -1; } .kpis { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 640px) {
+    .kpis { grid-template-columns: 1fr 1fr; padding: 0 12px 12px; gap: 8px; } .kpi.heat { grid-column: 1 / -1; } .kpi > b { font-size: 20px; }
+    .row3 { grid-template-columns: minmax(0, 1fr); } .row3 > :last-child { grid-column: auto; }
+    table.pool td.rsn, table.pool th.rsn-h { display: none; }
+    .rsn-m { display: block; font-size: 11.5px; color: var(--text-3); white-space: normal; margin-top: 2px; max-width: 190px; }
+    table.pool td { vertical-align: top; }
+    .blk, .sect > div { padding: 9px 14px; }
+  }
+
   footer { color: var(--text-3); font-size: 12px; text-align: center; padding: 6px 16px 40px; line-height: 1.8; }
 
   @media (max-width: 1080px) { .brand small { display: none; } }
@@ -319,6 +357,7 @@
     <div class="brand"><span class="logo"><svg viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg></span>MarketWhy <small>行情为什么动</small></div>
     <nav class="tabs">
       <button data-tab="overview">总览</button>
+      <button data-tab="watch">看盘</button>
       <button data-tab="global">全球</button>
       <button data-tab="metals">有色</button>
       <button data-tab="ai">AI</button>
@@ -348,6 +387,7 @@
 
 <nav class="tabbar">
   <button data-tab="overview" data-ic="home">总览</button>
+  <button data-tab="watch" data-ic="gauge">看盘</button>
   <button data-tab="global" data-ic="globe">全球</button>
   <button data-tab="metals" data-ic="ingot">有色</button>
   <button data-tab="ai" data-ic="chip">AI</button>
@@ -367,6 +407,7 @@ const state = { tab: 'overview', market: null, move: 0, lang: 'all', factor: '',
 // ── 线性图标（统一替代 emoji）──
 const I = {
   home: '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>',
+  gauge: '<path d="M4 17a8 8 0 1116 0"/><path d="M12 17l4-5"/><circle cx="12" cy="17" r="1.2"/>',
   globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
   news: '<path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/>',
   bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
@@ -1076,6 +1117,124 @@ function renderNews(id) {
   </div>`;
 }
 
+// ── 看盘（A 股，参考财联社看盘页）──
+let A = null;
+const fmtYi = v => v == null ? '—' : Math.abs(v) >= 1e12 ? (v / 1e12).toFixed(2) + '万亿' : (v / 1e8).toFixed(0) + '亿';
+const pctTxt = v => v == null ? '—' : `<span class="num ${cls(v)}">${sign((+v).toFixed(2))}%</span>`;
+function gauge(v) {
+  if (v == null) return '<div class="empty">—</div>';
+  const a = Math.PI * (1 - v / 100), r = 52, cx = 64, cy = 62;
+  const x = cx + r * Math.cos(a), y = cy - r * Math.sin(a);
+  const col = v >= 60 ? 'var(--up)' : v <= 40 ? 'var(--down)' : '#f5a623';
+  return `<svg viewBox="0 0 128 74" class="gauge"><path d="M12 62 A52 52 0 0 1 116 62" fill="none" stroke="var(--panel-2)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M12 62 A52 52 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="${col}" stroke-width="10" stroke-linecap="round"/>
+    <text x="64" y="58" text-anchor="middle" font-size="22" font-weight="800" fill="var(--text-1)">${v.toFixed(0)}°</text></svg>`;
+}
+function distSvg(dist) {
+  const W = isPhone() ? 420 : 640, H = 230, P = { t: 22, b: 26 }, n = dist.length, bw = W / n, max = Math.max(1, ...dist.map(d => d.n));
+  return `<svg viewBox="0 0 ${W} ${H}" class="dist">${dist.map((d, i) => {
+    const h = d.n / max * (H - P.t - P.b), x = i * bw + bw * 0.18, y = H - P.b - h;
+    const c = i < 6 ? 'var(--up)' : i === 6 ? 'var(--text-3)' : 'var(--down)';
+    return `<rect x="${x}" y="${y}" width="${bw * 0.64}" height="${Math.max(1, h)}" rx="2" fill="${c}"/>
+      <text x="${x + bw * 0.32}" y="${y - 6}" text-anchor="middle" font-size="12" fill="var(--text-2)">${d.n}</text>
+      <text x="${x + bw * 0.32}" y="${H - 8}" text-anchor="middle" font-size="11.5" fill="var(--text-3)">${d.label}</text>`;
+  }).join('')}</svg>`;
+}
+// 上证分时 + 涨停集中出现的题材标注（同一时段涨停最多的题材）
+function watchChart(labels) {
+  const m = D.markets.find(x => x.id === '1.000001');
+  if (!m || m.pts.length < 2) return '<div class="empty">暂无上证分时</div>';
+  // 手机上用窄画布，标注文字不会被整体缩小到看不清
+  const W = isPhone() ? 400 : 800, H = isPhone() ? 260 : 280, P = { l: 8, r: 64, t: 16, b: 24 }, p = m.pts, n = p.length;
+  const vs = p.map(x => x[1]).concat(m.pre); let lo = Math.min(...vs), hi = Math.max(...vs); const pd = (hi - lo) * 0.1 || 1; lo -= pd; hi += pd;
+  const X = i => P.l + i / (n - 1) * (W - P.l - P.r), Y = v => P.t + (hi - v) / (hi - lo) * (H - P.t - P.b);
+  const line = p.map((x, i) => `${X(i).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ');
+  const col = m.chg >= 0 ? 'var(--up)' : 'var(--down)';
+  const [y0, mo, d0] = A.date.split('-').map(Number);
+  const sameDay = ymd(p[n - 1][0]) === A.date;
+  let marks = '';
+  if (sameDay) (labels || []).forEach((l, k) => {
+    const [h, mi] = l.t.split(':').map(Number), ts = Date.UTC(y0, mo - 1, d0, h - 8, mi) / 1000;
+    let i = 0, bd = Infinity; p.forEach((x, j) => { const dd = Math.abs(x[0] - ts); if (dd < bd) { bd = dd; i = j; } });
+    const px = X(i), py = Y(p[i][1]), up = k % 2 === 0, ly = up ? Math.max(P.t + 4, py - 34 - (k % 4 >= 2 ? 22 : 0)) : Math.min(H - P.b - 20, py + 22 + (k % 4 >= 2 ? 22 : 0));
+    const txt = `${l.tag}${l.n > 1 ? ' ×' + l.n : ''}`, tw = txt.length * 12 + 12;
+    marks += `<line x1="${px}" x2="${px}" y1="${py}" y2="${up ? ly + 18 : ly}" stroke="var(--up)" stroke-width="1"/><circle cx="${px}" cy="${py}" r="3" fill="var(--up)"/>
+      <rect x="${Math.min(W - P.r - tw, Math.max(P.l, px - tw / 2))}" y="${ly}" width="${tw}" height="18" rx="4" fill="var(--up-bg)" stroke="var(--up)" stroke-width=".6"/>
+      <text x="${Math.min(W - P.r - tw, Math.max(P.l, px - tw / 2)) + tw / 2}" y="${ly + 13}" text-anchor="middle" font-size="11.5" fill="var(--up)" font-weight="600">${esc(txt)}</text>`;
+  });
+  const ticks = [0, .5, 1].map(f => Math.round(f * (n - 1)));
+  return `<svg viewBox="0 0 ${W} ${H}">${gridLines(W, H, P)}
+    <line x1="${P.l}" x2="${W - P.r}" y1="${Y(m.pre)}" y2="${Y(m.pre)}" stroke="var(--text-3)" stroke-dasharray="3 4"/>
+    <text x="${W - P.r + 6}" y="${Y(m.pre) + 4}" font-size="11" fill="var(--text-3)">${fmtPx(m.pre, m.dec)}</text>
+    <polyline fill="none" stroke="${col}" stroke-width="1.6" points="${line}"/>
+    <rect x="${W - P.r + 2}" y="${Y(m.last) - 9}" width="${P.r - 4}" height="18" rx="4" fill="${col}"/>
+    <text x="${W - P.r + P.r / 2}" y="${Y(m.last) + 4}" font-size="11" fill="#fff" font-weight="700" text-anchor="middle">${fmtPx(m.last, m.dec)}</text>
+    ${marks}
+    ${ticks.map(i => `<text x="${X(i)}" y="${H - 6}" font-size="11" fill="var(--text-3)" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${hm(p[i][0])}</text>`).join('')}</svg>
+    ${sameDay ? '' : `<div class="hint" style="padding:6px 6px 0">分时是 ${dayLabel(p[n - 1][0])} 的，和看盘数据（${A.date}）不是同一天，暂不标注</div>`}`;
+}
+const POOLS = [['zt', '涨停池'], ['lb', '连板池'], ['zb', '炸板池'], ['dt', '跌停池']];
+function poolTable(key) {
+  const rows = (A.pools[key] || []);
+  if (!rows.length) return `<div class="empty">今天${POOLS.find(p => p[0] === key)[1].replace('池', '')}为空</div>`;
+  const shown = state.poolAll ? rows : rows.slice(0, 15);
+  const extra = key === 'zb' ? '炸板次数' : key === 'dt' ? '所属行业' : '首次封板';
+  return `<table class="st pool"><thead><tr><th>股票</th><th>现价</th><th>涨跌幅</th><th>${key === 'dt' ? '' : '连板'}</th><th class="hide-m">${extra}</th><th class="rsn-h">涨停原因</th></tr></thead><tbody>
+    ${shown.map(s => `<tr data-stock="${s.id}"><td><div class="nm">${esc(s.name)}<span class="cd">${esc(s.id.split('.')[1])}</span></div>
+        ${s.reason ? `<div class="rsn-m">${esc(s.reason)}</div>` : ''}</td>
+      <td class="num">${s.price.toFixed(2)}</td><td>${chgBlock(s.pct)}</td>
+      <td>${key === 'dt' ? '' : `<span class="lbc ${(s.lbc || 1) >= 2 ? 'hot' : ''}">${esc(s.high || (s.lbc ? s.lbc + '板' : ''))}</span>`}</td>
+      <td class="hide-m num" style="color:var(--text-2)">${key === 'zb' ? s.zbc + ' 次' : key === 'dt' ? esc(s.ind) : esc(s.fbt || '')}</td>
+      <td class="rsn">${esc(s.reason || s.ind || '—')}</td></tr>`).join('')}
+    </tbody></table>${rows.length > 15 ? `<button class="more" data-poolall>${state.poolAll ? '收起' : `展开全部 ${rows.length} 只`}</button>` : ''}`;
+}
+function sectorList(rows) {
+  if (!rows?.length) return '<div class="empty">板块数据暂时取不到</div>';
+  return `<div class="sect">${rows.map(r => `<div><div class="h"><b>${esc(r.name)}</b>${pctTxt(r.pct)}</div>
+    ${r.lead ? `<a class="lead" ${r.leadId ? `data-stock="${r.leadId}"` : ''}>${esc(r.lead)} ${pctTxt(r.leadPct)}</a>` : ''}</div>`).join('')}</div>`;
+}
+const RANKS = [['gain', '涨幅榜', 'pct'], ['flow', '主力净流入', 'flow'], ['turn', '换手率', 'turn']];
+function rankTable(key) {
+  const rows = A.rank?.[key] || [], col = RANKS.find(r => r[0] === key)[2];
+  if (!rows.length) return '<div class="empty">排行暂时取不到</div>';
+  return `<table class="st"><tbody>${rows.slice(0, 10).map((r, i) => `<tr data-stock="${r.id}"><td><div class="nm"><span class="cd" style="width:16px">${i + 1}</span>${esc(r.name)}</div></td>
+    <td class="num">${r.price ?? '—'}</td><td>${col === 'pct' ? chgBlock(r.pct) : col === 'flow' ? `<span class="num ${cls(r.flow)}">${fmtYi(r.flow)}</span>` : `<span class="num">${r.turn?.toFixed(2)}%</span>`}</td></tr>`).join('')}</tbody></table>`;
+}
+function renderWatch() {
+  if (!A) { $('#view').innerHTML = '<div class="page"><div class="card"><div class="empty">看盘数据还没生成，等下一次定时抓取后再来看</div></div></div>'; return; }
+  const b = A.breadth, t = A.turnover;
+  const live = D.news.filter(n => n.lang === 'zh' && n.ts > nowTs() - 36 * 3600 && /收评|午评|复盘|连板|涨停分析|盘面|板块点评|看盘|收盘[:：]|午盘|市场情绪|赚钱效应/.test(n.title));
+  const seen = new Set(), liveU = live.filter(n => { const k = n.title.slice(0, 14); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 12);
+  const rk = state.rank || 'gain', pk = state.pool || 'zt';
+  $('#view').innerHTML = `<div class="page">
+    <div class="card"><div class="ch">${ic('gauge')}A 股看盘 <small>${A.date === ymd(nowTs()) ? '今日' : A.date} · 更新于 ${A.updated.slice(11, 16)}</small></div>
+      <div class="kpis">
+        <div class="kpi heat">${gauge(A.heat)}<span>市场热度</span><div class="sub2"><b class="up">涨停 ${b.zt}</b> vs <b class="down">跌停 ${b.dt}</b></div></div>
+        <div class="kpi"><span>两市成交额</span><b class="num">${fmtYi(t.amt)}</b><div class="sub2">${t.diff == null ? '较上日 —' : `较上日 <b class="num ${cls(t.diff)}">${t.diff > 0 ? '+' : ''}${fmtYi(t.diff)}</b>`}</div></div>
+        <div class="kpi"><span>封板率</span><b class="num">${A.seal == null ? '—' : (A.seal * 100).toFixed(1) + '%'}</b><div class="sub2">封板 ${b.zt} · 炸板 ${b.zb}</div></div>
+        <div class="kpi"><span>昨日涨停今日表现</span><b class="num ${cls(A.yzt.avg)}">${A.yzt.avg == null ? '—' : sign(A.yzt.avg.toFixed(2)) + '%'}</b><div class="sub2">获利率 ${A.yzt.win == null ? '—' : (A.yzt.win * 100).toFixed(0) + '%'} · ${A.yzt.n} 只</div></div>
+        <div class="kpi"><span>涨跌家数</span><b class="num"><span class="up">${b.up}</span> / <span class="down">${b.down}</span></b><div class="sub2">平盘 ${b.flat}</div></div>
+      </div>
+      <div class="ch" style="padding-top:4px">上证指数分时 <small>红色标注 = 那个时段涨停最集中的题材</small></div>
+      <div class="chart">${watchChart(A.labels)}</div></div>
+    <div class="row" style="margin-top:0;align-items:start">
+      <div class="card"><h2>涨跌分布 <small>上涨 ${b.up} · 平盘 ${b.flat} · 下跌 ${b.down}</small></h2><div class="pad">${distSvg(A.dist)}</div></div>
+      <div class="card"><h2>涨停板块 <small>同花顺 · 按涨停家数</small></h2>
+        ${A.blocks.length ? A.blocks.slice(0, 8).map(bk => `<div class="blk"><div class="h"><b>${esc(bk.name)}</b><span class="zt">${bk.zt} 家涨停</span>${bk.high ? `<span class="cd">最高 ${esc(bk.high)}</span>` : ''}</div>
+          <div class="ss">${bk.stocks.map(s => `<a data-stock="${s.id}">${esc(s.name)} <span class="up num">${sign(s.pct.toFixed(2))}%</span></a>`).join('')}</div></div>`).join('') : '<div class="empty">暂无</div>'}</div>
+    </div>
+    <div class="card"><div class="ch">市场风向标 <div class="seg r" id="segPool">${POOLS.map(([k, l]) => `<button data-pool="${k}" class="${pk === k ? 'on' : ''}">${l} ${(A.pools[k] || []).length}</button>`).join('')}</div></div>
+      ${poolTable(pk)}</div>
+    <div class="row3">
+      <div class="card"><h2>热门行业 <small>领涨股</small></h2>${sectorList(A.industry)}</div>
+      <div class="card"><h2>热门概念 <small>领涨股</small></h2>${sectorList(A.concept)}</div>
+      <div class="card"><div class="ch"><div class="seg">${RANKS.map(([k, l]) => `<button data-rank="${k}" class="${rk === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>${rankTable(rk)}</div>
+    </div>
+    <div class="card"><h2>${ic('news')}盘面直播 <small>收评、复盘、连板分析、板块点评 · 来自快讯库</small></h2>${liveU.length ? liveU.map(n => feedItem(n)).join('') : '<div class="empty">暂无</div>'}</div>
+    ${A.errors?.length ? `<div class="hint">部分数据这次没取到：${esc(A.errors.join('；'))}</div>` : ''}
+  </div>`;
+}
+
 // ── 路由与交互 ──
 const BOARDS = ['global', 'metals', 'ai'];
 function render() {
@@ -1088,7 +1247,7 @@ function render() {
   const showTicker = state.tab === 'overview' || state.tab === 'market';
   $('#ticker').style.display = showTicker ? '' : 'none';
   if (showTicker) renderTicker();
-  ({ overview: renderOverview, market: renderMarket, feed: renderFeed,
+  ({ overview: renderOverview, market: renderMarket, feed: renderFeed, watch: renderWatch,
      global: () => renderBoard('global'), metals: () => renderBoard('metals'), ai: () => renderBoard('ai'),
      theme: () => renderTheme(state.theme), stock: () => renderStock(state.stock), news: () => renderNews(state.news) })[state.tab]();
 }
@@ -1112,7 +1271,7 @@ function readHash() {
   else if (tab === 'theme' && TH?.themes[a]) { state.tab = 'theme'; state.theme = a; }
   else if (tab === 'stock' && a) { state.tab = 'stock'; state.stock = decodeURIComponent(a); }
   else if (tab === 'news' && a) { state.tab = 'news'; state.news = a; }
-  else state.tab = BOARDS.includes(tab) ? tab : 'overview';
+  else state.tab = BOARDS.includes(tab) || tab === 'watch' ? tab : 'overview';
 }
 // 主题、个股、新闻是「进入」的下一层，写入浏览器历史，返回键能回来；其余标签切换替换当前记录
 function go(patch) {
@@ -1136,6 +1295,11 @@ document.addEventListener('click', e => {
   if (pd) { DETAIL.period = pd.dataset.period; document.querySelectorAll('#periods button').forEach(b => b.classList.toggle('on', b === pd));
     $('#dchart').innerHTML = '<div class="empty">图表加载中…</div>'; return loadChart(state.stock, DETAIL.period, '#dchart'); }
   if (t.closest('[data-expand]')) { DETAIL.expand = !DETAIL.expand; return paintProfile(state.stock); }
+  const pl = t.closest('[data-pool]');
+  if (pl) { state.pool = pl.dataset.pool; state.poolAll = false; return renderWatch(); }
+  if (t.closest('[data-poolall]')) { state.poolAll = !state.poolAll; return renderWatch(); }
+  const rkb = t.closest('[data-rank]');
+  if (rkb) { state.rank = rkb.dataset.rank; return renderWatch(); }
   const tab = t.closest('[data-tab]');
   if (tab) { e.preventDefault(); return go({ tab: tab.dataset.tab, ...(tab.dataset.tab === 'market' && !state.market ? { market: defaultMarket(), move: 0 } : {}) }); }
   const mm = t.closest('[data-mkmv]');
@@ -1195,6 +1359,7 @@ $('#btnSrc').onclick = () => {
 async function load() {
   try {
     [D, TH] = await Promise.all(['data.json', 'themes.json'].map(f => fetch(f + '?t=' + Date.now()).then(r => r.json())));
+    A = await fetch('analysis.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null);   // 看盘数据，没有也不影响其他页面
   } catch (e) { $('#view').innerHTML = `<div class="empty">数据加载失败：${esc(e.message)}</div>`; return; }
   Object.entries(D.quotes || {}).forEach(([id, q]) => { if (!qLive[id]) Q[id] = q; });   // 快照兜底，实时数据优先
   NEWS = Object.fromEntries(D.news.map(n => [n.id, n]));
@@ -1208,7 +1373,7 @@ async function load() {
     if (state.tab === 'market' && !D.markets.some(m => m.id === state.market)) state.market = defaultMarket();
     render();
     if (viewIds().length) refreshQuotes(true);
-  } else if (state.tab === 'market') render();   // 定时重读：总览由行情刷新带动，快讯页、详情页不打断
+  } else if (state.tab === 'market' || state.tab === 'watch') render();   // 定时重读：总览由行情刷新带动，快讯页、详情页不打断
 }
 let first = true;
 try { localStorage.removeItem('mw-view'); } catch {}   // 旧版「热力图 / 卡片」切换的记忆，已不用
