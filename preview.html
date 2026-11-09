@@ -569,11 +569,14 @@ function renderTicker() {
 
 // ── 热力图（squarified treemap）──
 // 块大小按美元市值（汇率近似），颜色按今日涨跌
+const CAP0 = {};
 function usdCap(id) {
   const q = Q[id]; if (!q?.cap) return 0;
+  CAP0[id] ??= q.cap;                       // 方块大小用第一次见到的市值，行情刷新时布局不动，只变颜色
+  const cap = CAP0[id];
   const cnh = D.markets.find(m => m.id === '133.USDCNH')?.last || 7.1;
   const FX = { US: 1, HK: 7.8, CN: cnh, JP: 150, KR: 1400, TW: 32 };
-  return q.cap / (FX[mktOf(id)] || 1);
+  return cap / (FX[mktOf(id)] || 1);
 }
 function squarify(items, x, y, w, h) {
   const total = items.reduce((a, i) => a + i.v, 0); if (!total || w <= 0 || h <= 0) return [];
@@ -1099,18 +1102,54 @@ function viewIds() {
   }
   return [];
 }
+// 两棵 DOM 结构是否一致（标签和子节点数量都相同；图表、公司简介这两块按原样保留，不参与比较）
+const KEEP_IDS = new Set(['dchart', 'profile']);
+function sameShape(a, b) {
+  if (a.nodeType !== b.nodeType || a.nodeName !== b.nodeName) return false;
+  if (a.nodeType !== 1 || KEEP_IDS.has(a.id)) return true;
+  if (a.childNodes.length !== b.childNodes.length) return false;
+  for (let i = 0; i < a.childNodes.length; i++) if (!sameShape(a.childNodes[i], b.childNodes[i])) return false;
+  return true;
+}
+// 只改变化了的文字和属性，元素本身不换（展开状态、悬停、动画都不受影响）
+function morph(a, b) {
+  if (a.nodeType === 3) { if (a.nodeValue !== b.nodeValue) a.nodeValue = b.nodeValue; return; }
+  if (a.nodeType !== 1 || KEEP_IDS.has(a.id)) return;
+  for (const at of b.attributes) if (at.name !== 'class' && a.getAttribute(at.name) !== at.value) a.setAttribute(at.name, at.value);
+  if (b.getAttribute('class') !== a.getAttribute('class')) {          // class 里保留运行时加上的展开状态
+    const open = a.classList.contains('open');
+    a.setAttribute('class', b.getAttribute('class') || '');
+    if (open) a.classList.add('open');
+  }
+  for (let i = 0; i < a.childNodes.length; i++) morph(a.childNodes[i], b.childNodes[i]);
+}
+const quoteSig = ids => ids.map(id => { const q = Q[id]; return q ? `${q.price}|${q.pct}|${q.cap}` : '-'; }).join(',');
+let curVT = null;
+// 切换动画结束后再去拉行情，避免动画进行中页面被替换
+const afterNav = () => (curVT ? curVT.finished.catch(() => {}) : Promise.resolve()).then(() => { if (viewIds().length) refreshQuotes(true); });
+
 async function refreshQuotes(force) {
   const ids = viewIds(); if (!ids.length) return;
+  const tab = state.tab, key = state.theme + '|' + state.stock, before = quoteSig(ids);
   await fetchQuotes(ids, force);
-  // 只更新数字和热力图，不重画详情页图表、不打断展开状态
-  const y = scrollY, keep = { chart: $('#dchart')?.innerHTML, prof: $('#profile')?.innerHTML };
-  if (state.tab === 'stock') renderStock(state.stock, keep);
-  else if (state.tab === 'theme') renderTheme(state.theme, keep);
-  else if (BOARDS.includes(state.tab)) renderBoard(state.tab);
-  else if (state.tab === 'overview') {
-    const open = [...document.querySelectorAll('.ev')].map((e, i) => e.classList.contains('open') ? i : -1).filter(i => i >= 0);
-    renderOverview();
-    const evs = document.querySelectorAll('.ev'); open.forEach(i => evs[i]?.classList.add('open'));
+  if (tab !== state.tab || key !== state.theme + '|' + state.stock) return;   // 请求期间已经切走了
+  if (quoteSig(ids) === before) { console.debug('[Nav] 行情没变，不重画'); return; }
+  // 在页面外渲染一份新内容（同一帧里换进换出，用户看不到），再把差异合并回当前页面
+  const y = scrollY, real = $('#view'), tmp = real.cloneNode(false);
+  real.replaceWith(tmp);
+  try {
+    if (tab === 'stock') renderStock(state.stock, {});
+    else if (tab === 'theme') renderTheme(state.theme, {});
+    else if (BOARDS.includes(tab)) renderBoard(tab);
+    else if (tab === 'overview') renderOverview();
+  } finally { tmp.replaceWith(real); }
+  if (sameShape(real, tmp)) { morph(real, tmp); console.debug('[Nav] 行情变了，原地更新数字'); }
+  else {                                                             // 结构变了（比如多了一行）才整块替换，图表和简介仍保留
+    const keep = { chart: $('#dchart')?.innerHTML, prof: $('#profile')?.innerHTML };
+    real.replaceChildren(...tmp.childNodes);
+    if (keep.chart && $('#dchart')) $('#dchart').innerHTML = keep.chart;
+    if (keep.prof && $('#profile')) $('#profile').innerHTML = keep.prof;
+    console.debug('[Nav] 结构变化，整块替换');
   }
   jump(y);
 }
@@ -1355,13 +1394,14 @@ function transition(dir, update, heroFrom, heroTo) {
   if (!canVT() || state.noAnim) { state.noAnim = false; update(); return; }
   document.documentElement.dataset.nav = dir;
   if (heroFrom) heroFrom.style.viewTransitionName = 'hero';
-  const vt = document.startViewTransition(() => {
+  const vt = curVT = document.startViewTransition(() => {
     if (heroFrom) heroFrom.style.viewTransitionName = '';
     update();
     const to = heroTo?.();
     if (to) to.style.viewTransitionName = 'hero';
   });
   vt.finished.finally(() => {
+    if (curVT === vt) curVT = null;
     delete document.documentElement.dataset.nav;
     document.querySelectorAll('[style*="view-transition-name"]').forEach(el => { if (el.style.viewTransitionName === 'hero') el.style.viewTransitionName = ''; });
   });
@@ -1381,7 +1421,7 @@ function go(patch, opts = {}) {
     render();
     jump(dir === 'push' ? 0 : (SCROLL[location.hash] ?? 0));
   }, heroFrom, heroFrom ? () => document.querySelector('.ph') : null);
-  if (viewIds().length) refreshQuotes(true);
+  afterNav();
 }
 
 document.addEventListener('click', e => {
@@ -1446,7 +1486,7 @@ window.addEventListener('popstate', () => {
     render();
     jump(SCROLL[location.hash || '#overview'] ?? 0);
   }, heroFrom, heroFrom ? () => heroOf(fromTab, fromKey) : null);
-  if (viewIds().length) refreshQuotes(true);
+  afterNav();
 });
 
 // E. 手机右滑返回：二级 / 三级页从屏幕左边缘向右拖动，页面跟手，超过三分之一宽度松手就返回
