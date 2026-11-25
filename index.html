@@ -1173,7 +1173,8 @@ async function refreshQuotes(force) {
     else if (BOARDS.includes(tab)) renderBoard(tab);
     else if (tab === 'overview') renderOverview();
   } finally { RENDER_INTO = null; tmp.remove(); }
-  if (sameShape(real, tmp)) { morph(real, tmp); console.debug('[Nav] 行情变了，原地更新数字'); }
+  // 只合并子节点：tmp 自己带着 visibility:hidden 等临时样式，morph 根节点会把它们抄到真实页面上，整页变得看不见
+  if (sameShape(real, tmp)) { for (let i = 0; i < real.childNodes.length; i++) morph(real.childNodes[i], tmp.childNodes[i]); console.debug('[Nav] 行情变了，原地更新数字'); }
   else {                                                             // 结构变了（比如多了一行）才整块替换，图表和简介仍保留
     const keep = { chart: real.querySelector('#dchart')?.innerHTML, prof: real.querySelector('#profile')?.innerHTML };
     real.replaceChildren(...tmp.childNodes);
